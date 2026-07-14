@@ -65,14 +65,17 @@ class FetchResult:
     ok: bool = True
     error: str = ""
 
-    # The archival payload: raw HTML exactly as served (the corpus asset) plus a
-    # normalized, line-oriented text rendering used for diffing and extraction.
+    # The archival payload: the raw document exactly as served (the corpus asset)
+    # plus a normalized, line-oriented text rendering used for diffing/extraction.
+    # HTML sources populate raw_html; binary sources (PDF) populate raw_bytes.
     raw_html: Optional[str] = None
+    raw_bytes: Optional[bytes] = None
+    raw_ext: str = "html"    # archival file extension: "html" | "pdf"
     text: Optional[str] = None
 
     # Integrity / change-detection fingerprints.
     text_sha256: str = ""   # hash of normalized text — the change signal we diff
-    raw_sha256: str = ""     # hash of raw bytes — archival integrity of the source
+    raw_sha256: str = ""     # hash of the raw document — archival integrity
     char_count: int = 0
 
     meta: Dict[str, Any] = field(default_factory=dict)
@@ -84,3 +87,7 @@ class FetchResult:
 
 def sha256_text(s: str) -> str:
     return hashlib.sha256(s.encode("utf-8")).hexdigest()
+
+
+def sha256_bytes(b: bytes) -> str:
+    return hashlib.sha256(b).hexdigest()

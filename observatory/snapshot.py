@@ -93,14 +93,20 @@ class SnapshotStore:
 
         meta = asdict(result)
         raw_html = meta.pop("raw_html", None)
+        raw_bytes = meta.pop("raw_bytes", None)
         text = meta.pop("text", None)
+        raw_ext = meta.get("raw_ext", "html")
 
         (d / f"{stamp}.json").write_text(
             json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8"
         )
         if text is not None:
             (d / f"{stamp}.txt").write_text(text, encoding="utf-8")
-        if raw_html is not None:
+        # Archive the raw document under its native extension: HTML as text,
+        # PDF (or any binary) as bytes. The raw corpus is the sacred asset.
+        if raw_bytes is not None:
+            (d / f"{stamp}.{raw_ext}").write_bytes(raw_bytes)
+        elif raw_html is not None:
             (d / f"{stamp}.html").write_text(raw_html, encoding="utf-8")
 
         return d / f"{stamp}.json"

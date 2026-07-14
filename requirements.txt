@@ -5,3 +5,4 @@ beautifulsoup4>=4.12  # HTML parsing / content extraction for page snapshots
 PyYAML>=6.0           # source registry + human-verified overrides (non-confidential)
 python-dotenv>=1.0    # load ANTHROPIC_API_KEY from a local .env (never committed)
 anthropic>=0.40       # Claude API client for the structured extraction layer
+pypdf>=4.0            # extract text from PDF-hosted documents (e.g. Microsoft MCA)

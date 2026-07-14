@@ -45,8 +45,11 @@ providers:
       # N-series), the Microsoft Online Services AUP, and the Product Terms.
       - doc_type: service_terms
         name: Microsoft Customer Agreement (published)
-        url: https://www.microsoft.com/licensing/docs/customeragreement
-        notes: The published MCA. (MACC is negotiated/not published — not a document here.)
+        url: https://www.microsoft.com/licensing/docs/documents/download/Microsoft%20Customer%20Agreement.pdf
+        notes: >-
+          First-party PDF of the published MCA body (the /customeragreement landing
+          page only serves a JS geography selector, not the terms). Fetched via the
+          PDF path. (MACC is negotiated/not published — not a document here.)
       - doc_type: sla
         name: SLA for Azure Virtual Machines (compute & GPU)
         url: https://azure.microsoft.com/en-us/support/legal/sla/virtual-machines/

@@ -15,12 +15,13 @@ normalized text (the change signal we diff and the input we extract from).
 
 from __future__ import annotations
 
+import io
 import re
 
 import requests
 from bs4 import BeautifulSoup
 
-from .model import Document, FetchResult, sha256_text
+from .model import Document, FetchResult, sha256_bytes, sha256_text
 
 # A normal browser UA. Many providers serve a stripped or blocked response to an
 # empty UA; this gets the real page. We identify politely in a comment-free way
@@ -57,6 +58,28 @@ _NOISE = "script, style, noscript, svg, nav, header, footer, form, iframe"
 _MIN_CHARS = 200
 
 
+def _lineify(raw_text: str) -> str:
+    """Squeeze whitespace and drop blank lines so a single edited clause shows up
+    as a single changed line downstream. Shared by the HTML and PDF paths."""
+    lines = []
+    for line in raw_text.split("\n"):
+        line = re.sub(r"\s+", " ", line).strip()
+        if line:
+            lines.append(line)
+    return "\n".join(lines)
+
+
+def _pdf_text(content: bytes) -> str:
+    """Extract text from a PDF document, rendered line-oriented like the HTML path.
+    Used for documents published only as PDFs (e.g. the Microsoft Customer
+    Agreement), so they diff and extract consistently with HTML sources."""
+    from pypdf import PdfReader
+
+    reader = PdfReader(io.BytesIO(content))
+    pages = [page.extract_text() or "" for page in reader.pages]
+    return _lineify("\n".join(pages))
+
+
 def _normalize(html: str) -> str:
     """Extract the document text and render it line-oriented for clean diffing."""
     soup = BeautifulSoup(html, "html.parser")
@@ -72,13 +95,7 @@ def _normalize(html: str) -> str:
     for tag in container.select(_NOISE):
         tag.decompose()
 
-    raw = container.get_text("\n")
-    lines = []
-    for line in raw.split("\n"):
-        line = re.sub(r"\s+", " ", line).strip()
-        if line:
-            lines.append(line)
-    return "\n".join(lines)
+    return _lineify(container.get_text("\n"))
 
 
 def fetch_document(doc: Document) -> FetchResult:
@@ -98,18 +115,34 @@ def fetch_document(doc: Document) -> FetchResult:
         result.http_status = resp.status_code
         resp.raise_for_status()
 
-        raw_html = resp.text
-        text = _normalize(raw_html)
+        content = resp.content
+        content_type = resp.headers.get("content-type", "").lower()
+        is_pdf = (
+            content[:5] == b"%PDF-"
+            or "application/pdf" in content_type
+            or doc.url.lower().endswith(".pdf")
+        )
+
+        if is_pdf:
+            text = _pdf_text(content)
+            result.raw_bytes = content
+            result.raw_ext = "pdf"
+            result.raw_sha256 = sha256_bytes(content)
+        else:
+            raw_html = resp.text
+            text = _normalize(raw_html)
+            result.raw_html = raw_html
+            result.raw_ext = "html"
+            result.raw_sha256 = sha256_text(raw_html)
+
         if len(text) < _MIN_CHARS:
             raise RuntimeError(
                 f"content suspiciously short ({len(text)} chars) — likely blocked "
                 "or the page layout changed; refusing to snapshot"
             )
 
-        result.raw_html = raw_html
         result.text = text
         result.text_sha256 = sha256_text(text)
-        result.raw_sha256 = sha256_text(raw_html)
         result.char_count = len(text)
         result.ok = True
     except Exception as exc:  # noqa: BLE001 — we intentionally capture and report

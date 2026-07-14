@@ -1,0 +1,16 @@
+{
+  "provider": "azure",
+  "provider_name": "Microsoft Azure",
+  "doc_type": "service_terms",
+  "name": "Microsoft Customer Agreement (published)",
+  "url": "https://www.microsoft.com/licensing/docs/documents/download/Microsoft%20Customer%20Agreement.pdf",
+  "fetched_at": "2026-07-14T23:07:54.110573+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "raw_ext": "pdf",
+  "text_sha256": "0d4f51d9d52ba28432acadf123f3e24dc067aa3aa1eefbdfafaa703decec09e7",
+  "raw_sha256": "6e8bb0dc3d50d164d6ad1551e96c95d8b16044f14e5274fbe9db1e45f6e96a41",
+  "char_count": 41114,
+  "meta": {}
+}
