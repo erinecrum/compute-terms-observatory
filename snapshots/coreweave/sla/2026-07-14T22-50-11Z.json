@@ -1,0 +1,15 @@
+{
+  "provider": "coreweave",
+  "provider_name": "CoreWeave",
+  "doc_type": "sla",
+  "name": "CoreWeave AI Object Storage SLA",
+  "url": "https://docs.coreweave.com/docs/policies/terms-of-service/coreweave-ai-object-storage-policy",
+  "fetched_at": "2026-07-14T22:50:10.259185+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "text_sha256": "e9ff257f5161bf68269324d7e5f9445b50d55dcf5ba7a694c7345bb29f40cf90",
+  "raw_sha256": "74a772ebcea592eee25b0dc228a804d3045ea85a75d2c4d248695ea07ca53eb4",
+  "char_count": 4624,
+  "meta": {}
+}

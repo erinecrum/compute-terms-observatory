@@ -1,0 +1,15 @@
+{
+  "provider": "coreweave",
+  "provider_name": "CoreWeave",
+  "doc_type": "service_terms",
+  "name": "CoreWeave Terms of Use",
+  "url": "https://docs.coreweave.com/policies/terms-of-service/terms-of-use",
+  "fetched_at": "2026-07-14T22:50:09.689454+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "text_sha256": "88d876cd2087f912340547eb718a5e77ef485871dd1be94f644abc048a51d527",
+  "raw_sha256": "46b75e03eafdddc34b4cbce906ac169dd2ad475a455f775e94d3dce9580a1c18",
+  "char_count": 23023,
+  "meta": {}
+}

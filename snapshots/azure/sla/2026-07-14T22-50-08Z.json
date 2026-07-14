@@ -1,0 +1,15 @@
+{
+  "provider": "azure",
+  "provider_name": "Microsoft Azure",
+  "doc_type": "sla",
+  "name": "SLA for Azure Virtual Machines (compute & GPU)",
+  "url": "https://azure.microsoft.com/en-us/support/legal/sla/virtual-machines/",
+  "fetched_at": "2026-07-14T22:50:07.407432+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "text_sha256": "496b3717f1c530179566eb7c5e8ce185c249cad35e1e9a937f60ec30c92bfc7f",
+  "raw_sha256": "269af13afb2a72c48ff21fa12d1bd4ef06b91e85ae78a0e8c93c5244b1a3e695",
+  "char_count": 10924,
+  "meta": {}
+}

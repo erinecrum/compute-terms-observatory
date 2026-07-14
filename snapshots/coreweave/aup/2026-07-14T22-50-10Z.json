@@ -1,0 +1,15 @@
+{
+  "provider": "coreweave",
+  "provider_name": "CoreWeave",
+  "doc_type": "aup",
+  "name": "CoreWeave Acceptable Use Policy",
+  "url": "https://docs.coreweave.com/policies/terms-of-service/acceptable-use-policy",
+  "fetched_at": "2026-07-14T22:50:10.041411+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "text_sha256": "d10762ac2fe14d4c2281810e650afc798cb81e38ab424aa797c6e5e6ea1f3bfc",
+  "raw_sha256": "0d505e209e8f3607257ca2f8a578d3c15d9df3f9c48c7e3b1c9d8b28c307cf25",
+  "char_count": 8839,
+  "meta": {}
+}

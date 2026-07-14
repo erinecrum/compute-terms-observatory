@@ -1,0 +1,15 @@
+{
+  "provider": "azure",
+  "provider_name": "Microsoft Azure",
+  "doc_type": "aup",
+  "name": "Microsoft Acceptable Use Policy (Online Services)",
+  "url": "https://www.microsoft.com/en-us/microsoft-365/legal/docid12",
+  "fetched_at": "2026-07-14T22:50:08.496977+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "text_sha256": "1002e85c92058688563e5c5653cdfcb3926ec81a020265367b4c05dbcc8a95c5",
+  "raw_sha256": "440e2dd353931ac2fdd63ea348df60141a975e033fc5097c2e055b3a4992e24d",
+  "char_count": 4524,
+  "meta": {}
+}

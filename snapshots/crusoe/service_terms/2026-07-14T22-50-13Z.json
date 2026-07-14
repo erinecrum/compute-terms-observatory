@@ -1,0 +1,15 @@
+{
+  "provider": "crusoe",
+  "provider_name": "Crusoe",
+  "doc_type": "service_terms",
+  "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+  "url": "https://legal.crusoe.ai/",
+  "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f",
+  "raw_sha256": "37d384b98d133d6b9affd7bcf919b60541199ad2894a0a48d87c9d9dfa09e2b3",
+  "char_count": 1633854,
+  "meta": {}
+}

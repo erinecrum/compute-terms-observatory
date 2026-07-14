@@ -1,0 +1,15 @@
+{
+  "provider": "lambda",
+  "provider_name": "Lambda",
+  "doc_type": "service_terms",
+  "name": "Lambda Terms of Service",
+  "url": "https://lambda.ai/legal/terms-of-service",
+  "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537",
+  "raw_sha256": "eeaa13b29f2b7cdbc73fa0d34627abef2b488c0d3b132af66d4a8b3004433db5",
+  "char_count": 107980,
+  "meta": {}
+}

@@ -1,0 +1,15 @@
+{
+  "provider": "azure",
+  "provider_name": "Microsoft Azure",
+  "doc_type": "ai_terms",
+  "name": "Microsoft Product Terms for Online Services",
+  "url": "https://www.microsoft.com/licensing/terms/product/ForOnlineServices/all",
+  "fetched_at": "2026-07-14T22:50:09.052258+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "text_sha256": "0853193df49254fe5976349bbf1722328d2a4b94c9b4aea84f3d4c7c85afe828",
+  "raw_sha256": "034fa99a0a35c39180d0dc6e65e882e0a6595bea0002bbca391e74ea2bc5284d",
+  "char_count": 34272,
+  "meta": {}
+}

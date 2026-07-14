@@ -1,0 +1,15 @@
+{
+  "provider": "runpod",
+  "provider_name": "Runpod",
+  "doc_type": "service_terms",
+  "name": "Runpod Terms of Service",
+  "url": "https://www.runpod.io/legal/terms-of-service",
+  "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4",
+  "raw_sha256": "49159fae720de55772392648c5a942768b15b444bfd868abaea8fa5553f349bf",
+  "char_count": 88842,
+  "meta": {}
+}

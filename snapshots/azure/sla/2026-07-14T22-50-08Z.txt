@@ -1,0 +1,643 @@
+Licensing Resources and Documents
+Search for a specific licensing resource or browse by category using the links below.
+Service Level Agreements (SLA) for Online Services
+The Service Level Agreements (SLA) describe Microsoft’s commitments for uptime and connectivity for Microsoft Online Services. The current and archived editions of the SLA are available for download and they cover Azure, Dynamics 365, Office 365, and Intune.
+Download the most recent version (English) (July 2026):
+Service Level Agreement for Microsoft Online Services (WW)
+Download
+Resource Name
+Type
+Month
+Day
+Year
+Language
+Service Level Agreement for Microsoft Online Services (WW)
+July
+01
+2026
+English
+Service Level Agreement for Microsoft Online Services (WW)
+June
+01
+2026
+English
+Service Level Agreement for Microsoft Online Services (WW)
+May
+01
+2026
+English
+Service Level Agreement for Microsoft Online Services (WW)
+April
+08
+2026
+English
+Service Level Agreement for Microsoft Online Services (WW)
+April
+01
+2026
+English
+Service Level Agreement for Microsoft Online Services (WW)
+January
+01
+2026
+English
+Service Level Agreement for Microsoft Online Services (WW)
+December
+01
+2025
+English
+Service Level Agreement for Microsoft Online Services (WW)
+November
+18
+2025
+English
+Service Level Agreement for Microsoft Online Services (WW)
+November
+01
+2025
+English
+Service Level Agreement for Microsoft Online Services (WW)
+October
+01
+2025
+English
+Service Level Agreement for Microsoft Online Services (WW)
+September
+01
+2025
+English
+Service Level Agreement for Microsoft Online Services (WW)
+July
+01
+2025
+English
+Service Level Agreement for Microsoft Online Services (WW)
+May
+21
+2025
+English
+Service Level Agreement for Microsoft Online Services (WW)
+May
+01
+2025
+English
+Service Level Agreement for Microsoft Online Services (WW)
+April
+01
+2025
+English
+Service Level Agreement for Microsoft Online Services (WW)
+March
+01
+2025
+English
+Service Level Agreement for Microsoft Online Services (WW)
+February
+01
+2025
+English
+Service Level Agreement for Microsoft Online Services (WW)
+December
+16
+2024
+English
+Service Level Agreement for Microsoft Online Services (WW)
+December
+01
+2024
+English
+Service Level Agreement for Microsoft Online Services (WW)
+November
+01
+2024
+English
+Service Level Agreement for Microsoft Online Services (WW)
+October
+15
+2024
+English
+Service Level Agreement for Microsoft Online Services (WW)
+October
+01
+2024
+English
+Service Level Agreement for Microsoft Online Services (WW)
+September
+01
+2024
+English
+Service Level Agreement for Microsoft Online Services (WW)
+June
+01
+2024
+English
+Service Level Agreement for Microsoft Online Services (WW)
+May
+01
+2024
+English
+Service Level Agreement for Microsoft Online Services (WW)
+April
+01
+2024
+English
+Service Level Agreement for Microsoft Online Services (WW)
+March
+01
+2024
+English
+Service Level Agreement for Microsoft Online Services (WW)
+February
+01
+2024
+English
+Service Level Agreement for Microsoft Online Services (WW)
+January
+01
+2024
+English
+Service Level Agreement for Microsoft Online Services (WW)
+December
+01
+2023
+English
+Service Level Agreement for Microsoft Online Services (WW)
+November
+01
+2023
+English
+Service Level Agreement for Microsoft Online Services (WW)
+October
+01
+2023
+English
+Service Level Agreement for Microsoft Online Services (WW)
+September
+01
+2023
+English
+Service Level Agreement for Microsoft Online Services (WW)
+August
+01
+2023
+English
+Service Level Agreement for Microsoft Online Services (WW)
+July
+01
+2023
+English
+Service Level Agreement for Microsoft Online Services (WW)
+June
+01
+2023
+English
+Service Level Agreement for Microsoft Online Services (WW)
+May
+01
+2023
+English
+Service Level Agreement for Microsoft Online Services (WW)
+April
+01
+2023
+English
+Service Level Agreement for Microsoft Online Services (WW)
+March
+03
+2023
+English
+Service Level Agreement for Microsoft Online Services (WW)
+March
+01
+2023
+English
+Service Level Agreement for Microsoft Online Services (WW)
+February
+01
+2023
+English
+Service Level Agreement for Microsoft Online Services (WW)
+December
+01
+2022
+English
+Service Level Agreement for Microsoft Online Services (WW)
+June
+01
+2022
+English
+Service Level Agreement for Microsoft Online Services (WW)
+May
+01
+2022
+English
+Service Level Agreement for Microsoft Online Services (WW)
+December
+01
+2021
+English
+Service Level Agreement for Microsoft Online Services (WW)
+September
+01
+2021
+English
+Service Level Agreement for Microsoft Online Services (WW)
+August
+01
+2021
+English
+Service Level Agreement for Microsoft Online Services (WW)
+July
+01
+2021
+English
+Service Level Agreement for Microsoft Online Services (WW)
+March
+01
+2021
+English
+Service Level Agreement for Microsoft Online Services (WW)
+December
+01
+2020
+English
+Service Level Agreement for Microsoft Online Services (WW)
+November
+01
+2020
+English
+Service Level Agreement for Microsoft Online Services (WW)
+October
+01
+2020
+English
+Service Level Agreement for Microsoft Online Services (WW)
+September
+01
+2020
+English
+Service Level Agreement for Microsoft Online Services (WW)
+August
+01
+2020
+English
+Service Level Agreement for Microsoft Online Services (WW)
+July
+01
+2020
+English
+Service Level Agreement for Microsoft Online Services (WW)
+June
+01
+2020
+English
+Service Level Agreement for Microsoft Online Services (WW)
+May
+01
+2020
+English
+Service Level Agreement for Microsoft Online Services (WW)
+April
+01
+2020
+English
+Service Level Agreement for Microsoft Online Services (WW)
+February
+01
+2020
+English
+Service Level Agreement for Microsoft Online Services (WW)
+December
+01
+2019
+English
+Service Level Agreement for Microsoft Online Services (WW)
+October
+01
+2019
+English
+Service Level Agreement for Microsoft Online Services (WW)
+August
+01
+2019
+English
+Service Level Agreement for Microsoft Online Services (WW)
+July
+01
+2019
+English
+Service Level Agreement for Microsoft Online Services (WW)
+June
+01
+2019
+English
+Service Level Agreement for Microsoft Online Services (WW)
+May
+01
+2019
+English
+Service Level Agreement for Microsoft Online Services (WW)
+December
+01
+2018
+English
+Service Level Agreement for Microsoft Online Services (WW)
+November
+01
+2018
+English
+Service Level Agreement for Microsoft Online Services (WW)
+October
+01
+2018
+English
+Service Level Agreement for Microsoft Online Services (WW)
+September
+01
+2018
+English
+Service Level Agreement for Microsoft Online Services (WW)
+July
+12
+2018
+English
+Service Level Agreement for Microsoft Online Services (WW)
+July
+01
+2018
+English
+Service Level Agreement for Microsoft Online Services (WW)
+June
+01
+2018
+English
+Service Level Agreement for Microsoft Online Services (WW)
+May
+01
+2018
+English
+Service Level Agreement for Microsoft Online Services (WW)
+March
+01
+2018
+English
+Service Level Agreement for Microsoft Online Services (WW)
+February
+01
+2018
+English
+Service Level Agreement for Microsoft Online Services (WW)
+January
+01
+2018
+English
+Service Level Agreement for Microsoft Online Services (WW)
+November
+01
+2017
+English
+Service Level Agreement for Microsoft Online Services (WW)
+October
+01
+2017
+English
+Service Level Agreement for Microsoft Online Services (WW)
+September
+01
+2017
+English
+Service Level Agreement for Microsoft Online Services (WW)
+August
+01
+2017
+English
+Service Level Agreement for Microsoft Online Services (WW)
+July
+01
+2017
+English
+Service Level Agreement for Microsoft Online Services (WW)
+June
+01
+2017
+English
+Service Level Agreement for Microsoft Online Services (WW)
+May
+01
+2017
+English
+Service Level Agreement for Microsoft Online Services (WW)
+April
+01
+2017
+English
+Service Level Agreement for Microsoft Online Services (WW)
+March
+15
+2017
+English
+Service Level Agreement for Microsoft Online Services (WW)
+January
+01
+2017
+English
+Service Level Agreement for Microsoft Online Services (WW)
+December
+01
+2016
+English
+Service Level Agreement for Microsoft Online Services (WW)
+November
+21
+2016
+English
+Service Level Agreement for Microsoft Online Services (WW)
+November
+15
+2016
+English
+Service Level Agreement for Microsoft Online Services (WW)
+November
+01
+2016
+English
+Service Level Agreement for Microsoft Online Services (WW)
+October
+12
+2016
+English
+Service Level Agreement for Microsoft Online Services (WW)
+October
+01
+2016
+English
+Service Level Agreement for Microsoft Online Services (WW)
+September
+01
+2016
+English
+Service Level Agreement for Microsoft Online Services (WW)
+August
+01
+2016
+English
+Service Level Agreement for Microsoft Online Services (WW)
+July
+21
+2016
+English
+Service Level Agreement for Microsoft Online Services (WW)
+July
+11
+2016
+English
+Service Level Agreement for Microsoft Online Services (WW)
+June
+27
+2016
+English
+Service Level Agreement for Microsoft Online Services (WW)
+June
+01
+2016
+English
+Service Level Agreement for Microsoft Online Services (WW)
+April
+01
+2016
+English
+Service Level Agreement for Microsoft Online Services (WW)
+March
+01
+2016
+English
+Service Level Agreement for Microsoft Online Services (WW)
+February
+01
+2016
+English
+Service Level Agreement for Microsoft Online Services (WW)
+December
+01
+2015
+English
+Service Level Agreement for Microsoft Online Services (WW)
+October
+01
+2015
+English
+Service Level Agreement for Microsoft Online Services (WW)
+September
+30
+2015
+English
+Service Level Agreement for Microsoft Online Services (WW)
+August
+05
+2015
+English
+Service Level Agreement for Microsoft Online Services (WW)
+August
+01
+2015
+English
+Service Level Agreement for Microsoft Online Services (WW)
+July
+07
+2015
+English
+Service Level Agreement for Microsoft Online Services (WW)
+June
+24
+2015
+English
+Service Level Agreement for Microsoft Online Services (WW)
+May
+04
+2015
+English
+Service Level Agreement for Microsoft Online Services (WW)
+April
+15
+2015
+English
+Service Level Agreement for Microsoft Online Services (WW)
+April
+01
+2015
+English
+Service Level Agreement for Microsoft Online Services (WW)
+January
+01
+2015
+English
+Service Level Agreement for Microsoft Online Services (WW)
+October
+01
+2014
+English
+Service Level Agreement for Microsoft Online Services (WW)
+July
+01
+2014
+English
+Service Level Agreement for Microsoft Online Services (WW)
+April
+01
+2014
+English
+Service Level Agreement for Microsoft Online Services (WW)
+January
+01
+2014
+English
+Service Level Agreement for Microsoft Online Services (WW)
+October
+01
+2013
+English
+Service Level Agreement for Microsoft Online Services (WW)
+July
+01
+2013
+English
+Service Level Agreement for Microsoft Online Services (WW)
+April
+01
+2013
+English
+Service Level Agreement for Microsoft Online Services (WW)
+January
+01
+2013
+English
+Service Level Agreement for Microsoft Online Services (WW)
+October
+01
+2012
+English
+Service Level Agreement for Microsoft Online Services (WW)
+July
+01
+2012
+English
+Service Level Agreement for Microsoft Online Services (WW)
+January
+01
+2012
+English
+Service Level Agreement for Microsoft Online Services (WW)
+October
+01
+2011
+English
+Service Level Agreement for Microsoft Online Services (WW)
+June
+01
+2011
+English
+Service Level Agreement for Microsoft Online Services (WW)
+March
+01
+2011
+English

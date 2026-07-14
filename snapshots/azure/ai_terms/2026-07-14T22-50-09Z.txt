@@ -1,0 +1,393 @@
+For Online Services
+Definitions
+Terms used here but not defined in the
+Glossary
+will have the definitions provided in Customer’s licensing agreement.
+Data Processing and Security
+The parties agree that these terms govern Customer’s use of the Online Services and that the
+DPA
+(defined in the
+Glossary
+) sets forth their obligations with respect to the processing and security of
+Customer Data
+and
+Personal Data
+by the Online Services. The parties also agree that, unless a separate Professional Services agreement exists, these terms govern the provision of Professional Services, including but not limited to the terms in the
+Professional Services
+section and terms in the
+DPA
+for the processing and security of Professional Services Data and
+Personal Data
+in connection with that provision. Separate terms, including different privacy and security terms, govern Customer’s use of Non-Microsoft Products (as defined below). In the event of any conflict or inconsistency between the
+DPA
+and any other terms in Customer’s licensing agreement (including these terms), the DPA shall prevail.
+Service Level Agreements
+Many Online Services offer a Service Level Agreement (SLA). For more information regarding the Online Services SLAs, please refer to
+https://aka.ms/CSLA
+.
+Applicable Product Terms and Updates for Online Services
+When Customer renews or purchases a new subscription to an Online Service, the then-current terms will apply and will not change during Customer’s subscription for that Online Service. When Microsoft introduces features, supplements or related software that are new (i.e., that were not previously included with the subscription), Microsoft may provide terms or make updates to the terms that apply to Customer’s use of those new features, supplements or related software.
+Electronic Notices
+Microsoft may provide Customer with information and notices about Online Services electronically, including via email, through the portal for the Online Service, or through a web site that Microsoft identifies. Notice is given as of the date it is made available by Microsoft.
+Licensing the Online Services
+Customer must acquire and assign the appropriate subscription licenses required for its use of each Online Service. Usage exceeding the Online Service’s documented entitlement(s) and/or usage limits require additional purchase of licenses to cover overage. Each user that accesses the Online Service must be assigned a User SL or access the Online Service only through a device that has been assigned a Device SL, unless specified otherwise in the Online Service-specific Terms.
+Subscription License Suites
+describes SL Suites that also fulfill requirements for User SLs. Customer has no right to use an Online Service after the SL for that Online Service ends.
+Eligibility to Assign Frontline Worker Licenses
+Microsoft
+Frontline Worker Licenses
+may only be assigned to users who satisfy one or more of the following conditions:
+Uses a primary work device with a single screen smaller than 10.9”, or
+Share their primary work device with other users licensed with a
+Frontline Worker License
+, during or across shifts.
+Other users licensed with a
+Frontline Worker License
+must also use the device as their primary work device; and
+Any software or service accessed from the shared device requires the device or users to be assigned a license that includes use of those software or services.
+License Reassignment
+Most, but not all, SLs may be reassigned. Except as permitted in this paragraph or in the Online Service-specific Terms, Customer may not reassign an SL on a short-term basis (i.e., within 90 days of the last assignment). Customer may reassign an SL on a short-term basis to cover a user’s absence or the unavailability of a device that is out of service. Reassignment of an SL for any other purpose must be for the remaining term of that License. When Customer reassigns an SL from one device or user to another, Customer must block access and remove any related software from the former device or from the former user’s device.
+Multiplexing
+Any method (for example, hardware, software, or automation) that a Customer uses to:
+pool connections or reduce the number of
+OSE
+’s, devices, or users a Product directly manages;
+reduce the number of devices or users that directly or indirectly access or use a Product;
+or access data a Product itself processes or generates;
+does not reduce the number of Licenses of any type that Customer needs.
+Online Services Step-up Availability and License Assignment
+Some licensing programs allow customers to step-up an existing online service to a higher edition any time during the agreement and enrollment (if any) term. Such higher edition licenses may be acquired using Step-up SKUs with the following requirements:
+A higher edition license acquired using a Step-up SKU can only be assigned to a licensed user of a qualifying base license of the same online service or a suite license that includes the same qualifying base online service,
+Once the higher edition license is acquired, customers may not separate it from the qualifying base online service license,
+Step up SKUs must be purchased under the same licensing agreement and enrollment (if any), under which the qualifying base online service User SL was acquired.
+Using the Online Services
+Customer may use the Online Services and related software as expressly permitted in Customer’s licensing agreement. Microsoft reserves all other rights.
+Acceptable Use Policy
+Neither Customer, nor those that access an Online Service through Customer, may use an Online Service:
+in a way prohibited by law, regulation, governmental order or decree;
+to violate the rights of others;
+to try to gain unauthorized access to or disrupt any service, device, data, account or network, including by intentionally evading or disrupting restrictions in
+Metaprompts
+;
+to spam or distribute malware;
+to mine cryptocurrency;
+to replicate product functionality;
+to scrape or use other data extraction methods to extract data from the Online Service;
+to reverse engineer any Online Service or exfiltrate the weights of any AI models or otherwise discover any underlying components, algorithms or systems included in the Online Service;
+in any application or situation where failure of the Online Service could lead to the death or serious bodily injury of any person, or to severe physical or environmental damage, except in accordance with the High-Risk Use section below;
+to attempt to circumvent the limitations Microsoft sets on the use of any APIs related to the Online Service;
+in a way that could adversely impact the integrity, availability, stability, resilience, interaction with or use of the Online Service; or
+to assist or encourage anyone to do any of the above.
+Without limiting Microsoft’s other remedies, violations of the Acceptable Use Policy in this section may result in suspension of the Online Service. If Microsoft suspends the Online Service, Microsoft will suspend only to the extent reasonably necessary. Unless Microsoft believes an immediate suspension is required, Microsoft will provide reasonable notice before suspending an Online Service for the reasons stated above.
+Excessive Use
+Use of an Online Service in excess of any limits set forth in documentation may result in temporary throttling of the Customer's access to the Microsoft Online Service.
+Purchasing Consumption Services
+Some Online Services are billed at metered Consumption Rates. Unless otherwise noted, these are First-Party Consumption Services.
+Consumption services may be sold as prepayments, reservations or other subscriptions. Prices for consumption are subject to change.
+The expiration or termination of the User license will not change the User’s obligation to pay for consumption.
+Responsible Use of Microsoft AI Services
+Customer must use
+Microsoft AI Services
+in accordance with the Acceptable Use Policy and the Microsoft Enterprise AI Services Code of Conduct (
+https://aka.ms/AI-CoC
+)("Code of Conduct"). Without limiting its other remedies, Microsoft may limit Customer's access to or use of a
+Microsoft AI Service
+if Microsoft has a reasonable basis to believe that Customer's use of a
+Microsoft AI Service
+or
+Output Content
+violates the Acceptable Use Policy or
+Code of Conduct
+. As part of providing the
+Microsoft AI Services
+, Microsoft may run automated classifiers and other automated evaluation systems to detect violations of the Acceptable Use Policy and
+Code of Conduct
+.
+Starter templates, instructions, and code samples that Microsoft makes available for use with
+Microsoft AI Services
+are designed to assist Customers in accelerating their development of applications and/or AI agents for specific scenarios. Customer is responsible for the design, development and use of any application or AI agent it creates using or for use with
+Microsoft AI Services
+, including complying with any legal, regulatory, or licensing requirements applicable to the resulting application or AI agent or its use.
+Third-party agent templates, instructions, and code samples that Microsoft makes available for use with
+Microsoft AI Services
+are
+Non-Microsoft Products
+and subject to the terms for
+Non-Microsoft Products
+.
+High-Risk Use
+WARNING: Modern technologies, and especially platform technologies, may be used in new and innovative ways, and Customer must consider whether its specific use of these technologies is safe. The Online Services are not designed or intended to support any use in which a service interruption, defect, error, or other failure of an Online Service could result in the death or serious bodily injury of any person or in physical or environmental damage (collectively, “High-Risk Use”). Accordingly, Customer must design and implement every application such that, in the event of any interruption, defect, error, or other failure of the Online Service, the safety of people, property, and the environment are not reduced below a level that is reasonable, appropriate, and legal, whether in general or for a specific industry. Customer’s High-Risk Use of the Online Services is at its own risk. Customer agrees to defend, indemnify and hold Microsoft harmless from and against all damages, costs and attorneys' fees in connection with any claims arising from a High-Risk Use associated with the Online Services, including any claims based in strict liability or that Microsoft was negligent in designing or providing the Online Service(s) to Customer. The foregoing indemnification obligation is in addition to any defense obligation set forth in Customer’s licensing agreement and is not subject to any limitation of, or exclusion from, liability contained in such agreements.
+Medical Device Disclaimer
+Customer acknowledges that the Online Services (1) are not designed, intended or made available as a medical device(s), and (2) are not designed or intended to be a substitute for professional medical advice, diagnosis, treatment, or judgment and should not be used to replace or as a substitute for professional medical advice, diagnosis, treatment, or judgment. Customer is solely responsible for displaying and/or obtaining appropriate consents, warnings, disclaimers, and acknowledgements to end users of Customer’s implementation of the Online Services.
+Data Protection and Security
+The terms of the
+DPA
+(
+http://aka.ms/DPA
+) apply to Online Services except for those Online Services specifically identified in the
+Privacy & Security Terms
+as excluded from or as exceptions to the DPA. For Core Online Services and EU Data Boundary Services, details on security practices and location of
+Customer Data
+at rest are also set forth in the
+Privacy & Security Terms
+.
+Use of Software with the Online Service
+Customer may need to install certain Microsoft software to use the Online Service. If so, the following terms apply:
+Microsoft Software License Terms
+Customer may install and use the software only for use with the Online Service. The Online Service-specific Terms may limit the number of copies of the software Customer may use or the number of devices on which Customer may use it. Customer’s right to use the software begins when the Online Service is activated and ends when Customer’s right to use the Online Service ends. Customer must uninstall the software when Customer’s right to use it ends. Microsoft may disable it at that time.
+Notwithstanding anything to the contrary in customer’s volume licensing agreement, Microsoft shall have no responsibility or liability for any losses or damages due to performance issues (including but not limited to security vulnerabilities, data loss, or service interruptions) of a Product that customer uses after the end of the applicable support period as provided in the Product Support Lifecycle [
+https://learn.microsoft.com/lifecycle/products/
+]. Continued use of such Products after the end of support is at the Customer’s sole risk.
+Validation, Automatic Updates, and Collection for Software
+Microsoft may automatically check the version of any of its software. Devices on which the software is installed may periodically provide information to enable Microsoft to verify that the software is properly licensed. This information includes the software version, the end user’s user account, product ID information, a machine ID, and the internet protocol address of the device. If the software is not properly licensed, its functionality will be affected. Customer may only obtain updates or upgrades for the software from Microsoft or authorized sources. By using the software, Customer consents to the transmission of the information described in this section. Microsoft may recommend or download to Customer’s devices updates, supplements, or extensions to this software, with or without notice. Some Online Services may require, or may be enhanced by, the installation of local software (e.g., agents, device management applications) (“Apps”). The Apps may collect diagnostic data (as defined in the Product Documentation) about the use and performance of the Apps, which may be transmitted to Microsoft, to the extent any
+Personal Data
+is contained therein, and used for the purposes described in the
+DPA
+.
+Third-party Software Components
+The software may contain third party software components. Unless otherwise disclosed in that software, Microsoft, not the third party, licenses these components to Customer under Microsoft’s license terms and notices.
+Cancellation Policy
+Certain subscriptions must be canceled within 7 days of the subscription start date to be eligible for a prorated credit or refund for unused time, calculated on a daily basis. No credits or refunds will be issued for such subscriptions canceled after 7 days of the subscription start date. See
+Cancel your subscription
+(
+https://docs.microsoft.com/microsoft-365/commerce/subscriptions/cancel-your-subscription
+) for details.
+Technical Limitations
+Customer must comply with, and may not work around, any technical limitations in an Online Service that only allow Customer to use it in certain ways. Customer may not download or otherwise remove copies of software or source code from an Online Service except as explicitly authorized.
+Bing
+When Bing is optionally available through an Online Service, as disclosed in the product documentation, use of Bing by end users is governed by the Microsoft Services Agreement (
+https://www.microsoft.com/servicesagreement/
+), the Microsoft Privacy Statement (
+https://privacy.microsoft.com/privacystatement
+), the Microsoft Bing Maps and Embedded Maps Service Terms of Use (
+https://www.bingmapsportal.com/terms/EndUserTerms
+), except that noncommercial use limitations in those terms do not apply to Products available for a fee through Microsoft volume license. The Data Protection Addendum does not apply to use of Bing functionality as a connected service with any Online Service, or component of Online Service.
+Import/Export Services
+Customer’s use of any Import/Export Service is conditioned upon its compliance with all instructions provided by Microsoft regarding the preparation, treatment and shipment of physical media containing its data (“storage media”). Customer is solely responsible for ensuring the storage media and data are provided in compliance with all laws and regulations. Microsoft has no duty with respect to the storage media and no liability for lost, damaged or destroyed storage media. All storage media shipped to Microsoft must be shipped DAP Microsoft DCS Data Center (INCOTERMS 2010). Storage media shipped to Customer will be shipped DAP Customer Dock (INCOTERMS 2010).
+Font Components
+While Customer uses an Online Service, Customer may use the fonts installed by that Online Service to display and print content. Customer may only embed fonts in content as permitted by the embedding restrictions in the fonts and temporarily download them to a printer or other output device to print content.
+Changes to and Availability of the Online Services
+Microsoft may make commercially reasonable changes to each Online Service from time to time. Microsoft may modify or terminate an Online Service in any country where Microsoft is subject to a government regulation, obligation or other requirement that (1) is not generally applicable to businesses operating there, (2) presents a hardship for Microsoft to continue operating the Online Service without modification, and/or (3) causes Microsoft to believe these terms or the Online Service may conflict with any such requirement or obligation. If Microsoft terminates an Online Service for regulatory reasons, Customers will receive a credit for any amount paid in advance for the period after termination.
+Availability, functionality, and language versions for each Online Service may vary by country. For information on availability, Customer may refer to
+https://go.microsoft.com/fwlink/?linkid=870295
+.
+Azure availability
+First-Party Consumption Services
+may be available for purchase as Azure meters, which allow customers to pay as you go for certain Online Services as outlined in the
+Microsoft Azure Payment and Fees
+clause, and
+Purchasing Microsoft Azure Services
+clause.
+These Microsoft services are not Azure products and thus the Azure terms do not apply. The product specific licensing terms for these services apply, in addition to the
+Microsoft Azure Payment and Fees
+clause, and
+Purchasing Microsoft Azure Services
+clause.
+Microsoft Generative AI Services
+Capacity Limitations
+Excessive use of a
+Microsoft Generative AI Service
+may result in temporary throttling of Customer’s access to the
+Microsoft Generative AI Service
+.
+Reverse Engineering
+Customer may not use a
+Microsoft Generative AI Service
+to discover any underlying components of the models, algorithms, and systems, such as exfiltrating the weights of models.
+Extracting Data
+Customer may not use web scraping, web harvesting, or other data extraction methods to extract data from a
+Microsoft Generative AI Service
+.
+Use of Content for Training
+By Microsoft
+.
+Microsoft Generative AI Services
+will not use
+Customer Data
+to train any generative AI foundation model, except pursuant to Customer’s documented instructions.
+By Customer
+. Customer will not use and will not direct or enable third parties to use, a
+Microsoft Generative AI Service
+to generate
+Output Content
+for the express purpose of creating synthetic training data to develop or train AI models or systems that have substantially similar functionality to a Microsoft AI service, except as expressly permitted in the service-specific terms for Azure Direct Models in Microsoft Foundry. The restrictions in this section do not prevent the use of a
+Microsoft Generative AI Service
+to generate
+Output Content
+for use as an input to dynamic AI models or systems.
+Output Content
+Output Content
+is
+Customer Data
+. Microsoft does not own Customer's
+Output Content
+.
+Customer Copyright Commitment
+Microsoft’s obligation to defend Customer against third-party intellectual property claims under Customer’s volume licensing agreement will apply, and Customer’s obligations to defend Microsoft against third-party intellectual property claims under Customer's volume licensing agreement will not apply, to the extent that such claims are based on Customer’s use or distribution of
+Output Content
+of a
+Covered Product
+if all the following additional conditions are met:
+While using the
+Covered Product
+to produce the
+Output Content
+that is the subject of the claim, Customer must not have disabled, evaded, disrupted, or interfered with the content filters, restrictions in
+Metaprompts
+, or other safety systems that are part of the
+Covered Product
+.
+Customer does not modify, use, or distribute the
+Output Content
+in a manner that it knows, or should know, is likely to infringe or misappropriate any proprietary right of a third party.
+Customer has sufficient rights to use the
+Input
+in connection with the
+Covered Product
+, including, without limitation, any
+Customer Data
+that Customer used to
+Customize
+the model that produced the
+Output Content
+that is the subject of the claim.
+The claim does not allege that the
+Output Content
+, as used in commerce or the course of trade, violates a third party’s trademark or related rights.
+For Azure OpenAI in Microsoft Foundry Models and any other
+Covered Product
+with configurable
+Metaprompts
+or other safety systems, Customer also must have implemented all mitigations required by the Azure OpenAI documentation (published at
+https://learn.microsoft.com/legal/cognitive-services/openai/customer-copyright-commitment
+) in the offering that delivered the
+Output Content
+that is the subject of the claim.
+Dataverse
+Dataverse structures a variety of data and business logic to support interconnected applications and processes. Dataverse Instances provided with Microsoft 365 licenses includes various features and integrates data that may or may not be available for the product or service Customer is licensed with. Access to Dataverse, through an individual product or service, does not grant access to unrelated products, services, features, or data that users are not licensed for. Users only have rights to access data, services, and features within Dataverse for which they are properly licensed for.
+Online Services with Distributable Code
+Certain Online Services may contain Software components. The Distributable Code terms below apply to Online Services that contain Software components.
+Distributable Code
+Refer to the Product Entries for software that contains code and text files Customer is permitted to distribute “Distributable Code”. The code and text files listed below are also Distributable Code that may be used as described below. In the case of a conflict between the following terms and Distributable Code terms published in the Product Entry, the terms in the Product Entry govern Customer’s use of Distributable Code.
+Right to Use and Distribute
+The code and text files listed below are “Distributable Code.”
+REDIST.TXT Files: Customer may copy and distribute the object code form of code listed in REDIST.TXT files and in OTHER-DIST.TXT files, as well as any code marked as “Silverlight Libraries”, Silverlight “Client Libraries” and Silverlight “Server Libraries”.
+Sample Code, Templates, and Styles: Customer may modify, copy, and distribute the source and object code form of code marked as “sample, “template”, “simple styles” and “sketch styles.”
+Third Party Distribution: Customer may permit distributors of its programs to copy and distribute the Distributable Code as part of those programs.
+Image Library: Customer may copy and distribute images, graphics and animations in the Image Library as described in the software documentation.
+Distribution Requirements
+If Customer distributes any Distributable Code. Customer must:
+Only distribute it with Customer’s programs, where Customer’s programs provide significant primary functionality to the Distributable Code;
+require distributors and external end users to agree to terms that protect the Distributable Code at least as much as Customer’s volume licensing agreement, including the Product Terms;
+indemnify, defend, and hold harmless Microsoft from any claims, including attorneys’ fees, related to the distribution or use of Customer’s programs, except to the extent that any claim is based solely on the Distributable Code included in Customer’s programs.
+Distribution Limitations
+Customer may not:
+alter any copyright, trademark or patent notice in the Distributable Code;
+use Microsoft’s trademarks in Customer’s programs’ names or in a way that suggests its programs come from or are endorsed by Microsoft;
+distribute Distributable Code in or with any malicious or, deceptive programs or in an unlawful manner; or
+modify or distribute the source code of any Distributable Code so that any part of it becomes subject to an Excluded License. An Excluded License is one that requires, as a condition of use, modification or distribution, that the code be disclosed or distributed in source code form, or that others have the right to modify it.
+Other
+Non-Microsoft Products
+Microsoft may make
+Non-Microsoft Products
+available to Customer through Customer’s use of the
+Online Services
+(such as through a store or gallery, or as search results) or a Microsoft online store (such as the Microsoft Store for Business or Microsoft Store for Education). If Customer installs or uses any
+Non-Microsoft Product
+with an
+Online Service
+, Customer may not do so in any way that would subject Microsoft’s intellectual property or technology to obligations beyond those expressly included in Customer’s licensing agreement. For Customer’s convenience, Microsoft may include charges for certain
+Non-Microsoft Product
+as part of Customer’s bill for
+Online Services
+. Microsoft, however, assumes no responsibility or liability whatsoever for any
+Non-Microsoft Product
+. Customer is solely responsible for any
+Non-Microsoft Product
+that it installs or uses with an
+Online Service
+or acquires or manages through a Microsoft online store. Customer’s use of any
+Non-Microsoft Product
+shall be governed by the license, service, and/or privacy terms between Customer and the publisher of the
+Non-Microsoft Product
+(if any).
+Previews
+PREVIEWS
+ARE PROVIDED "AS-IS," "WITH ALL FAULTS," AND "AS AVAILABLE," as described herein. Unless otherwise noted in a separate agreement,
+Previews
+are not included in the SLA for the corresponding
+Online Service
+, and may not be covered by customer support. We may change or discontinue
+Previews
+at any time without notice. We may also choose not to make a Preview service generally commercially available. Certain
+Previews
+are subject to supplemental preview terms published by Microsoft.
+Providing “Feedback” (suggestions, comments, feedback, ideas, or know-how, in any form) to Microsoft about Preview services is voluntary. Microsoft is under no obligation to post or use any Feedback. By providing Feedback to Microsoft, Customer (and anyone providing Feedback through Customer) irrevocably and perpetually grant to Microsoft and its Affiliates, under all of its (and their) owned or controlled intellectual property rights, a worldwide, non-exclusive, fully paid-up, royalty-free, transferable, sub-licensable right and license to make, use, reproduce, prepare derivative works based upon, distribute, publicly perform, publicly display, transmit, and otherwise commercialize the Feedback (including by combining or interfacing products, services or technologies that depend on or incorporate Feedback with other products, services or technologies of Microsoft or others), without attribution in any way and for any purpose.
+Customer warrants that 1) it will not provide Feedback that is subject to a license requiring Microsoft to license anything to third parties because Microsoft exercises any of the above rights in Customer’s Feedback; and 2) it owns or otherwise controls all of the rights to such Feedback and that no such Feedback is subject to any third-party rights (including any personality or publicity rights).
+Microsoft Entra ID Free
+As described in
+https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-whatis
+, most Online Services include an instance of Microsoft Entra ID, a cloud-based user authentication capability ("Microsoft Entra ID Free"). After Customer configures and uses the first such Online Service, that instance of Microsoft Entra ID Free, as configured by Customer for its users, may power the user authentication features for each later-acquired subscription of an Online Service.
+Customer's instance of Microsoft Entra ID Free will also enable authenticated users to interact with Microsoft or a third party in contexts outside of the Online Services ("Other Microsoft Entra ID-dependent Services"), specifically where Microsoft or that third party requires an A Microsoft Entra ID user account. With respect to the operation of Microsoft Entra ID Free for Other Microsoft Entra ID-dependent Services, Microsoft remains a data processor, and this use of Microsoft Entra ID Free constitutes Customer's authoritative instruction to Microsoft that such use is permitted. With respect to the operation of the Other Microsoft Entra ID-dependent Service, refer to its applicable agreement and privacy policy to determine the role of the provider of the Other Microsoft Entra ID-dependent Service.
+Competitive Benchmarking
+If Customer offers a product or service competitive to an Online Service, by using the Online Service, Customer waives any restrictions on competitive use and benchmark testing in the terms governing its competitive products and services. If Customer offers a product or service competitive to an Online Service and discloses, directly or through third parties, any benchmarks or comparative tests or evaluations (each, a “Benchmark”) of any Online Service, Customer will, upon request from Microsoft, provide: (a) all information necessary to replicate such Benchmark; and (b) access to Customer’s competitive products and services for Microsoft, directly or through third parties, to perform and disclose Benchmarks. If Customer does not intend to waive such restrictions in its terms of use and agree to these terms, Customer is not allowed to use the Online Service.
+Government Customers
+If Customer is a government entity, then the following terms apply to any Online Service provided to Customer at no charge (including free trials or Previews):
+Microsoft waives any and all entitlement to compensation from Customer for the Online Service.
+In compliance with applicable laws and regulations, Microsoft and Customer acknowledge that the Online Services are for the sole benefit and use of Customer and not provided for the personal use or benefit of any individual government employee.
+Waiver of end-user consumer protection provisions
+Customer agrees to waive any and all entitlements that would otherwise be applicable under the European Electronic Communications Code (Directive 2018/1972) Article 102 paragraphs 1, 3, and 5; Article 105 paragraph 1; and Article 107 paragraphs 1 and 3.
+Microsoft Security Products Data Handling
+Products purchased by Customer may share data, including
+Customer Data
+, among the Products as described in product documentation. Data copied to a Product is governed by the Product Terms applicable to that Product.
+Online Services Regional Availability
+Visit
+https://www.microsoft.com/en-us/microsoft-365/business/international-availability
+for a list of countries and regions in which the Online Services are available.
+Online Services Purchasing Rules
+The following purchasing rules apply to purchasing Online Services:
+Subscription terms vary by purchasing program. Under the Enterprise Agreement program, the subscription terms for Online Services other than Microsoft Azure must be coterminous, ending on the date of Customer’s Enrollment end date.
+If Customer makes additional purchases of an Online Service, the end of the subscription term of the additional purchase must align with Customer’s existing subscription term for the same Online Service. This provision does not apply to Azure reservations.
+Customer may not reduce the number of users or devices covered by its Online Services subscription during the term of their Online Services subscription except as permitted in Customer’s licensing agreement.
+Cloud Add-on to SA
+User
+SLs
+, as specified in the Cloud Add-ons to SA section of each respective product section, and
+Step-up
+User
+SLs
+must be purchased under the same licensing agreement as their Qualifying License or base User
+SL
+.
+Cloud Add-on to SA
+User
+SLs
+expire upon the earlier of the expiration of the SA coverage for the Qualifying License or the
+Cloud Add-on to SA
+User
+SL
+.
+Step-ups
+expire upon the earlier of the expiration of the
+Step-up
+User
+SL
+or base User SL.
+User
+SLs
+are priced monthly.
+Online Services Renewal
+Online Services
+with auto-renewal will automatically renew the day after their subscription term expires. Customers may turn off auto-renewal any time before their subscription term expires in the Microsoft 365 admin center (
+https://learn.microsoft.com/microsoft-365/commerce/subscriptions/renew-your-subscription
+).
+Online services
+subscriptions for government and academic customers will not be automatically renewed unless Customer chooses the auto-renewal option.
+For
+Online Services
+not renewed at the end of their subscription term, access to the applicable
+Online Services
+will continue following expiration for 30 days and may continue thereafter for successive one-month periods until cancelled (“Extended Term”). Microsoft reserves the right to invoice Customer for the Extended Term at the then-current published price for a monthly subscription plus a three (3) percent uplift for certain Products. If it does, Microsoft will provide Customer with an opportunity to opt out of the Extended Term prior to the Subscription expiration date and request instead that the applicable Subscription either be renewed automatically or disabled immediately upon expiration. Customer will have 90 days to extract
+Customer Data
+from a disabled account, but the Subscription cannot be reactivated.

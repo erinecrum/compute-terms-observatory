@@ -1,0 +1,41 @@
+This CoreWeave AI Object Storage Service Level Agreement (“Storage SLA”) applies solely to
+CoreWeave AI Object Storage
+, which is considered CoreWeave Services. This Storage SLA is hereby incorporated into the
+CoreWeave Terms of Service (“TOS”)
+. For the avoidance of doubt, this Storage SLA applies only to data accessed at the
+cwobject.com
+endpoint, and does not apply to data accessed at the
+cwlota.com
+endpoint. Capitalized terms not defined herein shall have the meaning ascribed to them in the TOS.
+CoreWeave shall use commercially reasonable efforts to provide CoreWeave AI Object Storage to Customer at the Storage Monthly Uptime Percentage of >= 99.9%. If CoreWeave does not meet such Storage Monthly Uptime Percentage, and if Customer is otherwise in good standing and meeting its obligations under the TOS, Customer will be eligible to receive the Storage Financial Credits set forth in the below table. Storage Financial Credits will be made in the form of a monetary credit applied to future use of CoreWeave AI Object Storage and will be applied within sixty (60) days after the Storage Financial Credit was requested. Storage Financial Credits will not entitle you to any refund or other payment from CoreWeave. Storage Financial Credits may not be transferred or applied to any other account. This Storage SLA states Customer’s sole and exclusive remedy for any failure by CoreWeave to meet the Storage Monthly Uptime Percentage.
+“Storage Financial Credits”
+means the below table:
+Storage Monthly Uptime Percentage
+Percentage of monthly bill for the CoreWeave Availability Zone affected which did not meet the Storage Monthly Uptime Percentage that will be credited to future monthly bills of Customer
+99% - 99.9%
+10%
+95% - 98.999%
+25%
+< 94.999%
+100%
+“Storage Monthly Uptime Percentage”
+means for the applicable monthly billing period: 100% minus the average Error Percentage for each five minute interval of such monthly billing period.
+“Error Percentage”
+means, for each request type to CoreWeave AI Object Storage at the
+cwobject.com
+endpoint during a given five minute interval of the monthly billing period: the total number of internal server errors returned by CoreWeave AI Object Storage for such request type as error status “InternalError” or “ServiceUnavailable” (each, an “Error”), divided by the total number of requests for such request type. For the avoidance of doubt, (a) the Error Percentage shall not include any internal server errors arising directly or indirectly from the exclusions set forth in Section 3 of this Storage SLA, and (b) the Error Percentage for a given five minute interval shall be 0% if no requests were made during such interval.
+Customer Must Request Storage Financial Credit.
+In order to receive any of the Storage Financial Credits described above, Customer must notify CoreWeave technical support at
+support@coreweave.com
+within thirty (30) days from the time Customer becomes eligible to receive a Storage Financial Credit. Customer must also provide CoreWeave with the applicable CoreWeave Availability Zone, and the request logs documenting the dates and times of each Error. If Customer does not comply with these requirements, Customer will forfeit its right to receive a Storage Financial Credit. If a dispute arises with respect to this Storage SLA, CoreWeave will make a determination in good faith based on its system logs, monitoring reports, configuration records, and other available information, which CoreWeave will make available for auditing by Customer at Customer’s request.
+Exclusions.
+The Storage Financial Credits do not apply to any: (a) features designated pre-general availability (unless otherwise set forth in the associated Documentation), (b) features excluded from the TOS (in the associated documentation), or (c) any unavailability, suspension or termination of CoreWeave AI Object Storage, performance issues or other errors: (i) caused by factors outside of CoreWeave’s reasonable control, including internet access or related problems beyond the demarcation point of CoreWeave AI Object Storage; (ii) that resulted from Customer’s actions or inactions, or Customer’s and/or third party software, hardware, equipment or other technology; (iii) that resulted from abuses or other behaviors that violate the TOS or any other suspension or termination of Customer’s right to use CoreWeave AI Object Storage; or (iv) that resulted from quotas applied by the system, or (d) downtime caused by in-advance communicated maintenance.
+Was this page helpful?
+Yes
+No
+CoreWeave Sub-processors
+Previous
+CoreWeave ARENA Terms of Service
+Next
+⌘
+I

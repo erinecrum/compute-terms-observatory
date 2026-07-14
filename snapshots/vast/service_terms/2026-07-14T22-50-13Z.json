@@ -1,0 +1,15 @@
+{
+  "provider": "vast",
+  "provider_name": "Vast.ai",
+  "doc_type": "service_terms",
+  "name": "Vast.ai Terms of Service",
+  "url": "https://vast.ai/terms",
+  "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801",
+  "raw_sha256": "0e2f745fac951b5fcf01d4dcf9ec8256dea5708cd12aee564403a8f6062c25c7",
+  "char_count": 46207,
+  "meta": {}
+}
