@@ -1,0 +1,80 @@
+"""Source registry loader.
+
+The registry (`registry.yaml`) maps each provider to the public documents we
+archive and compare. It is the single place URLs live. Adding a provider — or a
+new document for an existing provider — is a registry edit, not a code change.
+
+Registry shape:
+
+    providers:
+      - provider: aws
+        provider_name: Amazon Web Services
+        documents:
+          - doc_type: service_terms
+            name: AWS Service Terms
+            url: https://aws.amazon.com/service-terms/
+            notes: optional free text
+          - doc_type: sla
+            ...
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Dict, List
+
+import yaml
+
+from .model import DOC_TYPES, Document
+
+
+class Registry:
+    def __init__(self, documents: List[Document]):
+        self._documents = documents
+
+    def documents(self) -> List[Document]:
+        return list(self._documents)
+
+    def for_provider(self, provider: str) -> List[Document]:
+        return [d for d in self._documents if d.provider == provider]
+
+    def providers(self) -> List[str]:
+        # Preserve registry order, de-duplicated.
+        seen: Dict[str, None] = {}
+        for d in self._documents:
+            seen.setdefault(d.provider, None)
+        return list(seen)
+
+    def provider_names(self) -> Dict[str, str]:
+        return {d.provider: d.provider_name for d in self._documents}
+
+
+def load_registry(path: str | Path = "registry.yaml") -> Registry:
+    raw = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+    if not raw or "providers" not in raw:
+        raise ValueError(f"{path}: expected a top-level 'providers:' list")
+
+    documents: List[Document] = []
+    for p in raw["providers"]:
+        provider = p["provider"]
+        provider_name = p["provider_name"]
+        for d in p.get("documents", []):
+            doc_type = d["doc_type"]
+            if doc_type not in DOC_TYPES:
+                raise ValueError(
+                    f"{provider}: unknown doc_type {doc_type!r}. "
+                    f"Known types: {', '.join(DOC_TYPES)}"
+                )
+            documents.append(
+                Document(
+                    provider=provider,
+                    provider_name=provider_name,
+                    doc_type=doc_type,
+                    name=d["name"],
+                    url=d["url"],
+                    notes=d.get("notes", ""),
+                )
+            )
+    if not documents:
+        raise ValueError(f"{path}: no documents found")
+    return Registry(documents)

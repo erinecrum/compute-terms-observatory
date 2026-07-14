@@ -1,0 +1,15 @@
+{
+  "provider": "gcp",
+  "provider_name": "Google Cloud",
+  "doc_type": "ai_terms",
+  "name": "Google Cloud Service Specific Terms (AI/ML data use)",
+  "url": "https://cloud.google.com/terms/service-terms",
+  "fetched_at": "2026-07-14T22:34:30.333005+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "text_sha256": "02842c721259cc88e9613fccac7e87e272c4bf9c410ab4f57fc69e06d66cc55f",
+  "raw_sha256": "707023196c52f29f3ad5a192fb8a5f98fbaba0203e369cf2e5459900927215fd",
+  "char_count": 141115,
+  "meta": {}
+}

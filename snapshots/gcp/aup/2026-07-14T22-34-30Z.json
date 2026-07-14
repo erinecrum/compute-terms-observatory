@@ -1,0 +1,15 @@
+{
+  "provider": "gcp",
+  "provider_name": "Google Cloud",
+  "doc_type": "aup",
+  "name": "Google Cloud Platform Acceptable Use Policy",
+  "url": "https://cloud.google.com/terms/aup",
+  "fetched_at": "2026-07-14T22:34:29.695996+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "text_sha256": "72e2fe1b11c10bd80316b55d7ecd043b006d3b31a3d79a23e0da96397446c879",
+  "raw_sha256": "bb5862c00a80945b14f2e8904f19f4ad336f995b42210808261bffce46b86ff8",
+  "char_count": 4441,
+  "meta": {}
+}

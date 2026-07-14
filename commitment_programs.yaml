@@ -1,0 +1,40 @@
+# Commitment / reserved-capacity programs.
+#
+# Per counsel's direction: providers offer volume-commitment vehicles (Microsoft
+# MACC, AWS EDP, Google Cloud committed use discounts) whose actual TERMS are
+# negotiated privately and NOT published. We do not chase a terms document that
+# does not exist at a public URL. Instead, the dataset's "capacity & reservation"
+# dimension (schema item 5) records these as:
+#
+#     value:    "negotiated, not published"
+#     citation: the public page that describes the program's EXISTENCE (below)
+#
+# This is the same rule applied to any document we cannot find at a public URL:
+# record it as not published, cite the public evidence of its existence, never
+# guess and never substitute a third-party copy. Every URL here is first-party.
+
+programs:
+  - provider: aws
+    program: AWS Enterprise Discount Program (EDP)
+    value: negotiated, not published
+    citation_url: https://aws.amazon.com/pricing/enterprise/
+    citation_note: >-
+      AWS's enterprise pricing page describes custom, negotiated volume commitments;
+      the actual EDP discount rates and terms are confidential and not published.
+
+  - provider: azure
+    program: Microsoft Azure Consumption Commitment (MACC)
+    value: negotiated, not published
+    citation_url: https://learn.microsoft.com/en-us/azure/cost-management-billing/benefits/macc/track-consumption-commitment
+    citation_note: >-
+      Microsoft's own docs describe the MACC as a contractual spend commitment
+      associated with a negotiated agreement; the commitment terms themselves are
+      not published.
+
+  - provider: gcp
+    program: Google Cloud Committed Use Discounts (CUDs)
+    value: negotiated, not published
+    citation_url: https://cloud.google.com/compute/docs/instances/committed-use-discounts-overview
+    citation_note: >-
+      Google publishes the mechanics of committed-use discounts for Compute
+      Engine; specific negotiated enterprise commitment terms are not published.

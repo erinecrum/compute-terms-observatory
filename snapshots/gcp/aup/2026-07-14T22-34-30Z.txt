@@ -1,0 +1,65 @@
+Google Cloud Acceptable Use Policy
+For translations of this Acceptable Use Policy into other languages, please click on the appropriate link:
+Bahasa Indonesia
+,
+Deutsch
+,
+Español (Latinoamérica)
+,
+Français
+,
+Italiano
+,
+Nederlands
+,
+Português
+,
+한국어
+,
+日本語
+For all Services that are subject to the Cloud Acceptable Use Policy
+:
+Use of the Services is subject to this acceptable use policy ("
+AUP
+").
+If not defined here, capitalized terms have the meaning stated in the applicable contract ("
+Agreement
+") between the customer, reseller or other authorized user ("
+You
+") and Google.
+You must not use the Services – and You must not allow any third parties or End Users to use the Services – for any of the following:
+to violate, or encourage the violation of, the legal rights of others;
+to engage in, promote, or encourage illegal activity, including child sexual exploitation, child abuse, or terrorism or violence that can cause death, serious harm, or injury to individuals or groups of individuals;
+for any unlawful, invasive, infringing, defamatory, or fraudulent purpose including Non-consensual Explicit Imagery (NCEI), violating intellectual property rights of others, phishing, or creating a pyramid scheme;
+to distribute viruses, worms, Trojan horses, corrupted files, hoaxes or other items of a destructive or deceptive nature;
+to gain unauthorized access to, disrupt, or impair the use of the Services, or the equipment used to provide the Services, by customers, authorized resellers, or other authorized users;
+to alter, disable, interfere with or circumvent any aspect of the Services, Software, or the equipment used to provide the Services;
+to generate, distribute, publish or facilitate unsolicited mass email, promotions, advertisements, or other solicitations ("spam");
+to test or reverse-engineer the Services in order to find limitations or vulnerabilities, or to evade filtering capabilities, except as expressly permitted in the Agreement; or
+to use the Services, or any interfaces provided with the Services, to access any other Google product or service in a manner that violates the terms of service of such other Google product or service.
+For Google Workspace:
+In addition to the provisions for "All Services" above, if You are using Google Workspace, Google Workspace for Education, or Cloud Identity, You must not use the Services – and You must not allow any third parties or End Users to use the Services – for any of the following:
+to grant multiple individuals access to an individual End User Account other than via the delegation features provided within the Services;
+to create End User Accounts assigned to business functions rather than to human beings for the purpose of sharing files within or outside of the domain;
+to resell End User Accounts, or parts thereof, as added into a commercial product offered to third parties; or
+to record audio or video communications without consent if such consent is required by applicable laws and regulations (You are solely responsible for ensuring compliance with all applicable laws and regulations in the relevant jurisdiction(s)).
+If You use Google Workspace for Education, You agree to use all Services, Additional Products, and Third-Party Offerings that are accessible with Your Account only (a) for educational purposes, and (b) if You are an End User, as authorized by Your school.
+For Google Maps Platform:
+In addition to the provisions for "All Services" above, if You are using Google Maps Platform, You must not use the Services – and You must not allow any third parties or End Users to use the Services – for any of the following:
+to engage in activities that disparage, discriminate, or harass, or are intended to do so;
+to combine any Google data with any personal information held by You to derive additional personal information without user consent;
+to limit access to "sensitive consumer opportunities" based on demographics; or
+to assist in the use of weapons where that use would, or is likely to, violate applicable law or regulations.
+Your failure to comply with the AUP may result in suspension or termination, or both, of the applicable Services pursuant to the Agreement.
+Previous versions of the Google Maps Platform Acceptable Use Policy
+January 27, 2025
+August 22, 2018
+May 1, 2018
+Previous versions
+(Last modified June 23, 2026)
+February 9, 2026
+October 13, 2025
+July 1, 2025
+February 6, 2023
+December 16, 2015
+September 18, 2012

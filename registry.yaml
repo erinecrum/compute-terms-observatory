@@ -1,0 +1,151 @@
+# Source registry — the single place document URLs live.
+#
+# Adding a provider or a document is an edit here, never a code change. Each
+# document has: doc_type (service_terms | sla | aup | ai_terms), a human-readable
+# name, the public URL, and optional notes.
+#
+# Coverage is deliberately uneven and HONEST: several GPU providers bundle all
+# their legal text on one page, and some publish no standalone SLA at all. Where
+# a document type has no distinct public URL, there is no entry for it and the
+# gap is recorded in the notes of that provider's main document. The reviewing
+# attorney is expected to correct URLs and add any missing ones.
+#
+# ⚑ = flagged for human review at the Step 1 checkpoint (uncertain or bundled).
+
+providers:
+  # ─────────────────────────── Hyperscalers ───────────────────────────
+  - provider: aws
+    provider_name: Amazon Web Services
+    documents:
+      - doc_type: service_terms
+        name: AWS Service Terms
+        url: https://aws.amazon.com/service-terms/
+        notes: Governs use of all AWS services; contains service-specific and AI/ML sections.
+      - doc_type: sla
+        name: Amazon Compute Service Level Agreement (EC2/ECS/Fargate)
+        url: https://aws.amazon.com/compute/sla/
+        notes: Region-level (99.99%) and instance-level (99.5%) commitments for EC2.
+      - doc_type: aup
+        name: AWS Acceptable Use Policy
+        url: https://aws.amazon.com/aup/
+        notes: ""
+      - doc_type: ai_terms
+        name: AWS Responsible AI Policy
+        url: https://aws.amazon.com/ai/responsible-ai/policy/
+        notes: Supplements the AUP and Service Terms for AI/ML services.
+
+  - provider: azure
+    provider_name: Microsoft Azure
+    documents:
+      # Per counsel's direction: the MACC is a negotiated enterprise agreement
+      # with NO published terms document — we do not chase one. It is recorded
+      # instead under the capacity/reservation dimension as "negotiated, not
+      # published" (see commitment_programs.yaml). The public sources below are
+      # the published Microsoft Customer Agreement, the Azure VM SLA (covers GPU
+      # N-series), the Microsoft Online Services AUP, and the Product Terms.
+      - doc_type: service_terms
+        name: Microsoft Customer Agreement (published)
+        url: https://www.microsoft.com/licensing/docs/customeragreement
+        notes: The published MCA. (MACC is negotiated/not published — not a document here.)
+      - doc_type: sla
+        name: SLA for Azure Virtual Machines (compute & GPU)
+        url: https://azure.microsoft.com/en-us/support/legal/sla/virtual-machines/
+        notes: Covers Azure VMs including GPU N-series instances.
+      - doc_type: aup
+        name: Microsoft Acceptable Use Policy (Online Services)
+        url: https://www.microsoft.com/en-us/microsoft-365/legal/docid12
+        notes: The published AUP governing Microsoft Online Services, including Azure.
+      - doc_type: ai_terms
+        name: Microsoft Product Terms for Online Services
+        url: https://www.microsoft.com/licensing/terms/product/ForOnlineServices/all
+        notes: >-
+          ⚑ AI/generative-AI service terms live within the Product Terms. This is
+          a dynamic (JS-rendered) site and may not snapshot as clean text; if the
+          normalized capture is thin we'll flag it as such rather than guess.
+
+  - provider: gcp
+    provider_name: Google Cloud
+    documents:
+      - doc_type: service_terms
+        name: Google Cloud Platform Terms of Service
+        url: https://cloud.google.com/terms
+        notes: ""
+      - doc_type: sla
+        name: Compute Engine Service Level Agreement
+        url: https://cloud.google.com/compute/sla
+        notes: There is also a consolidated GCP SLA index at cloud.google.com/terms/sla.
+      - doc_type: aup
+        name: Google Cloud Platform Acceptable Use Policy
+        url: https://cloud.google.com/terms/aup
+        notes: ""
+      - doc_type: ai_terms
+        name: Google Cloud Service Specific Terms (AI/ML data use)
+        url: https://cloud.google.com/terms/service-terms
+        notes: Contains the AI/ML sections, including the no-training-on-customer-data commitment.
+
+  # ────────────────────────── GPU-focused ──────────────────────────
+  - provider: coreweave
+    provider_name: CoreWeave
+    documents:
+      - doc_type: service_terms
+        name: CoreWeave Terms of Use
+        url: https://docs.coreweave.com/policies/terms-of-service/terms-of-use
+        notes: >-
+          ⚑ CoreWeave publishes no standalone compute SLA; service-level
+          objectives are embedded in these Terms of Use. A separate AI Object
+          Storage SLA exists (storage only), registered below.
+      - doc_type: aup
+        name: CoreWeave Acceptable Use Policy
+        url: https://docs.coreweave.com/policies/terms-of-service/acceptable-use-policy
+        notes: ""
+      - doc_type: sla
+        name: CoreWeave AI Object Storage SLA
+        url: https://docs.coreweave.com/docs/policies/terms-of-service/coreweave-ai-object-storage-policy
+        notes: ⚑ Storage-specific SLA, NOT a compute/GPU SLA. Included for completeness.
+
+  - provider: lambda
+    provider_name: Lambda
+    documents:
+      - doc_type: service_terms
+        name: Lambda Terms of Service
+        url: https://lambda.ai/legal/terms-of-service
+        notes: >-
+          ⚑ Single page bundling website terms, terms of sale, Cloud Terms of
+          Service, Platform Guidelines, and the Acceptable Use Policy
+          (#acceptable-use-policy). Lambda publishes NO SLA — the terms expressly
+          disclaim any uptime/uninterrupted-service warranty.
+
+  - provider: crusoe
+    provider_name: Crusoe
+    documents:
+      - doc_type: service_terms
+        name: Crusoe Legal Center (Cloud Platform Terms of Service)
+        url: https://legal.crusoe.ai/
+        notes: >-
+          ⚑ Single legal center page containing Terms of Service, Acceptable Use
+          Policy (#aup), Service Level Agreements (#service-level-agreements),
+          Service Specific Terms, and Data Processing terms as sections. If Crusoe
+          exposes distinct per-document paths, please supply them and I'll split
+          these into separate registry entries.
+
+  - provider: runpod
+    provider_name: Runpod
+    documents:
+      - doc_type: service_terms
+        name: Runpod Terms of Service
+        url: https://www.runpod.io/legal/terms-of-service
+        notes: >-
+          ⚑ Acceptable-use restrictions appear within these Terms. Runpod
+          advertises a 99.99% uptime commitment but I did not find a standalone
+          published SLA document — please confirm whether one exists.
+
+  - provider: vast
+    provider_name: Vast.ai
+    documents:
+      - doc_type: service_terms
+        name: Vast.ai Terms of Service
+        url: https://vast.ai/terms
+        notes: >-
+          ⚑ Marketplace model; acceptable-use language is within the Terms. A
+          separate Data Processing Agreement exists (vast.ai/data-processing-agreement).
+          No standalone SLA found — please confirm.

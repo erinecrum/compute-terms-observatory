@@ -1,0 +1,15 @@
+{
+  "provider": "aws",
+  "provider_name": "Amazon Web Services",
+  "doc_type": "service_terms",
+  "name": "AWS Service Terms",
+  "url": "https://aws.amazon.com/service-terms/",
+  "fetched_at": "2026-07-14T22:34:27.276670+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "text_sha256": "02d594b7f20e0f8aa0c54d08695750805f475dd2c71b5f41fb2e0440405d4096",
+  "raw_sha256": "58cae7c4f3c448a615da565c53b30a3705e8d432e1962ecb60f2e3afd372b57c",
+  "char_count": 294102,
+  "meta": {}
+}

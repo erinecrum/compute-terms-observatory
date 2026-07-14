@@ -1,0 +1,15 @@
+{
+  "provider": "gcp",
+  "provider_name": "Google Cloud",
+  "doc_type": "sla",
+  "name": "Compute Engine Service Level Agreement",
+  "url": "https://cloud.google.com/compute/sla",
+  "fetched_at": "2026-07-14T22:34:29.088326+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9",
+  "raw_sha256": "20e50f1466029e3b3f27455d2a77be7d54b6b9268e867ec6fd90390d97bbba0e",
+  "char_count": 9406,
+  "meta": {}
+}

@@ -1,0 +1,15 @@
+{
+  "provider": "aws",
+  "provider_name": "Amazon Web Services",
+  "doc_type": "sla",
+  "name": "Amazon Compute Service Level Agreement (EC2/ECS/Fargate)",
+  "url": "https://aws.amazon.com/compute/sla/",
+  "fetched_at": "2026-07-14T22:34:27.686721+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "text_sha256": "e9aa2507e0b36766ef2ff0927769cef2050847251a0c04c42cd0d6d0a71ca3c6",
+  "raw_sha256": "dfd7817a90a67f70a89613e0881fa1d5c2a91c44b6954cfb81f161f2bbdf65e2",
+  "char_count": 7572,
+  "meta": {}
+}

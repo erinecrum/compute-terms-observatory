@@ -1,0 +1,15 @@
+{
+  "provider": "gcp",
+  "provider_name": "Google Cloud",
+  "doc_type": "service_terms",
+  "name": "Google Cloud Platform Terms of Service",
+  "url": "https://cloud.google.com/terms",
+  "fetched_at": "2026-07-14T22:34:28.288467+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "text_sha256": "cbb13687e8591a4610e5716dc649c689aa45919af6c50b441328630b23ad85de",
+  "raw_sha256": "99c1bc3d7a498ca8a0523a2055406c87616d6094c38348620243c0e71fd7c2c9",
+  "char_count": 59123,
+  "meta": {}
+}

@@ -1,0 +1,15 @@
+{
+  "provider": "aws",
+  "provider_name": "Amazon Web Services",
+  "doc_type": "ai_terms",
+  "name": "AWS Responsible AI Policy",
+  "url": "https://aws.amazon.com/ai/responsible-ai/policy/",
+  "fetched_at": "2026-07-14T22:34:28.110435+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "text_sha256": "ab28693f8cc0a5cf61928674a25b1066fb4423257bd28215fc3edd639fcab585",
+  "raw_sha256": "0cd07877ff876c10554579263a4ec8e4f71135eeada7b957e8fd5c330579257d",
+  "char_count": 2912,
+  "meta": {}
+}

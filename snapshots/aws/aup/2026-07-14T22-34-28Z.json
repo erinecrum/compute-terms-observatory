@@ -1,0 +1,15 @@
+{
+  "provider": "aws",
+  "provider_name": "Amazon Web Services",
+  "doc_type": "aup",
+  "name": "AWS Acceptable Use Policy",
+  "url": "https://aws.amazon.com/aup/",
+  "fetched_at": "2026-07-14T22:34:27.874516+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "text_sha256": "35d979a0cf403fa271d5baa9b2961e5b39401c4fb9a2efffcf9af2347a2fccdf",
+  "raw_sha256": "d6c044e9d14c61547fe90aee77383ecf758befa2ff976b9f3f271bce42c41c55",
+  "char_count": 1685,
+  "meta": {}
+}
