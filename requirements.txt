@@ -1,0 +1,7 @@
+# Compute Contract Terms Observatory — runtime dependencies (kept deliberately minimal,
+# matching the radar project's low-dependency posture).
+requests>=2.31        # HTTP fetching of public terms/SLA/AUP pages
+beautifulsoup4>=4.12  # HTML parsing / content extraction for page snapshots
+PyYAML>=6.0           # source registry + human-verified overrides (non-confidential)
+python-dotenv>=1.0    # load ANTHROPIC_API_KEY from a local .env (never committed)
+anthropic>=0.40       # Claude API client for the structured extraction layer

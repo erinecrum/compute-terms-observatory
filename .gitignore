@@ -1,0 +1,16 @@
+# Secrets — never commit the API key. This line is here from the first commit.
+.env
+
+# Machine-local Claude Code settings (personal permission allowlist)
+.claude/settings.local.json
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+
+# Generated site output is a build artifact, rebuilt from the corpus + dataset.
+# NOTE: snapshots/ is deliberately NOT ignored — the raw corpus is the asset
+# and is committed on every run (see README, "Archival discipline").
+site/
