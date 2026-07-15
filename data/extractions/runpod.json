@@ -1,0 +1,170 @@
+{
+  "provider": "runpod",
+  "provider_name": "Runpod",
+  "extracted_at": "2026-07-15T01:04:12.103884+00:00",
+  "model": "claude-opus-4-8",
+  "documents_used": [
+    {
+      "slug": "service_terms",
+      "doc_type": "service_terms",
+      "name": "Runpod Terms of Service",
+      "url": "https://www.runpod.io/legal/terms-of-service",
+      "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+      "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4",
+      "included_chars": 88842,
+      "truncated": false
+    }
+  ],
+  "fields": {
+    "availability_definition": {
+      "value": "no SLA / uptime not committed. For Community Cloud, expressly no uptime warranty; Service provided 'as-is and as-available'.",
+      "confidence": "high",
+      "citation": "Runpod does not make any specific uptime warranties with respect to the Community Cloud Offerings",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Runpod Terms of Service",
+        "url": "https://www.runpod.io/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+        "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+      },
+      "human_verified": false
+    },
+    "credit_regime": {
+      "value": "not specified; no service-credit structure in the document. Liability capped at lesser of 6-month fees paid or $100.",
+      "confidence": "medium",
+      "citation": "LIMITED TO THE LESSER OF THE AMOUNT PAID... OR $100.00",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Runpod Terms of Service",
+        "url": "https://www.runpod.io/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+        "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+      },
+      "human_verified": false
+    },
+    "claim_mechanics": {
+      "value": "not specified; no SLA credit claim process. Billing disputes directed to help@runpod.io.",
+      "confidence": "medium",
+      "citation": "Please contact help@runpod.io regarding any billing disputes",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Runpod Terms of Service",
+        "url": "https://www.runpod.io/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+        "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+      },
+      "human_verified": false
+    },
+    "sla_exclusions": {
+      "value": "No formal SLA. Related disclaimers present: force majeure ('cause beyond our reasonable control'); customer fault/misuse; interruption/cessation of transmission; Community/beta-type offerings disclaimed.",
+      "confidence": "medium",
+      "citation": "any cause beyond our reasonable control",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Runpod Terms of Service",
+        "url": "https://www.runpod.io/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+        "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+      },
+      "human_verified": false
+    },
+    "capacity_reservation": {
+      "value": "Subscriptions auto-renew for same-duration terms; no prorated refund on cancellation (use-it-or-lose-it flavor). No published reserved-instance/committed-use terms; enterprise commitment terms negotiated, not published.",
+      "confidence": "medium",
+      "citation": "you will not be eligible for a prorated refund",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Runpod Terms of Service",
+        "url": "https://www.runpod.io/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+        "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+      },
+      "human_verified": false
+    },
+    "data_use_ai_training": {
+      "value": "May access/use Your Content to provide Service, and use it in aggregated and anonymized form to update and improve Service and Runpod's products. No explicit AI/ML model-training statement; no opt-out stated.",
+      "confidence": "high",
+      "citation": "use Your Content in an aggregated and anonymized form to update and improve the Service",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Runpod Terms of Service",
+        "url": "https://www.runpod.io/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+        "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+      },
+      "human_verified": false
+    },
+    "suspension_rights": {
+      "value": "May suspend/terminate immediately and without notice for material breach, undue system stress, or legal requirement; non-payment may lead to suspension. Grounds: AUP breach, non-payment, legal process, security/harm.",
+      "confidence": "high",
+      "citation": "immediately and without notice, suspend or terminate any Service",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Runpod Terms of Service",
+        "url": "https://www.runpod.io/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+        "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+      },
+      "human_verified": false
+    },
+    "termination": {
+      "value": "Runpod may terminate for convenience at any time upon notice; customer may terminate by notice and closing Account. No post-termination data-retrieval window specified; Runpod may delete account/content at any time.",
+      "confidence": "high",
+      "citation": "terminate these Terms of Use or your access to the Service at any time without cause upon notice",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Runpod Terms of Service",
+        "url": "https://www.runpod.io/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+        "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+      },
+      "human_verified": false
+    },
+    "unilateral_modification": {
+      "value": "May modify Terms at sole discretion; notice given only by updating 'Last Updated' date; changes effective on posting via continued use. No fixed advance-notice period (pricing changes get 'reasonable advance notification').",
+      "confidence": "high",
+      "citation": "we will alert you about any changes by updating the “Last Updated” date",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Runpod Terms of Service",
+        "url": "https://www.runpod.io/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+        "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+      },
+      "human_verified": false
+    },
+    "governing_law_disputes": {
+      "value": "Governing law: Delaware. Venue: NJ courts (Burlington County for severed/void-arbitration matters). Binding arbitration: yes (NAM, opt-out within 30 days). Class-action waiver: yes.",
+      "confidence": "high",
+      "citation": "governed by... the laws of the State of Delaware; MANDATORY BINDING ARBITRATION AND A CLASS ACTION WAIVER",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Runpod Terms of Service",
+        "url": "https://www.runpod.io/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+        "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+      },
+      "human_verified": false
+    }
+  }
+}

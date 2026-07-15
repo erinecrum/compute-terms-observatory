@@ -1,0 +1,170 @@
+{
+  "provider": "vast",
+  "provider_name": "Vast.ai",
+  "extracted_at": "2026-07-15T01:04:27.029577+00:00",
+  "model": "claude-opus-4-8",
+  "documents_used": [
+    {
+      "slug": "service_terms",
+      "doc_type": "service_terms",
+      "name": "Vast.ai Terms of Service",
+      "url": "https://vast.ai/terms",
+      "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+      "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801",
+      "included_chars": 46207,
+      "truncated": false
+    }
+  ],
+  "fields": {
+    "availability_definition": {
+      "value": "no SLA / uptime not committed. Terms state Company cannot guarantee availability and disclaims liability for downtime.",
+      "confidence": "high",
+      "citation": "Company cannot guarantee the Website and that Company Services will be always available",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Vast.ai Terms of Service",
+        "url": "https://vast.ai/terms",
+        "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+        "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+      },
+      "human_verified": false
+    },
+    "credit_regime": {
+      "value": "not specified; no service-credit structure. Payments are final and no refunds; refunds on unspent credits at sole discretion.",
+      "confidence": "high",
+      "citation": "All payments for credits spent on or through the Website are final and no refunds shall be issued",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Vast.ai Terms of Service",
+        "url": "https://vast.ai/terms",
+        "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+        "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+      },
+      "human_verified": false
+    },
+    "claim_mechanics": {
+      "value": "not specified. No SLA claim process; note a 1-year limitation period applies to any claim/cause of action.",
+      "confidence": "medium",
+      "citation": "ANY CLAIM OR CAUSE OF ACTION ... MUST BE FILED WITHIN ONE (1) YEAR",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Vast.ai Terms of Service",
+        "url": "https://vast.ai/terms",
+        "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+        "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+      },
+      "human_verified": false
+    },
+    "sla_exclusions": {
+      "value": "No SLA exists. Related disclaimers present: force majeure (cause beyond reasonable control) and maintenance/interruptions; no service-level exclusions listed.",
+      "confidence": "medium",
+      "citation": "may need to perform maintenance ... resulting in interruptions, delays, or errors",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Vast.ai Terms of Service",
+        "url": "https://vast.ai/terms",
+        "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+        "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+      },
+      "human_verified": false
+    },
+    "capacity_reservation": {
+      "value": "not specified. Terms describe on-demand rental of hosting from independent providers and purchase of credits; no reserved/committed-use terms published.",
+      "confidence": "medium",
+      "citation": "Rental by users of hosting services ... from independent providers",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Vast.ai Terms of Service",
+        "url": "https://vast.ai/terms",
+        "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+        "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+      },
+      "human_verified": false
+    },
+    "data_use_ai_training": {
+      "value": "not specified re AI training. Governed by Privacy Policy/DPA; Feedback is assigned to Company for any use. Data-use rights not detailed in these terms.",
+      "confidence": "medium",
+      "citation": "you hereby assign to us ... any ideas, know-how, concepts, techniques ... in the Feedback",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Vast.ai Terms of Service",
+        "url": "https://vast.ai/terms",
+        "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+        "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+      },
+      "human_verified": false
+    },
+    "suspension_rights": {
+      "value": "Grounds: non-payment/chargebacks, false info, export-law violation, AUP/breach, or any/no reason; may be immediate and without notice.",
+      "confidence": "high",
+      "citation": "DENY ACCESS ... WITHOUT NOTICE OR LIABILITY ... FOR ANY REASON OR FOR NO REASON",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Vast.ai Terms of Service",
+        "url": "https://vast.ai/terms",
+        "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+        "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+      },
+      "human_verified": false
+    },
+    "termination": {
+      "value": "Either side may terminate at any time for any reason; Company may terminate without notice and delete content. No post-termination data retrieval window; Company has no obligation to retain data.",
+      "confidence": "high",
+      "citation": "Company has no obligation to retain a record of your account or any data",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Vast.ai Terms of Service",
+        "url": "https://vast.ai/terms",
+        "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+        "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+      },
+      "human_verified": false
+    },
+    "unilateral_modification": {
+      "value": "Company may modify at any time; changes effective on posting; user waives right to specific notice; continued use = acceptance.",
+      "confidence": "high",
+      "citation": "Modifications to this Agreement shall be effective after posting.",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Vast.ai Terms of Service",
+        "url": "https://vast.ai/terms",
+        "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+        "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+      },
+      "human_verified": false
+    },
+    "governing_law_disputes": {
+      "value": "Governing law: California. Forum: JAMS arbitration, Los Angeles, CA. Binding arbitration: yes. Class-action waiver: yes.",
+      "confidence": "high",
+      "citation": "governed by the laws of California ... submitted to binding arbitration with ... JAMS",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Vast.ai Terms of Service",
+        "url": "https://vast.ai/terms",
+        "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+        "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+      },
+      "human_verified": false
+    }
+  }
+}
