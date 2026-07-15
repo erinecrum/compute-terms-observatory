@@ -17,10 +17,12 @@ from typing import List
 
 from dotenv import load_dotenv
 
+from observatory.dataset import build_dataset, save_dataset
 from observatory.differ import diff_text
 from observatory.extractor import extract_provider, save_extraction
 from observatory.fetcher import fetch_document
 from observatory.registry import load_registry
+from observatory.site import render_site
 from observatory.snapshot import SnapshotStore
 
 
@@ -120,6 +122,28 @@ def cmd_extract(providers: List[str]) -> int:
     return 0 if failed == 0 else 2
 
 
+def cmd_build() -> int:
+    """Assemble the comparison dataset from extractions + overrides + programs."""
+    dataset = build_dataset()
+    path = save_dataset(dataset)
+    n_prov = len(dataset["providers"])
+    n_dim = len(dataset["dimensions"])
+    n_chg = len(dataset["change_log"])
+    print(f"Built dataset -> {path}  ({n_prov} providers, {n_dim} dimensions, {n_chg} change-log entries)")
+    return 0
+
+
+def cmd_site() -> int:
+    """Build the dataset, then render the static site."""
+    dataset = build_dataset()
+    save_dataset(dataset)
+    written = render_site(dataset)
+    for p in written:
+        print(f"  wrote {p}")
+    print(f"\nSite rendered. Open {written[0]} in a browser.")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(prog="observatory")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -142,6 +166,9 @@ def main() -> int:
     )
     p_extract.add_argument("--provider", action="append", default=[])
 
+    sub.add_parser("build", help="assemble the comparison dataset (data/dataset.json)")
+    sub.add_parser("site", help="build the dataset and render the static site into site/")
+
     args = parser.parse_args()
     if args.command == "fetch":
         return cmd_fetch(args.provider)
@@ -149,6 +176,10 @@ def main() -> int:
         return cmd_changes(args.provider)
     if args.command == "extract":
         return cmd_extract(args.provider)
+    if args.command == "build":
+        return cmd_build()
+    if args.command == "site":
+        return cmd_site()
     parser.error(f"unknown command {args.command!r}")
     return 1
 

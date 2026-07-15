@@ -1,0 +1,1535 @@
+{
+  "generated_at": "2026-07-15T01:14:31.367346+00:00",
+  "disclaimer": "This is an informational comparison of published documents, not legal advice. It describes what public documents say, with citations. Provider documents change and automated extraction can be wrong or stale — always review the current source documents yourself.",
+  "dimensions": [
+    {
+      "key": "availability_definition",
+      "label": "Availability definition",
+      "guidance": "How uptime/availability is defined and the commitment percentage(s). Categorize the basis as one of: instance-level, region-level, cluster/throughput-based, API-error-rate-based, or other. Include the commitment percentage(s) (e.g. 99.99% region, 99.5% instance). If the provider publishes no uptime commitment, value = 'no SLA / uptime not committed'."
+    },
+    {
+      "key": "credit_regime",
+      "label": "Credit regime",
+      "guidance": "Service-credit structure: the tier mapping (uptime threshold -> credit percentage), the maximum credit, and whether credits are stated to be the sole and exclusive remedy. Give the tiers compactly."
+    },
+    {
+      "key": "claim_mechanics",
+      "label": "Claim mechanics",
+      "guidance": "Whether the customer must file a claim to receive credits, the claim window and how it is measured (e.g. within 30 days / end of billing cycle), and what evidence the customer must supply."
+    },
+    {
+      "key": "sla_exclusions",
+      "label": "SLA exclusions",
+      "guidance": "Notable exclusions from the SLA as a short categorical checklist plus a brief note. Look for: force majeure, customer fault/misuse, scheduled or emergency maintenance, beta/preview services, single-AZ deployments, throttling, external network/ISP issues. List the ones present."
+    },
+    {
+      "key": "capacity_reservation",
+      "label": "Capacity & reservation terms",
+      "guidance": "Existence and nature of reserved or committed-capacity terms in the PUBLIC documents: reserved instances, committed-use/savings plans, take-or-pay, use-it-or-lose-it, cancellation rights. Where the meaningful commitment terms are negotiated privately (enterprise commitment vehicles), say so explicitly with 'negotiated, not published'. Do not infer terms that are not in the documents."
+    },
+    {
+      "key": "data_use_ai_training",
+      "label": "Data use & AI training",
+      "guidance": "What the terms say about the provider's rights to use customer data, and specifically any language about training or improving the provider's AI/ML models on customer content. State the default position (e.g. 'does not train on customer data' vs. 'may use to improve services') and any opt-in/opt-out."
+    },
+    {
+      "key": "suspension_rights",
+      "label": "Suspension rights",
+      "guidance": "The grounds on which the provider may suspend the service (e.g. AUP breach, non-payment, security risk, legal process) and whether prior notice is required or suspension can be immediate."
+    },
+    {
+      "key": "termination",
+      "label": "Termination",
+      "guidance": "Termination for convenience rights (which side, and any notice period), and the effect on data retrieval after termination — the post-termination window during which the customer can still retrieve data."
+    },
+    {
+      "key": "unilateral_modification",
+      "label": "Unilateral modification",
+      "guidance": "Whether and how the provider may unilaterally change the terms, and any notice commitment before changes take effect (e.g. 30/90 days' notice, or 'effective on posting')."
+    },
+    {
+      "key": "governing_law_disputes",
+      "label": "Governing law & disputes",
+      "guidance": "Governing law, the forum/venue, whether disputes go to binding arbitration (yes/no), and whether there is a class-action waiver (yes/no). Keep each element short."
+    }
+  ],
+  "providers": [
+    {
+      "provider": "aws",
+      "provider_name": "Amazon Web Services",
+      "extracted_at": "2026-07-15T00:56:40.900629+00:00",
+      "model": "claude-opus-4-8",
+      "documents": [
+        {
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "Amazon Compute Service Level Agreement (EC2/ECS/Fargate)",
+          "url": "https://aws.amazon.com/compute/sla/",
+          "fetched_at": "2026-07-14T22:34:27.686721+00:00",
+          "text_sha256": "e9aa2507e0b36766ef2ff0927769cef2050847251a0c04c42cd0d6d0a71ca3c6",
+          "included_chars": 7572,
+          "truncated": false
+        },
+        {
+          "slug": "customer_agreement",
+          "doc_type": "service_terms",
+          "name": "AWS Customer Agreement",
+          "url": "https://aws.amazon.com/agreement/",
+          "fetched_at": "2026-07-14T23:30:54.569782+00:00",
+          "text_sha256": "11afedaae0cc0d4d806c8b154e6e2c6cbd14eb4a97871fe746da9c5b80ec9398",
+          "included_chars": 61874,
+          "truncated": false
+        },
+        {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "AWS Service Terms",
+          "url": "https://aws.amazon.com/service-terms/",
+          "fetched_at": "2026-07-14T22:34:27.276670+00:00",
+          "text_sha256": "02d594b7f20e0f8aa0c54d08695750805f475dd2c71b5f41fb2e0440405d4096",
+          "included_chars": 294102,
+          "truncated": false
+        },
+        {
+          "slug": "ai_terms",
+          "doc_type": "ai_terms",
+          "name": "AWS Responsible AI Policy",
+          "url": "https://aws.amazon.com/ai/responsible-ai/policy/",
+          "fetched_at": "2026-07-14T22:34:28.110435+00:00",
+          "text_sha256": "ab28693f8cc0a5cf61928674a25b1066fb4423257bd28215fc3edd639fcab585",
+          "included_chars": 2912,
+          "truncated": false
+        },
+        {
+          "slug": "aup",
+          "doc_type": "aup",
+          "name": "AWS Acceptable Use Policy",
+          "url": "https://aws.amazon.com/aup/",
+          "fetched_at": "2026-07-14T22:34:27.874516+00:00",
+          "text_sha256": "35d979a0cf403fa271d5baa9b2961e5b39401c4fb9a2efffcf9af2347a2fccdf",
+          "included_chars": 1685,
+          "truncated": false
+        }
+      ],
+      "human_verified_dimensions": [
+        "governing_law_disputes"
+      ]
+    },
+    {
+      "provider": "azure",
+      "provider_name": "Microsoft Azure",
+      "extracted_at": "2026-07-15T00:57:01.270509+00:00",
+      "model": "claude-opus-4-8",
+      "documents": [
+        {
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "SLA for Azure Virtual Machines (compute & GPU)",
+          "url": "https://azure.microsoft.com/en-us/support/legal/sla/virtual-machines/",
+          "fetched_at": "2026-07-14T22:50:07.407432+00:00",
+          "text_sha256": "496b3717f1c530179566eb7c5e8ce185c249cad35e1e9a937f60ec30c92bfc7f",
+          "included_chars": 10924,
+          "truncated": false
+        },
+        {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Microsoft Customer Agreement (published)",
+          "url": "https://www.microsoft.com/licensing/docs/documents/download/Microsoft%20Customer%20Agreement.pdf",
+          "fetched_at": "2026-07-14T23:07:54.110573+00:00",
+          "text_sha256": "0d4f51d9d52ba28432acadf123f3e24dc067aa3aa1eefbdfafaa703decec09e7",
+          "included_chars": 41114,
+          "truncated": false
+        },
+        {
+          "slug": "ai_terms",
+          "doc_type": "ai_terms",
+          "name": "Microsoft Product Terms for Online Services",
+          "url": "https://www.microsoft.com/licensing/terms/product/ForOnlineServices/all",
+          "fetched_at": "2026-07-14T22:50:09.052258+00:00",
+          "text_sha256": "0853193df49254fe5976349bbf1722328d2a4b94c9b4aea84f3d4c7c85afe828",
+          "included_chars": 34272,
+          "truncated": false
+        },
+        {
+          "slug": "aup",
+          "doc_type": "aup",
+          "name": "Microsoft Acceptable Use Policy (Online Services)",
+          "url": "https://www.microsoft.com/en-us/microsoft-365/legal/docid12",
+          "fetched_at": "2026-07-14T22:50:08.496977+00:00",
+          "text_sha256": "1002e85c92058688563e5c5653cdfcb3926ec81a020265367b4c05dbcc8a95c5",
+          "included_chars": 4524,
+          "truncated": false
+        }
+      ],
+      "human_verified_dimensions": []
+    },
+    {
+      "provider": "gcp",
+      "provider_name": "Google Cloud",
+      "extracted_at": "2026-07-15T00:57:24.866276+00:00",
+      "model": "claude-opus-4-8",
+      "documents": [
+        {
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "Compute Engine Service Level Agreement",
+          "url": "https://cloud.google.com/compute/sla",
+          "fetched_at": "2026-07-14T22:34:29.088326+00:00",
+          "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9",
+          "included_chars": 9406,
+          "truncated": false
+        },
+        {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Google Cloud Platform Terms of Service",
+          "url": "https://cloud.google.com/terms",
+          "fetched_at": "2026-07-14T22:34:28.288467+00:00",
+          "text_sha256": "cbb13687e8591a4610e5716dc649c689aa45919af6c50b441328630b23ad85de",
+          "included_chars": 59123,
+          "truncated": false
+        },
+        {
+          "slug": "ai_terms",
+          "doc_type": "ai_terms",
+          "name": "Google Cloud Service Specific Terms (AI/ML data use)",
+          "url": "https://cloud.google.com/terms/service-terms",
+          "fetched_at": "2026-07-14T22:34:30.333005+00:00",
+          "text_sha256": "02842c721259cc88e9613fccac7e87e272c4bf9c410ab4f57fc69e06d66cc55f",
+          "included_chars": 141115,
+          "truncated": false
+        },
+        {
+          "slug": "aup",
+          "doc_type": "aup",
+          "name": "Google Cloud Platform Acceptable Use Policy",
+          "url": "https://cloud.google.com/terms/aup",
+          "fetched_at": "2026-07-14T22:34:29.695996+00:00",
+          "text_sha256": "72e2fe1b11c10bd80316b55d7ecd043b006d3b31a3d79a23e0da96397446c879",
+          "included_chars": 4441,
+          "truncated": false
+        }
+      ],
+      "human_verified_dimensions": []
+    },
+    {
+      "provider": "coreweave",
+      "provider_name": "CoreWeave",
+      "extracted_at": "2026-07-15T00:57:43.626403+00:00",
+      "model": "claude-opus-4-8",
+      "documents": [
+        {
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "CoreWeave AI Object Storage SLA",
+          "url": "https://docs.coreweave.com/docs/policies/terms-of-service/coreweave-ai-object-storage-policy",
+          "fetched_at": "2026-07-14T22:50:10.259185+00:00",
+          "text_sha256": "e9ff257f5161bf68269324d7e5f9445b50d55dcf5ba7a694c7345bb29f40cf90",
+          "included_chars": 4624,
+          "truncated": false
+        },
+        {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "CoreWeave Terms of Use",
+          "url": "https://docs.coreweave.com/policies/terms-of-service/terms-of-use",
+          "fetched_at": "2026-07-14T22:50:09.689454+00:00",
+          "text_sha256": "88d876cd2087f912340547eb718a5e77ef485871dd1be94f644abc048a51d527",
+          "included_chars": 23023,
+          "truncated": false
+        },
+        {
+          "slug": "aup",
+          "doc_type": "aup",
+          "name": "CoreWeave Acceptable Use Policy",
+          "url": "https://docs.coreweave.com/policies/terms-of-service/acceptable-use-policy",
+          "fetched_at": "2026-07-14T22:50:10.041411+00:00",
+          "text_sha256": "d10762ac2fe14d4c2281810e650afc798cb81e38ab424aa797c6e5e6ea1f3bfc",
+          "included_chars": 8839,
+          "truncated": false
+        }
+      ],
+      "human_verified_dimensions": []
+    },
+    {
+      "provider": "lambda",
+      "provider_name": "Lambda",
+      "extracted_at": "2026-07-15T00:58:01.751234+00:00",
+      "model": "claude-opus-4-8",
+      "documents": [
+        {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Lambda Terms of Service",
+          "url": "https://lambda.ai/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+          "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537",
+          "included_chars": 107980,
+          "truncated": false
+        }
+      ],
+      "human_verified_dimensions": []
+    },
+    {
+      "provider": "crusoe",
+      "provider_name": "Crusoe",
+      "extracted_at": "2026-07-15T01:03:54.593207+00:00",
+      "model": "claude-opus-4-8",
+      "documents": [
+        {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+          "url": "https://legal.crusoe.ai/",
+          "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+          "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f",
+          "included_chars": 600000,
+          "truncated": true
+        }
+      ],
+      "human_verified_dimensions": []
+    },
+    {
+      "provider": "runpod",
+      "provider_name": "Runpod",
+      "extracted_at": "2026-07-15T01:04:12.103884+00:00",
+      "model": "claude-opus-4-8",
+      "documents": [
+        {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Runpod Terms of Service",
+          "url": "https://www.runpod.io/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+          "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4",
+          "included_chars": 88842,
+          "truncated": false
+        }
+      ],
+      "human_verified_dimensions": []
+    },
+    {
+      "provider": "vast",
+      "provider_name": "Vast.ai",
+      "extracted_at": "2026-07-15T01:04:27.029577+00:00",
+      "model": "claude-opus-4-8",
+      "documents": [
+        {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Vast.ai Terms of Service",
+          "url": "https://vast.ai/terms",
+          "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+          "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801",
+          "included_chars": 46207,
+          "truncated": false
+        }
+      ],
+      "human_verified_dimensions": []
+    }
+  ],
+  "matrix": {
+    "aws": {
+      "availability_definition": {
+        "value": "instance-level and region-level; 99.99% region (multi-AZ), 99.5% single instance; 'Unavailable' = no external connectivity",
+        "confidence": "high",
+        "citation": "AWS makes two SLA commitments for Amazon EC2",
+        "citation_document": "sla",
+        "source": {
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "Amazon Compute Service Level Agreement (EC2/ECS/Fargate)",
+          "url": "https://aws.amazon.com/compute/sla/",
+          "fetched_at": "2026-07-14T22:34:27.686721+00:00",
+          "text_sha256": "e9aa2507e0b36766ef2ff0927769cef2050847251a0c04c42cd0d6d0a71ca3c6"
+        },
+        "human_verified": false
+      },
+      "credit_regime": {
+        "value": "Region: <99.99%->10%, <99.0%->30%, <95.0%->100%. Instance: <99.5%->10%, <99.0%->30%, <95.0%->100%. Max 100%. Sole and exclusive remedy.",
+        "confidence": "high",
+        "citation": "this SLA sets forth your sole and exclusive remedies",
+        "citation_document": "sla",
+        "source": {
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "Amazon Compute Service Level Agreement (EC2/ECS/Fargate)",
+          "url": "https://aws.amazon.com/compute/sla/",
+          "fetched_at": "2026-07-14T22:34:27.686721+00:00",
+          "text_sha256": "e9aa2507e0b36766ef2ff0927769cef2050847251a0c04c42cd0d6d0a71ca3c6"
+        },
+        "human_verified": false
+      },
+      "claim_mechanics": {
+        "value": "Must file claim via AWS Support Center; by end of second billing cycle after incident; must include dates/times, resource IDs, request logs corroborating outage",
+        "confidence": "high",
+        "citation": "Credit Request and Payment Procedures",
+        "citation_document": "sla",
+        "source": {
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "Amazon Compute Service Level Agreement (EC2/ECS/Fargate)",
+          "url": "https://aws.amazon.com/compute/sla/",
+          "fetched_at": "2026-07-14T22:34:27.686721+00:00",
+          "text_sha256": "e9aa2507e0b36766ef2ff0927769cef2050847251a0c04c42cd0d6d0a71ca3c6"
+        },
+        "human_verified": false
+      },
+      "sla_exclusions": {
+        "value": "force majeure/beyond demarcation point; customer actions/inactions; customer equipment/software; suspension/termination per Agreement; beta services excluded (Service Terms 2.2)",
+        "confidence": "high",
+        "citation": "Amazon Compute SLA Exclusions",
+        "citation_document": "sla",
+        "source": {
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "Amazon Compute Service Level Agreement (EC2/ECS/Fargate)",
+          "url": "https://aws.amazon.com/compute/sla/",
+          "fetched_at": "2026-07-14T22:34:27.686721+00:00",
+          "text_sha256": "e9aa2507e0b36766ef2ff0927769cef2050847251a0c04c42cd0d6d0a71ca3c6"
+        },
+        "human_verified": false
+      },
+      "capacity_reservation": {
+        "value": "Reserved Instances, Savings Plans, Dedicated Host Reservations, Capacity Blocks for ML: noncancellable, nonrefundable, nontransferable; pro rata refund only if AWS terminates without cause",
+        "confidence": "high",
+        "citation": "Savings Plans, EC2 Reserved Instances...are noncancellable",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "AWS Service Terms",
+          "url": "https://aws.amazon.com/service-terms/",
+          "fetched_at": "2026-07-14T22:34:27.276670+00:00",
+          "text_sha256": "02d594b7f20e0f8aa0c54d08695750805f475dd2c71b5f41fb2e0440405d4096"
+        },
+        "human_verified": false,
+        "commitment_program": {
+          "program": "AWS Enterprise Discount Program (EDP)",
+          "value": "negotiated, not published",
+          "citation_url": "https://aws.amazon.com/pricing/enterprise/",
+          "note": "AWS's enterprise pricing page describes custom, negotiated volume commitments; the actual EDP discount rates and terms are confidential and not published."
+        }
+      },
+      "data_use_ai_training": {
+        "value": "Default: will not access/use Your Content except to provide Services or comply with law; may use interaction info to improve Services; AI Services may use AI Content to improve models with AWS Organizations opt-out",
+        "confidence": "high",
+        "citation": "We will not access or use Your Content except as necessary",
+        "citation_document": "customer_agreement",
+        "source": {
+          "slug": "customer_agreement",
+          "doc_type": "service_terms",
+          "name": "AWS Customer Agreement",
+          "url": "https://aws.amazon.com/agreement/",
+          "fetched_at": "2026-07-14T23:30:54.569782+00:00",
+          "text_sha256": "11afedaae0cc0d4d806c8b154e6e2c6cbd14eb4a97871fe746da9c5b80ec9398"
+        },
+        "human_verified": false
+      },
+      "suspension_rights": {
+        "value": "Grounds: security risk, adverse system impact, liability, fraud, material breach, non-payment, insolvency; suspension immediate upon notice",
+        "confidence": "high",
+        "citation": "We may suspend...immediately upon notice to you",
+        "citation_document": "customer_agreement",
+        "source": {
+          "slug": "customer_agreement",
+          "doc_type": "service_terms",
+          "name": "AWS Customer Agreement",
+          "url": "https://aws.amazon.com/agreement/",
+          "fetched_at": "2026-07-14T23:30:54.569782+00:00",
+          "text_sha256": "11afedaae0cc0d4d806c8b154e6e2c6cbd14eb4a97871fe746da9c5b80ec9398"
+        },
+        "human_verified": false
+      },
+      "termination": {
+        "value": "Customer terminates for convenience anytime by closing account; AWS for convenience on 30 days' notice; 30-day post-termination data retrieval window (if fees paid)",
+        "confidence": "high",
+        "citation": "Termination for Convenience; during the 30 days following the Termination Date",
+        "citation_document": "customer_agreement",
+        "source": {
+          "slug": "customer_agreement",
+          "doc_type": "service_terms",
+          "name": "AWS Customer Agreement",
+          "url": "https://aws.amazon.com/agreement/",
+          "fetched_at": "2026-07-14T23:30:54.569782+00:00",
+          "text_sha256": "11afedaae0cc0d4d806c8b154e6e2c6cbd14eb4a97871fe746da9c5b80ec9398"
+        },
+        "human_verified": false
+      },
+      "unilateral_modification": {
+        "value": "AWS may modify Agreement anytime by posting revised version; effective upon posting or as stated in email; 90 days' notice for adverse SLA changes",
+        "confidence": "high",
+        "citation": "Modifications to the Agreement",
+        "citation_document": "customer_agreement",
+        "source": {
+          "slug": "customer_agreement",
+          "doc_type": "service_terms",
+          "name": "AWS Customer Agreement",
+          "url": "https://aws.amazon.com/agreement/",
+          "fetched_at": "2026-07-14T23:30:54.569782+00:00",
+          "text_sha256": "11afedaae0cc0d4d806c8b154e6e2c6cbd14eb4a97871fe746da9c5b80ec9398"
+        },
+        "human_verified": false
+      },
+      "governing_law_disputes": {
+        "value": "Governing law and forum vary by AWS Contracting Party. For Amazon Web Services, Inc. (US): Washington State law, King County, WA courts. Disputes are subject to binding arbitration (AAA commercial rules) and a class-action waiver (individual basis only).",
+        "confidence": "high",
+        "citation": "any dispute resolution proceedings will be conducted only on an individual basis",
+        "citation_document": "customer_agreement",
+        "source": {
+          "slug": "customer_agreement",
+          "doc_type": "service_terms",
+          "name": "AWS Customer Agreement",
+          "url": "https://aws.amazon.com/agreement/",
+          "fetched_at": "2026-07-14T23:30:54.569782+00:00",
+          "text_sha256": "11afedaae0cc0d4d806c8b154e6e2c6cbd14eb4a97871fe746da9c5b80ec9398"
+        },
+        "human_verified": true,
+        "override_note": "Verified by counsel 2026-07-14 against the AWS Customer Agreement, Section 12."
+      }
+    },
+    "azure": {
+      "availability_definition": {
+        "value": "not specified in provided text; the actual SLA percentages/definitions are only in downloadable SLA PDFs, not in the page content provided",
+        "confidence": "low",
+        "citation": "",
+        "citation_document": "none",
+        "source": null,
+        "human_verified": false
+      },
+      "credit_regime": {
+        "value": "not specified in provided text; SLA describes 'Microsoft's commitments for uptime' but tier/credit details are in the downloadable PDF, not shown. Customer Agreement states SLA remedies are Customer's remedies for breach of Online Services warranty",
+        "confidence": "low",
+        "citation": "Customer's remedies for breach of this warranty are described in the SLA",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Microsoft Customer Agreement (published)",
+          "url": "https://www.microsoft.com/licensing/docs/documents/download/Microsoft%20Customer%20Agreement.pdf",
+          "fetched_at": "2026-07-14T23:07:54.110573+00:00",
+          "text_sha256": "0d4f51d9d52ba28432acadf123f3e24dc067aa3aa1eefbdfafaa703decec09e7"
+        },
+        "human_verified": false
+      },
+      "claim_mechanics": {
+        "value": "not specified in provided text; claim filing procedure and window are in the downloadable SLA PDF, not shown",
+        "confidence": "low",
+        "citation": "",
+        "citation_document": "none",
+        "source": null,
+        "human_verified": false
+      },
+      "sla_exclusions": {
+        "value": "Beta/preview services excluded ('Previews are not included in the SLA'). Full SLA exclusion list is in downloadable PDF, not shown. Present: beta/preview; throttling referenced ('temporary throttling') though not framed as SLA exclusion",
+        "confidence": "medium",
+        "citation": "Previews are not included in the SLA for the corresponding Online Service",
+        "citation_document": "ai_terms",
+        "source": {
+          "slug": "ai_terms",
+          "doc_type": "ai_terms",
+          "name": "Microsoft Product Terms for Online Services",
+          "url": "https://www.microsoft.com/licensing/terms/product/ForOnlineServices/all",
+          "fetched_at": "2026-07-14T22:50:09.052258+00:00",
+          "text_sha256": "0853193df49254fe5976349bbf1722328d2a4b94c9b4aea84f3d4c7c85afe828"
+        },
+        "human_verified": false
+      },
+      "capacity_reservation": {
+        "value": "Consumption services may be sold as prepayments, reservations, or other subscriptions (Azure reservations); prices subject to change. Detailed commitment/cancellation terms largely negotiated, not published in these docs",
+        "confidence": "medium",
+        "citation": "Consumption services may be sold as prepayments, reservations or other subscriptions",
+        "citation_document": "ai_terms",
+        "source": {
+          "slug": "ai_terms",
+          "doc_type": "ai_terms",
+          "name": "Microsoft Product Terms for Online Services",
+          "url": "https://www.microsoft.com/licensing/terms/product/ForOnlineServices/all",
+          "fetched_at": "2026-07-14T22:50:09.052258+00:00",
+          "text_sha256": "0853193df49254fe5976349bbf1722328d2a4b94c9b4aea84f3d4c7c85afe828"
+        },
+        "human_verified": false,
+        "commitment_program": {
+          "program": "Microsoft Azure Consumption Commitment (MACC)",
+          "value": "negotiated, not published",
+          "citation_url": "https://learn.microsoft.com/en-us/azure/cost-management-billing/benefits/macc/track-consumption-commitment",
+          "note": "Microsoft's own docs describe the MACC as a contractual spend commitment associated with a negotiated agreement; the commitment terms themselves are not published."
+        }
+      },
+      "data_use_ai_training": {
+        "value": "Does not train on customer data by default: 'Microsoft Generative AI Services will not use Customer Data to train any generative AI foundation model, except pursuant to Customer's documented instructions.' Output Content is Customer Data",
+        "confidence": "high",
+        "citation": "will not use Customer Data to train any generative AI foundation model",
+        "citation_document": "ai_terms",
+        "source": {
+          "slug": "ai_terms",
+          "doc_type": "ai_terms",
+          "name": "Microsoft Product Terms for Online Services",
+          "url": "https://www.microsoft.com/licensing/terms/product/ForOnlineServices/all",
+          "fetched_at": "2026-07-14T22:50:09.052258+00:00",
+          "text_sha256": "0853193df49254fe5976349bbf1722328d2a4b94c9b4aea84f3d4c7c85afe828"
+        },
+        "human_verified": false
+      },
+      "suspension_rights": {
+        "value": "Grounds: AUP violation, non-payment/declined charge, material breach, security risk, trade-law risk. Prior notice generally required (30 days for breach; reasonable notice for AUP) but immediate suspension allowed to prevent unauthorized data access or protect systems",
+        "confidence": "high",
+        "citation": "Microsoft reasonably believes immediate suspension is required to prevent unauthorized access",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Microsoft Customer Agreement (published)",
+          "url": "https://www.microsoft.com/licensing/docs/documents/download/Microsoft%20Customer%20Agreement.pdf",
+          "fetched_at": "2026-07-14T23:07:54.110573+00:00",
+          "text_sha256": "0d4f51d9d52ba28432acadf123f3e24dc067aa3aa1eefbdfafaa703decec09e7"
+        },
+        "human_verified": false
+      },
+      "termination": {
+        "value": "Termination for convenience: either party on 60 days' notice. Post-termination data retrieval: for non-renewed/disabled subscriptions, Customer has 90 days to extract Customer Data",
+        "confidence": "high",
+        "citation": "Either party may terminate this Agreement without cause on 60 days' notice",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Microsoft Customer Agreement (published)",
+          "url": "https://www.microsoft.com/licensing/docs/documents/download/Microsoft%20Customer%20Agreement.pdf",
+          "fetched_at": "2026-07-14T23:07:54.110573+00:00",
+          "text_sha256": "0d4f51d9d52ba28432acadf123f3e24dc067aa3aa1eefbdfafaa703decec09e7"
+        },
+        "human_verified": false
+      },
+      "unilateral_modification": {
+        "value": "Microsoft may update the Agreement. For General Terms/other terms, 60 days' notice before changes take effect (effective on renewal). Product Terms: material adverse changes apply at renewal, others on publication. SLA/DPA changes per those documents. AUP may change at any time without notice",
+        "confidence": "high",
+        "citation": "Customer will be notified at least 60 days before changes take effect to these General Terms",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Microsoft Customer Agreement (published)",
+          "url": "https://www.microsoft.com/licensing/docs/documents/download/Microsoft%20Customer%20Agreement.pdf",
+          "fetched_at": "2026-07-14T23:07:54.110573+00:00",
+          "text_sha256": "0d4f51d9d52ba28432acadf123f3e24dc067aa3aa1eefbdfafaa703decec09e7"
+        },
+        "human_verified": false
+      },
+      "governing_law_disputes": {
+        "value": "Governing law: State of Washington and US federal law. Venue: King County, WA for actions against Microsoft (non-Europe); Ireland for European affiliates; Customer HQ if Microsoft sues. Arbitration: no (exclusive court venues). Class-action waiver: not specified",
+        "confidence": "high",
+        "citation": "governed by and construed in accordance with the laws of the State of Washington",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Microsoft Customer Agreement (published)",
+          "url": "https://www.microsoft.com/licensing/docs/documents/download/Microsoft%20Customer%20Agreement.pdf",
+          "fetched_at": "2026-07-14T23:07:54.110573+00:00",
+          "text_sha256": "0d4f51d9d52ba28432acadf123f3e24dc067aa3aa1eefbdfafaa703decec09e7"
+        },
+        "human_verified": false
+      }
+    },
+    "gcp": {
+      "availability_definition": {
+        "value": "Instance-level and multi-zone availability, measured as Monthly Uptime Percentage (minutes-based). Commitments: Instances in Multiple Zones >=99.99% (Premium), Load balancing >=99.99%, Single Instance Memory Optimized >=99.95%, Single Instance other families >=99.9%; Standard Tier >=99.9%; lower tiers (99.95%) for Mexico/Stockholm regions.",
+        "confidence": "high",
+        "citation": "Monthly Uptime Percentage ... Instances in Multiple Zones >= 99.99%",
+        "citation_document": "sla",
+        "source": {
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "Compute Engine Service Level Agreement",
+          "url": "https://cloud.google.com/compute/sla",
+          "fetched_at": "2026-07-14T22:34:29.088326+00:00",
+          "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9"
+        },
+        "human_verified": false
+      },
+      "credit_regime": {
+        "value": "Tiered credit of % of monthly bill for the non-compliant Covered Service. Multi-Zone/LB (Premium): 99.00%-<99.99% =10%, 95.00%-<99.00% =25%, <95.00% =100%. Single Instance: 95.00%-<99.9x% =10%, 90.00%-<95.00% =25%, <90.00% =100%. Sole and exclusive remedy stated.",
+        "confidence": "high",
+        "citation": "This SLA states Customer's sole and exclusive remedy",
+        "citation_document": "sla",
+        "source": {
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "Compute Engine Service Level Agreement",
+          "url": "https://cloud.google.com/compute/sla",
+          "fetched_at": "2026-07-14T22:34:29.088326+00:00",
+          "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9"
+        },
+        "human_verified": false
+      },
+      "claim_mechanics": {
+        "value": "Customer must file a claim: notify Google technical support within 60 days from becoming eligible, and provide log files showing Downtime Periods and dates/times. Failure to comply forfeits credit.",
+        "confidence": "high",
+        "citation": "must notify Google technical support within 60 days",
+        "citation_document": "sla",
+        "source": {
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "Compute Engine Service Level Agreement",
+          "url": "https://cloud.google.com/compute/sla",
+          "fetched_at": "2026-07-14T22:34:29.088326+00:00",
+          "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9"
+        },
+        "human_verified": false
+      },
+      "sla_exclusions": {
+        "value": "Present: pre-GA/beta features; features excluded in Documentation; force majeure (factors outside Google's reasonable control); customer or third-party software/hardware; abuse/Agreement violations; quota-based errors. Also Access Approval disruptions; Pre-GA offerings not covered.",
+        "confidence": "high",
+        "citation": "SLA Exclusions ... caused by factors outside of Google's reasonable control",
+        "citation_document": "sla",
+        "source": {
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "Compute Engine Service Level Agreement",
+          "url": "https://cloud.google.com/compute/sla",
+          "fetched_at": "2026-07-14T22:34:29.088326+00:00",
+          "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9"
+        },
+        "human_verified": false
+      },
+      "capacity_reservation": {
+        "value": "Public terms include Committed Units (non-cancellable, take-or-pay: pay whether or not used) with auto-renewal, no resell/transfer; Compute Engine future reservations (Google approves in its discretion). Refund of unused prepaid Fees only if Google non-renews/terminates or discontinues. Specific commitment amounts negotiated, not published.",
+        "confidence": "high",
+        "citation": "Customer will pay the Fees for those Committed Units ... whether or not they are used",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Google Cloud Platform Terms of Service",
+          "url": "https://cloud.google.com/terms",
+          "fetched_at": "2026-07-14T22:34:28.288467+00:00",
+          "text_sha256": "cbb13687e8591a4610e5716dc649c689aa45919af6c50b441328630b23ad85de"
+        },
+        "human_verified": false,
+        "commitment_program": {
+          "program": "Google Cloud Committed Use Discounts (CUDs)",
+          "value": "negotiated, not published",
+          "citation_url": "https://cloud.google.com/compute/docs/instances/committed-use-discounts-overview",
+          "note": "Google publishes the mechanics of committed-use discounts for Compute Engine; specific negotiated enterprise commitment terms are not published."
+        }
+      },
+      "data_use_ai_training": {
+        "value": "Default: does not train on customer data. 'Google will not use Customer Data to train or fine-tune any AI/ML models without Customer's prior permission or instruction.' Generally Google only processes Customer Data per the Cloud Data Processing Addendum. Opt-in via customer permission/instruction.",
+        "confidence": "high",
+        "citation": "Google will not use Customer Data to train or fine-tune any AI/ML models",
+        "citation_document": "ai_terms",
+        "source": {
+          "slug": "ai_terms",
+          "doc_type": "ai_terms",
+          "name": "Google Cloud Service Specific Terms (AI/ML data use)",
+          "url": "https://cloud.google.com/terms/service-terms",
+          "fetched_at": "2026-07-14T22:34:30.333005+00:00",
+          "text_sha256": "02842c721259cc88e9613fccac7e87e272c4bf9c410ab4f57fc69e06d66cc55f"
+        },
+        "human_verified": false
+      },
+      "suspension_rights": {
+        "value": "Grounds: AUP violation (notice + 24 hrs to cure before suspension); non-payment/late payment; protecting Services/infrastructure/other customers; suspected unauthorized access; legal compliance; breach of Restrictions/Service Specific Terms. Immediate suspension allowed for the 'Other Suspension' grounds; AUP violations get notice and 24-hour cure.",
+        "confidence": "high",
+        "citation": "Google may immediately Suspend all or part of Customer's use",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Google Cloud Platform Terms of Service",
+          "url": "https://cloud.google.com/terms",
+          "fetched_at": "2026-07-14T22:34:28.288467+00:00",
+          "text_sha256": "cbb13687e8591a4610e5716dc649c689aa45919af6c50b441328630b23ad85de"
+        },
+        "human_verified": false
+      },
+      "termination": {
+        "value": "Customer may terminate for convenience anytime on prior written notice (subject to financial commitments). Google may terminate GCP Services for convenience on 30 days' prior written notice. On termination, access to Services and Customer Data terminates unless otherwise stated; no general post-termination data retrieval window (EU Data Act adds a Data Recovery Period of >=30 days where applicable).",
+        "confidence": "high",
+        "citation": "Google may terminate this Agreement ... with 30 days' prior written notice",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Google Cloud Platform Terms of Service",
+          "url": "https://cloud.google.com/terms",
+          "fetched_at": "2026-07-14T22:34:28.288467+00:00",
+          "text_sha256": "cbb13687e8591a4610e5716dc649c689aa45919af6c50b441328630b23ad85de"
+        },
+        "human_verified": false
+      },
+      "unilateral_modification": {
+        "value": "Google may update the Agreement; material updates to GCP terms become effective 30 days after posting (immediately if for new functionality or required by law). Service discontinuation: at least 12 months' notice (with exceptions). URL Terms/SLA updates: material updates effective 30 days after posting.",
+        "confidence": "high",
+        "citation": "material updates to this Agreement will become effective 30 days after they are posted",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Google Cloud Platform Terms of Service",
+          "url": "https://cloud.google.com/terms",
+          "fetched_at": "2026-07-14T22:34:28.288467+00:00",
+          "text_sha256": "cbb13687e8591a4610e5716dc649c689aa45919af6c50b441328630b23ad85de"
+        },
+        "human_verified": false
+      },
+      "governing_law_disputes": {
+        "value": "Governing law: California (excluding conflict rules); venue: state/federal courts of Santa Clara County, California. Binding arbitration: no (litigation in courts). Class-action waiver: not specified. (Different rules for US government entities.)",
+        "confidence": "high",
+        "citation": "GOVERNED BY CALIFORNIA LAW ... LITIGATED EXCLUSIVELY IN ... SANTA CLARA COUNTY",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Google Cloud Platform Terms of Service",
+          "url": "https://cloud.google.com/terms",
+          "fetched_at": "2026-07-14T22:34:28.288467+00:00",
+          "text_sha256": "cbb13687e8591a4610e5716dc649c689aa45919af6c50b441328630b23ad85de"
+        },
+        "human_verified": false
+      }
+    },
+    "coreweave": {
+      "availability_definition": {
+        "value": "API-error-rate-based: Storage Monthly Uptime Percentage >= 99.9% for AI Object Storage (cwobject.com endpoint); computed as 100% minus average Error Percentage per 5-minute interval (InternalError/ServiceUnavailable errors / total requests). Applies only to Object Storage, not compute.",
+        "confidence": "high",
+        "citation": "Storage Monthly Uptime Percentage of >= 99.9%",
+        "citation_document": "sla",
+        "source": {
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "CoreWeave AI Object Storage SLA",
+          "url": "https://docs.coreweave.com/docs/policies/terms-of-service/coreweave-ai-object-storage-policy",
+          "fetched_at": "2026-07-14T22:50:10.259185+00:00",
+          "text_sha256": "e9ff257f5161bf68269324d7e5f9445b50d55dcf5ba7a694c7345bb29f40cf90"
+        },
+        "human_verified": false
+      },
+      "credit_regime": {
+        "value": "Tiers (% of monthly bill for affected AZ credited to future bills): 99%-99.9% -> 10%; 95%-98.999% -> 25%; <94.999% -> 100%. Credits are future-use monetary credits only, no refund. Stated as sole and exclusive remedy.",
+        "confidence": "high",
+        "citation": "sole and exclusive remedy for any failure",
+        "citation_document": "sla",
+        "source": {
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "CoreWeave AI Object Storage SLA",
+          "url": "https://docs.coreweave.com/docs/policies/terms-of-service/coreweave-ai-object-storage-policy",
+          "fetched_at": "2026-07-14T22:50:10.259185+00:00",
+          "text_sha256": "e9ff257f5161bf68269324d7e5f9445b50d55dcf5ba7a694c7345bb29f40cf90"
+        },
+        "human_verified": false
+      },
+      "claim_mechanics": {
+        "value": "Customer must request credit: notify support@coreweave.com within 30 days of becoming eligible; must provide applicable AZ and request logs documenting dates/times of each Error. Non-compliance forfeits the credit.",
+        "confidence": "high",
+        "citation": "must notify CoreWeave technical support ... within thirty (30) days",
+        "citation_document": "sla",
+        "source": {
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "CoreWeave AI Object Storage SLA",
+          "url": "https://docs.coreweave.com/docs/policies/terms-of-service/coreweave-ai-object-storage-policy",
+          "fetched_at": "2026-07-14T22:50:10.259185+00:00",
+          "text_sha256": "e9ff257f5161bf68269324d7e5f9445b50d55dcf5ba7a694c7345bb29f40cf90"
+        },
+        "human_verified": false
+      },
+      "sla_exclusions": {
+        "value": "Present: force majeure / factors outside CoreWeave's reasonable control (incl. internet beyond demarcation point); customer fault/misuse (customer actions/inactions, customer/third-party software/hardware); TOS/AUP violations & suspension/termination; throttling (system quotas); scheduled maintenance (in-advance communicated); beta/pre-GA features.",
+        "confidence": "high",
+        "citation": "Exclusions. The Storage Financial Credits do not apply",
+        "citation_document": "sla",
+        "source": {
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "CoreWeave AI Object Storage SLA",
+          "url": "https://docs.coreweave.com/docs/policies/terms-of-service/coreweave-ai-object-storage-policy",
+          "fetched_at": "2026-07-14T22:50:10.259185+00:00",
+          "text_sha256": "e9ff257f5161bf68269324d7e5f9445b50d55dcf5ba7a694c7345bb29f40cf90"
+        },
+        "human_verified": false
+      },
+      "capacity_reservation": {
+        "value": "not specified in the provided public documents (no reserved instance, committed-use, take-or-pay, or cancellation terms appear)",
+        "confidence": "low",
+        "citation": "",
+        "citation_document": "none",
+        "source": null,
+        "human_verified": false
+      },
+      "data_use_ai_training": {
+        "value": "not specified; provided documents (Terms of Use, AUP, Storage SLA) contain no language on provider use of customer data for training/improving AI/ML models (governed by TOS/Privacy Policy not included here)",
+        "confidence": "low",
+        "citation": "",
+        "citation_document": "none",
+        "source": null,
+        "human_verified": false
+      },
+      "suspension_rights": {
+        "value": "Under AUP, CoreWeave may suspend or terminate use of Services if it determines in good faith the Customer violated the AUP; may also intercept/block content or traffic where used unlawfully. Applies even if violation unintentional/unauthorized; exercisable at any time in sole discretion (no prior-notice requirement stated). Terms of Use: payment method problems may suspend/cancel a Transaction.",
+        "confidence": "high",
+        "citation": "suspend or terminate Customer's use ... applies even if a violation is committed unintentionally",
+        "citation_document": "aup",
+        "source": {
+          "slug": "aup",
+          "doc_type": "aup",
+          "name": "CoreWeave Acceptable Use Policy",
+          "url": "https://docs.coreweave.com/policies/terms-of-service/acceptable-use-policy",
+          "fetched_at": "2026-07-14T22:50:10.041411+00:00",
+          "text_sha256": "d10762ac2fe14d4c2281810e650afc798cb81e38ab424aa797c6e5e6ea1f3bfc"
+        },
+        "human_verified": false
+      },
+      "termination": {
+        "value": "Termination for convenience and post-termination data retrieval window not specified in the provided documents. Terms of Use: right to use CoreWeave Sites ceases immediately upon breach; AUP allows CoreWeave to terminate for violations. No customer termination-for-convenience or data-retrieval period stated.",
+        "confidence": "low",
+        "citation": "your right to use the CoreWeave Sites will cease immediately",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "CoreWeave Terms of Use",
+          "url": "https://docs.coreweave.com/policies/terms-of-service/terms-of-use",
+          "fetched_at": "2026-07-14T22:50:09.689454+00:00",
+          "text_sha256": "88d876cd2087f912340547eb718a5e77ef485871dd1be94f644abc048a51d527"
+        },
+        "human_verified": false
+      },
+      "unilateral_modification": {
+        "value": "Terms of Use: Company may update Terms in its sole discretion; 'All changes are effective immediately when we post them.' AUP: 'CoreWeave may modify this AUP at any time by posting a revised version.' No advance-notice commitment; effective on posting.",
+        "confidence": "high",
+        "citation": "All changes are effective immediately when we post them",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "CoreWeave Terms of Use",
+          "url": "https://docs.coreweave.com/policies/terms-of-service/terms-of-use",
+          "fetched_at": "2026-07-14T22:50:09.689454+00:00",
+          "text_sha256": "88d876cd2087f912340547eb718a5e77ef485871dd1be94f644abc048a51d527"
+        },
+        "human_verified": false
+      },
+      "governing_law_disputes": {
+        "value": "Governing law: New York (Terms of Use). Forum/venue: courts in New York, New York. Arbitration: optional at Company's sole discretion (binding, AAA rules, NY law) - not mandatory. Class-action waiver: yes (disputes resolved individually, no class action).",
+        "confidence": "high",
+        "citation": "resolved individually, without resort to any form of class action",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "CoreWeave Terms of Use",
+          "url": "https://docs.coreweave.com/policies/terms-of-service/terms-of-use",
+          "fetched_at": "2026-07-14T22:50:09.689454+00:00",
+          "text_sha256": "88d876cd2087f912340547eb718a5e77ef485871dd1be94f644abc048a51d527"
+        },
+        "human_verified": false
+      }
+    },
+    "lambda": {
+      "availability_definition": {
+        "value": "no SLA / uptime not committed; Services provided 'AS-IS', no warranty of uninterrupted service",
+        "confidence": "high",
+        "citation": "THE SERVICES ARE PROVIDED “AS-IS”",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Lambda Terms of Service",
+          "url": "https://lambda.ai/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+          "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537"
+        },
+        "human_verified": false
+      },
+      "credit_regime": {
+        "value": "No service-level uptime credit regime. Only discretionary credits (coupons, promos, prepaid, fee adjustments) expiring 12 months from issuance; no tiers, no sole-remedy language for uptime.",
+        "confidence": "high",
+        "citation": "Lambda may, at its sole discretion, choose to offer credits",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Lambda Terms of Service",
+          "url": "https://lambda.ai/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+          "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537"
+        },
+        "human_verified": false
+      },
+      "claim_mechanics": {
+        "value": "not specified (no SLA credit claim process; credits are discretionary and not claim-based)",
+        "confidence": "medium",
+        "citation": "",
+        "citation_document": "none",
+        "source": null,
+        "human_verified": false
+      },
+      "sla_exclusions": {
+        "value": "No SLA exists. Related risk-shifting present: force majeure; customer fault/misuse; scheduled/emergency maintenance ('planned downtime for upgrades and maintenance'); beta/preview services; external network/ISP issues; throttling.",
+        "confidence": "medium",
+        "citation": "temporarily suspend access to the Services during planned downtime for upgrades and maintenance",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Lambda Terms of Service",
+          "url": "https://lambda.ai/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+          "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537"
+        },
+        "human_verified": false
+      },
+      "capacity_reservation": {
+        "value": "Public terms reference only Orders and published pricing; no reserved-instance, committed-use, take-or-pay or cancellation terms published. Meaningful commitment terms are negotiated, not published (per-Order).",
+        "confidence": "medium",
+        "citation": "Each Order for the Services will describe additional mutually agreed-upon limitations",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Lambda Terms of Service",
+          "url": "https://lambda.ai/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+          "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537"
+        },
+        "human_verified": false
+      },
+      "data_use_ai_training": {
+        "value": "No explicit AI/ML training statement. Provider may process Customer Property to provide Services and may use aggregated/anonymized 'Usage Information' to improve Services; no opt-out stated. Default: may use anonymized/aggregated data to improve services.",
+        "confidence": "medium",
+        "citation": "use data ... in an aggregated and anonymous manner ... improving the Services",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Lambda Terms of Service",
+          "url": "https://lambda.ai/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+          "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537"
+        },
+        "human_verified": false
+      },
+      "suspension_rights": {
+        "value": "Grounds: breach of Agreement/AUP, non-payment, excessive utilization affecting availability, suspected unauthorized access, legal/court/regulatory requirement. Suspension may be immediate ('immediately suspend, throttle or terminate').",
+        "confidence": "high",
+        "citation": "Lambda may immediately suspend, throttle or terminate access to the Services",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Lambda Terms of Service",
+          "url": "https://lambda.ai/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+          "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537"
+        },
+        "human_verified": false
+      },
+      "termination": {
+        "value": "Termination for convenience: either party may terminate when no Orders in effect; for-cause with 30-day cure. Post-termination data retrieval: no window guaranteed — Lambda may delete Customer Property upon termination without liability.",
+        "confidence": "high",
+        "citation": "Lambda may ... delete the Customer Property in its possession without liability",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Lambda Terms of Service",
+          "url": "https://lambda.ai/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+          "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537"
+        },
+        "human_verified": false
+      },
+      "unilateral_modification": {
+        "value": "Lambda may update Agreement unilaterally; updated version binding at start of next billing cycle. (Website Terms: changes effective 10 days after posting.)",
+        "confidence": "high",
+        "citation": "updated version of this Agreement shall be binding upon the Parties at the start of the next billing cycle",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Lambda Terms of Service",
+          "url": "https://lambda.ai/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+          "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537"
+        },
+        "human_verified": false
+      },
+      "governing_law_disputes": {
+        "value": "Governing law: California. Forum if not arbitrated: N.D. Cal. or Santa Clara County state court. Binding arbitration: yes (AAA, FAA; 30-day opt-out). Class-action waiver: yes.",
+        "confidence": "high",
+        "citation": "The Parties agree to arbitrate all claims ... waiving ... class or representative action",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Lambda Terms of Service",
+          "url": "https://lambda.ai/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+          "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537"
+        },
+        "human_verified": false
+      }
+    },
+    "crusoe": {
+      "availability_definition": {
+        "value": "instance-level (per single GPU-enabled VM) and per-volume/per-resource. Commitments: 99.5% GPU VM, 99.5% Persistent Disks, 99.5% Shared Disks, 99.9% Container Registry, 99.9% Managed Kubernetes control plane. Measured as Monthly Uptime Percentage.",
+        "confidence": "high",
+        "citation": "A single GPU-enabled virtual machine ≥ 99.5%",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+          "url": "https://legal.crusoe.ai/",
+          "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+          "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
+        },
+        "human_verified": false
+      },
+      "credit_regime": {
+        "value": "Tiered credit of monthly bill for the affected Covered Service. GPU VM/Persistent/Shared Disks: 95-99.5%=10%, 90-95%=25%, <90%=100%. Container Registry/Kubernetes: 99-99.9%=10%, 95-99%=25%, <95%=100%. Max credit capped at amount due for affected Covered Service that month. Stated as sole and exclusive remedy.",
+        "confidence": "high",
+        "citation": "This SLA states Customer's sole and exclusive remedy",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+          "url": "https://legal.crusoe.ai/",
+          "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+          "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
+        },
+        "human_verified": false
+      },
+      "claim_mechanics": {
+        "value": "Customer must request. Must notify Crusoe within 30 days from becoming eligible, and provide log files or monitoring data showing loss of connectivity with date and time of errors. Failure to comply forfeits the credit.",
+        "confidence": "high",
+        "citation": "Customer must notify Crusoe within 30 days",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+          "url": "https://legal.crusoe.ai/",
+          "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+          "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
+        },
+        "human_verified": false
+      },
+      "sla_exclusions": {
+        "value": "Present: force majeure (factors outside Crusoe's reasonable control); customer fault/third-party hardware/software; scheduled or emergency maintenance; beta/preview (pre-general availability features); AUP/agreement violations; quotas/throttling (quotas applied by system). Not addressed: single-AZ, external ISP.",
+        "confidence": "high",
+        "citation": "SLA Exclusions",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+          "url": "https://legal.crusoe.ai/",
+          "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+          "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
+        },
+        "human_verified": false
+      },
+      "capacity_reservation": {
+        "value": "Not specified in public documents; no reserved instances, committed-use, savings plans, take-or-pay or cancellation terms appear. Pricing incorporated by reference to external URL. Enterprise commitment terms appear negotiated, not published.",
+        "confidence": "medium",
+        "citation": "The Fees for each Service are stated at https://crusoe.ai/cloud",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+          "url": "https://legal.crusoe.ai/",
+          "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+          "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
+        },
+        "human_verified": false
+      },
+      "data_use_ai_training": {
+        "value": "Does not use customer data for other purposes. Crusoe accesses/uses Customer Data only to provide the Services and TSS or as instructed, and will not use it for any other Crusoe products, services, or advertising. No AI/ML training language; no opt-in/opt-out stated.",
+        "confidence": "high",
+        "citation": "will not use it for any other Crusoe products, services, or advertising",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+          "url": "https://legal.crusoe.ai/",
+          "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+          "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
+        },
+        "human_verified": false
+      },
+      "suspension_rights": {
+        "value": "AUP violations: notice + 24-hour cure before suspension. Other grounds (adverse impact on Services/network, suspected unauthorized access, legal compliance, breach of Restrictions/Service Specific Terms): immediate suspension. Non-payment: may suspend if overdue. Notice of basis given at Customer's request as soon as reasonably possible.",
+        "confidence": "high",
+        "citation": "Crusoe may immediately Suspend all or part of Customer's use",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+          "url": "https://legal.crusoe.ai/",
+          "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+          "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
+        },
+        "human_verified": false
+      },
+      "termination": {
+        "value": "Termination for convenience: Customer any time on prior written notice; Crusoe any time with 30 days' prior written notice. On termination all rights and access to Services terminate including access to Customer Data; no defined post-termination data-retrieval window (data export must occur during the Term).",
+        "confidence": "high",
+        "citation": "Crusoe may terminate this Agreement for its convenience... with 30 days' prior written notice",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+          "url": "https://legal.crusoe.ai/",
+          "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+          "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
+        },
+        "human_verified": false
+      },
+      "unilateral_modification": {
+        "value": "Crusoe may change the Agreement/URL Terms and pricing. Material changes effective 30 days after posting; changes for new functionality, DPST, or legally required are effective immediately. At least 90 days' advance notice for materially adverse SLA changes. Continued use = consent.",
+        "confidence": "high",
+        "citation": "material changes to the Agreement will become effective 30 days after they are posted",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+          "url": "https://legal.crusoe.ai/",
+          "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+          "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
+        },
+        "human_verified": false
+      },
+      "governing_law_disputes": {
+        "value": "Governing law: New York law (excluding conflict rules). Forum: exclusive federal/state courts of Denver County, Colorado. Arbitration: no (litigation). Class-action waiver: not specified.",
+        "confidence": "high",
+        "citation": "GOVERNED BY NEW YORK LAW... LITIGATED EXCLUSIVELY IN THE... COURTS OF DENVER COUNTY, COLORADO",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+          "url": "https://legal.crusoe.ai/",
+          "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+          "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
+        },
+        "human_verified": false
+      }
+    },
+    "runpod": {
+      "availability_definition": {
+        "value": "no SLA / uptime not committed. For Community Cloud, expressly no uptime warranty; Service provided 'as-is and as-available'.",
+        "confidence": "high",
+        "citation": "Runpod does not make any specific uptime warranties with respect to the Community Cloud Offerings",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Runpod Terms of Service",
+          "url": "https://www.runpod.io/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+          "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+        },
+        "human_verified": false
+      },
+      "credit_regime": {
+        "value": "not specified; no service-credit structure in the document. Liability capped at lesser of 6-month fees paid or $100.",
+        "confidence": "medium",
+        "citation": "LIMITED TO THE LESSER OF THE AMOUNT PAID... OR $100.00",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Runpod Terms of Service",
+          "url": "https://www.runpod.io/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+          "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+        },
+        "human_verified": false
+      },
+      "claim_mechanics": {
+        "value": "not specified; no SLA credit claim process. Billing disputes directed to help@runpod.io.",
+        "confidence": "medium",
+        "citation": "Please contact help@runpod.io regarding any billing disputes",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Runpod Terms of Service",
+          "url": "https://www.runpod.io/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+          "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+        },
+        "human_verified": false
+      },
+      "sla_exclusions": {
+        "value": "No formal SLA. Related disclaimers present: force majeure ('cause beyond our reasonable control'); customer fault/misuse; interruption/cessation of transmission; Community/beta-type offerings disclaimed.",
+        "confidence": "medium",
+        "citation": "any cause beyond our reasonable control",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Runpod Terms of Service",
+          "url": "https://www.runpod.io/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+          "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+        },
+        "human_verified": false
+      },
+      "capacity_reservation": {
+        "value": "Subscriptions auto-renew for same-duration terms; no prorated refund on cancellation (use-it-or-lose-it flavor). No published reserved-instance/committed-use terms; enterprise commitment terms negotiated, not published.",
+        "confidence": "medium",
+        "citation": "you will not be eligible for a prorated refund",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Runpod Terms of Service",
+          "url": "https://www.runpod.io/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+          "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+        },
+        "human_verified": false
+      },
+      "data_use_ai_training": {
+        "value": "May access/use Your Content to provide Service, and use it in aggregated and anonymized form to update and improve Service and Runpod's products. No explicit AI/ML model-training statement; no opt-out stated.",
+        "confidence": "high",
+        "citation": "use Your Content in an aggregated and anonymized form to update and improve the Service",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Runpod Terms of Service",
+          "url": "https://www.runpod.io/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+          "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+        },
+        "human_verified": false
+      },
+      "suspension_rights": {
+        "value": "May suspend/terminate immediately and without notice for material breach, undue system stress, or legal requirement; non-payment may lead to suspension. Grounds: AUP breach, non-payment, legal process, security/harm.",
+        "confidence": "high",
+        "citation": "immediately and without notice, suspend or terminate any Service",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Runpod Terms of Service",
+          "url": "https://www.runpod.io/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+          "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+        },
+        "human_verified": false
+      },
+      "termination": {
+        "value": "Runpod may terminate for convenience at any time upon notice; customer may terminate by notice and closing Account. No post-termination data-retrieval window specified; Runpod may delete account/content at any time.",
+        "confidence": "high",
+        "citation": "terminate these Terms of Use or your access to the Service at any time without cause upon notice",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Runpod Terms of Service",
+          "url": "https://www.runpod.io/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+          "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+        },
+        "human_verified": false
+      },
+      "unilateral_modification": {
+        "value": "May modify Terms at sole discretion; notice given only by updating 'Last Updated' date; changes effective on posting via continued use. No fixed advance-notice period (pricing changes get 'reasonable advance notification').",
+        "confidence": "high",
+        "citation": "we will alert you about any changes by updating the “Last Updated” date",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Runpod Terms of Service",
+          "url": "https://www.runpod.io/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+          "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+        },
+        "human_verified": false
+      },
+      "governing_law_disputes": {
+        "value": "Governing law: Delaware. Venue: NJ courts (Burlington County for severed/void-arbitration matters). Binding arbitration: yes (NAM, opt-out within 30 days). Class-action waiver: yes.",
+        "confidence": "high",
+        "citation": "governed by... the laws of the State of Delaware; MANDATORY BINDING ARBITRATION AND A CLASS ACTION WAIVER",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Runpod Terms of Service",
+          "url": "https://www.runpod.io/legal/terms-of-service",
+          "fetched_at": "2026-07-14T22:50:13.391025+00:00",
+          "text_sha256": "fce2cda1fee944dd1ebf46439834959db61ad5d6ec235b68c01b0af684090be4"
+        },
+        "human_verified": false
+      }
+    },
+    "vast": {
+      "availability_definition": {
+        "value": "no SLA / uptime not committed. Terms state Company cannot guarantee availability and disclaims liability for downtime.",
+        "confidence": "high",
+        "citation": "Company cannot guarantee the Website and that Company Services will be always available",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Vast.ai Terms of Service",
+          "url": "https://vast.ai/terms",
+          "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+          "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+        },
+        "human_verified": false
+      },
+      "credit_regime": {
+        "value": "not specified; no service-credit structure. Payments are final and no refunds; refunds on unspent credits at sole discretion.",
+        "confidence": "high",
+        "citation": "All payments for credits spent on or through the Website are final and no refunds shall be issued",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Vast.ai Terms of Service",
+          "url": "https://vast.ai/terms",
+          "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+          "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+        },
+        "human_verified": false
+      },
+      "claim_mechanics": {
+        "value": "not specified. No SLA claim process; note a 1-year limitation period applies to any claim/cause of action.",
+        "confidence": "medium",
+        "citation": "ANY CLAIM OR CAUSE OF ACTION ... MUST BE FILED WITHIN ONE (1) YEAR",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Vast.ai Terms of Service",
+          "url": "https://vast.ai/terms",
+          "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+          "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+        },
+        "human_verified": false
+      },
+      "sla_exclusions": {
+        "value": "No SLA exists. Related disclaimers present: force majeure (cause beyond reasonable control) and maintenance/interruptions; no service-level exclusions listed.",
+        "confidence": "medium",
+        "citation": "may need to perform maintenance ... resulting in interruptions, delays, or errors",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Vast.ai Terms of Service",
+          "url": "https://vast.ai/terms",
+          "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+          "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+        },
+        "human_verified": false
+      },
+      "capacity_reservation": {
+        "value": "not specified. Terms describe on-demand rental of hosting from independent providers and purchase of credits; no reserved/committed-use terms published.",
+        "confidence": "medium",
+        "citation": "Rental by users of hosting services ... from independent providers",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Vast.ai Terms of Service",
+          "url": "https://vast.ai/terms",
+          "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+          "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+        },
+        "human_verified": false
+      },
+      "data_use_ai_training": {
+        "value": "not specified re AI training. Governed by Privacy Policy/DPA; Feedback is assigned to Company for any use. Data-use rights not detailed in these terms.",
+        "confidence": "medium",
+        "citation": "you hereby assign to us ... any ideas, know-how, concepts, techniques ... in the Feedback",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Vast.ai Terms of Service",
+          "url": "https://vast.ai/terms",
+          "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+          "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+        },
+        "human_verified": false
+      },
+      "suspension_rights": {
+        "value": "Grounds: non-payment/chargebacks, false info, export-law violation, AUP/breach, or any/no reason; may be immediate and without notice.",
+        "confidence": "high",
+        "citation": "DENY ACCESS ... WITHOUT NOTICE OR LIABILITY ... FOR ANY REASON OR FOR NO REASON",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Vast.ai Terms of Service",
+          "url": "https://vast.ai/terms",
+          "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+          "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+        },
+        "human_verified": false
+      },
+      "termination": {
+        "value": "Either side may terminate at any time for any reason; Company may terminate without notice and delete content. No post-termination data retrieval window; Company has no obligation to retain data.",
+        "confidence": "high",
+        "citation": "Company has no obligation to retain a record of your account or any data",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Vast.ai Terms of Service",
+          "url": "https://vast.ai/terms",
+          "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+          "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+        },
+        "human_verified": false
+      },
+      "unilateral_modification": {
+        "value": "Company may modify at any time; changes effective on posting; user waives right to specific notice; continued use = acceptance.",
+        "confidence": "high",
+        "citation": "Modifications to this Agreement shall be effective after posting.",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Vast.ai Terms of Service",
+          "url": "https://vast.ai/terms",
+          "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+          "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+        },
+        "human_verified": false
+      },
+      "governing_law_disputes": {
+        "value": "Governing law: California. Forum: JAMS arbitration, Los Angeles, CA. Binding arbitration: yes. Class-action waiver: yes.",
+        "confidence": "high",
+        "citation": "governed by the laws of California ... submitted to binding arbitration with ... JAMS",
+        "citation_document": "service_terms",
+        "source": {
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Vast.ai Terms of Service",
+          "url": "https://vast.ai/terms",
+          "fetched_at": "2026-07-14T22:50:13.620948+00:00",
+          "text_sha256": "89b0bf350279254e8427825a2485556b44ab0b9eabc30e9a84f0a139d857b801"
+        },
+        "human_verified": false
+      }
+    }
+  },
+  "change_log": []
+}
