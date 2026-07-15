@@ -33,10 +33,10 @@ from .schema import DIMENSIONS
 from .snapshot import SnapshotStore
 
 DISCLAIMER = (
-    "This is an informational comparison of published documents, not legal advice. "
-    "It describes what public documents say, with citations. Provider documents "
-    "change and automated extraction can be wrong or stale. Always review the "
-    "current source documents yourself."
+    "These values are an AI's reading of each provider's public terms, not the terms "
+    "themselves and not legal advice. They can be wrong, incomplete, or out of date. "
+    "Every value links to its source document, so verify anything yourself before you "
+    "rely on it."
 )
 
 

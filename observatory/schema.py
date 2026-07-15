@@ -24,46 +24,6 @@ class Dimension:
 
 DIMENSIONS: List[Dimension] = [
     Dimension(
-        key="availability_definition",
-        label="Availability definition",
-        guidance=(
-            "How uptime/availability is defined and the commitment percentage(s). "
-            "Categorize the basis as one of: instance-level, region-level, "
-            "cluster/throughput-based, API-error-rate-based, or other. Include the "
-            "commitment percentage(s) (e.g. 99.99% region, 99.5% instance). If the "
-            "provider publishes no uptime commitment, value = 'no SLA / uptime not "
-            "committed'."
-        ),
-    ),
-    Dimension(
-        key="credit_regime",
-        label="Credit regime",
-        guidance=(
-            "Service-credit structure: the tier mapping (uptime threshold -> credit "
-            "percentage), the maximum credit, and whether credits are stated to be "
-            "the sole and exclusive remedy. Give the tiers compactly."
-        ),
-    ),
-    Dimension(
-        key="claim_mechanics",
-        label="Claim mechanics",
-        guidance=(
-            "Whether the customer must file a claim to receive credits, the claim "
-            "window and how it is measured (e.g. within 30 days / end of billing "
-            "cycle), and what evidence the customer must supply."
-        ),
-    ),
-    Dimension(
-        key="sla_exclusions",
-        label="SLA exclusions",
-        guidance=(
-            "Notable exclusions from the SLA as a short categorical checklist plus a "
-            "brief note. Look for: force majeure, customer fault/misuse, scheduled or "
-            "emergency maintenance, beta/preview services, single-AZ deployments, "
-            "throttling, external network/ISP issues. List the ones present."
-        ),
-    ),
-    Dimension(
         key="capacity_reservation",
         label="Capacity & reservation terms",
         guidance=(
@@ -120,6 +80,47 @@ DIMENSIONS: List[Dimension] = [
             "Governing law, the forum/venue, whether disputes go to binding "
             "arbitration (yes/no), and whether there is a class-action waiver "
             "(yes/no). Keep each element short."
+        ),
+    ),
+    # SLA-specific dimensions are grouped at the bottom of the matrix.
+    Dimension(
+        key="availability_definition",
+        label="Availability definition",
+        guidance=(
+            "How uptime/availability is defined and the commitment percentage(s). "
+            "Categorize the basis as one of: instance-level, region-level, "
+            "cluster/throughput-based, API-error-rate-based, or other. Include the "
+            "commitment percentage(s) (e.g. 99.99% region, 99.5% instance). If the "
+            "provider publishes no uptime commitment, value = 'no SLA / uptime not "
+            "committed'."
+        ),
+    ),
+    Dimension(
+        key="credit_regime",
+        label="Credit regime",
+        guidance=(
+            "Service-credit structure: the tier mapping (uptime threshold -> credit "
+            "percentage), the maximum credit, and whether credits are stated to be "
+            "the sole and exclusive remedy. Give the tiers compactly."
+        ),
+    ),
+    Dimension(
+        key="claim_mechanics",
+        label="Claim mechanics",
+        guidance=(
+            "Whether the customer must file a claim to receive credits, the claim "
+            "window and how it is measured (e.g. within 30 days / end of billing "
+            "cycle), and what evidence the customer must supply."
+        ),
+    ),
+    Dimension(
+        key="sla_exclusions",
+        label="SLA exclusions",
+        guidance=(
+            "Notable exclusions from the SLA as a short categorical checklist plus a "
+            "brief note. Look for: force majeure, customer fault/misuse, scheduled or "
+            "emergency maintenance, beta/preview services, single-AZ deployments, "
+            "throttling, external network/ISP issues. List the ones present."
         ),
     ),
 ]

@@ -9,19 +9,18 @@ terms say side by side, plus a feed of what changed over time.
 Built for technology and infrastructure attorneys, founders signing compute
 deals, and analysts. It answers *"what do compute providers' published terms
 actually say, how do they compare, and what changed"*, using only public
-documents. **It states what documents say. It never advises or recommends.**
+documents. **It reports what an AI reads in those documents, with a source link on every value. It never advises or recommends.**
 
 ---
 
 ## ⚖️ Disclaimer
 
-**This is an informational comparison of published documents, not legal advice.**
-It describes and compares what public documents say, with citations to the source
-document and section. It does not recommend providers, rate them, or tell you what
-to do. Provider documents change, and automated extraction can be wrong or stale.
-**Always review the current source documents yourself** before relying on anything
-here. Nothing in this repository or on the site creates an attorney-client
-relationship.
+**These are AI-generated summaries of public documents, not legal advice.** An AI reads
+each provider's public terms and records what it finds, with a citation and a source link
+for every value. The summaries are not the terms themselves, and they can be wrong,
+incomplete, or out of date. It does not recommend providers, rate them, or tell you what to
+do. **Verify anything yourself against the linked source document before relying on it.**
+Nothing in this repository or on the site creates an attorney-client relationship.
 
 ---
 

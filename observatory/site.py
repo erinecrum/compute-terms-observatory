@@ -48,9 +48,10 @@ def _shell(title: str, body: str, active: str, subtitle: str = "") -> str:
     <nav class="nav">{nav}</nav>
   </div>
 </header>
-<div class="disclaimer"><div class="wrap"><strong>Not legal advice.</strong>
-  An informational comparison of published documents, with citations. Documents change and
-  automated extraction can be wrong or stale. Review the current source documents yourself.</div></div>
+<div class="disclaimer"><div class="wrap"><strong>AI-generated summaries, not legal advice.</strong>
+  Every value here is an AI's reading of a provider's public terms, not the terms themselves. It can be
+  wrong, incomplete, or out of date. We link each value to its source document, so verify anything
+  yourself before you rely on it.</div></div>
 <main class="wrap">
   <h1>{esc(title)}</h1>
   {f'<p class="subtitle">{esc(subtitle)}</p>' if subtitle else ''}
@@ -168,9 +169,12 @@ def render_about(dataset: dict) -> str:
     dim_list = "".join(f"<li><strong>{esc(d['label'])}</strong>: {esc(d['guidance'])}</li>" for d in dims)
     return f"""
 <h2>What this is</h2>
-<p>An informational, citation-first comparison of the <em>published</em> legal terms of
-cloud and GPU compute providers: their terms of service, SLAs, acceptable use policies,
-and AI-specific terms. It states what documents say. It does not advise, recommend, or rate.</p>
+<p>An AI reads each provider's <em>public</em> terms of service, SLAs, acceptable use policies,
+and AI-specific terms against a fixed 10-term schema, and records what it finds with a citation
+and a source link for every value. These are the AI's summaries of what the documents say, not the
+documents themselves and not legal advice. They can be wrong, incomplete, or out of date, which is
+why every value links to its source: so you can verify it yourself before relying on it. It does not
+advise, recommend, or rate.</p>
 
 <h2>Methodology</h2>
 <ul>
@@ -291,7 +295,7 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
     n = len(dataset["providers"])
     pages = {
         "index.html": ("Compute provider terms: comparison matrix", render_matrix(dataset), "index",
-                        f"What {n} cloud & GPU providers' published terms say, side by side."),
+                        f"An AI's side-by-side reading of {n} providers' public terms. Every value links to its source so you can verify it."),
         "changes.html": ("Change feed", render_changes(dataset), "changes",
                           "Detected changes to tracked documents, newest first."),
         "about.html": ("About & methodology", render_about(dataset), "about", ""),

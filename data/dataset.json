@@ -1,27 +1,7 @@
 {
-  "generated_at": "2026-07-15T03:52:33.358768+00:00",
-  "disclaimer": "This is an informational comparison of published documents, not legal advice. It describes what public documents say, with citations. Provider documents change and automated extraction can be wrong or stale. Always review the current source documents yourself.",
+  "generated_at": "2026-07-15T04:40:39.468575+00:00",
+  "disclaimer": "These values are an AI's reading of each provider's public terms, not the terms themselves and not legal advice. They can be wrong, incomplete, or out of date. Every value links to its source document, so verify anything yourself before you rely on it.",
   "dimensions": [
-    {
-      "key": "availability_definition",
-      "label": "Availability definition",
-      "guidance": "How uptime/availability is defined and the commitment percentage(s). Categorize the basis as one of: instance-level, region-level, cluster/throughput-based, API-error-rate-based, or other. Include the commitment percentage(s) (e.g. 99.99% region, 99.5% instance). If the provider publishes no uptime commitment, value = 'no SLA / uptime not committed'."
-    },
-    {
-      "key": "credit_regime",
-      "label": "Credit regime",
-      "guidance": "Service-credit structure: the tier mapping (uptime threshold -> credit percentage), the maximum credit, and whether credits are stated to be the sole and exclusive remedy. Give the tiers compactly."
-    },
-    {
-      "key": "claim_mechanics",
-      "label": "Claim mechanics",
-      "guidance": "Whether the customer must file a claim to receive credits, the claim window and how it is measured (e.g. within 30 days / end of billing cycle), and what evidence the customer must supply."
-    },
-    {
-      "key": "sla_exclusions",
-      "label": "SLA exclusions",
-      "guidance": "Notable exclusions from the SLA as a short categorical checklist plus a brief note. Look for: force majeure, customer fault/misuse, scheduled or emergency maintenance, beta/preview services, single-AZ deployments, throttling, external network/ISP issues. List the ones present."
-    },
     {
       "key": "capacity_reservation",
       "label": "Capacity & reservation terms",
@@ -51,6 +31,26 @@
       "key": "governing_law_disputes",
       "label": "Governing law & disputes",
       "guidance": "Governing law, the forum/venue, whether disputes go to binding arbitration (yes/no), and whether there is a class-action waiver (yes/no). Keep each element short."
+    },
+    {
+      "key": "availability_definition",
+      "label": "Availability definition",
+      "guidance": "How uptime/availability is defined and the commitment percentage(s). Categorize the basis as one of: instance-level, region-level, cluster/throughput-based, API-error-rate-based, or other. Include the commitment percentage(s) (e.g. 99.99% region, 99.5% instance). If the provider publishes no uptime commitment, value = 'no SLA / uptime not committed'."
+    },
+    {
+      "key": "credit_regime",
+      "label": "Credit regime",
+      "guidance": "Service-credit structure: the tier mapping (uptime threshold -> credit percentage), the maximum credit, and whether credits are stated to be the sole and exclusive remedy. Give the tiers compactly."
+    },
+    {
+      "key": "claim_mechanics",
+      "label": "Claim mechanics",
+      "guidance": "Whether the customer must file a claim to receive credits, the claim window and how it is measured (e.g. within 30 days / end of billing cycle), and what evidence the customer must supply."
+    },
+    {
+      "key": "sla_exclusions",
+      "label": "SLA exclusions",
+      "guidance": "Notable exclusions from the SLA as a short categorical checklist plus a brief note. Look for: force majeure, customer fault/misuse, scheduled or emergency maintenance, beta/preview services, single-AZ deployments, throttling, external network/ISP issues. List the ones present."
     }
   ],
   "providers": [
