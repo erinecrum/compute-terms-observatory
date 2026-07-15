@@ -109,6 +109,7 @@ def fetch_document(doc: Document) -> FetchResult:
         doc_type=doc.doc_type,
         name=doc.name,
         url=doc.url,
+        slug=doc.slug,
     )
     try:
         resp = requests.get(doc.url, headers=_HEADERS, timeout=_TIMEOUT)

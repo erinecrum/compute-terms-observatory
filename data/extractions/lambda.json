@@ -1,0 +1,163 @@
+{
+  "provider": "lambda",
+  "provider_name": "Lambda",
+  "extracted_at": "2026-07-15T00:58:01.751234+00:00",
+  "model": "claude-opus-4-8",
+  "documents_used": [
+    {
+      "slug": "service_terms",
+      "doc_type": "service_terms",
+      "name": "Lambda Terms of Service",
+      "url": "https://lambda.ai/legal/terms-of-service",
+      "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+      "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537",
+      "included_chars": 107980,
+      "truncated": false
+    }
+  ],
+  "fields": {
+    "availability_definition": {
+      "value": "no SLA / uptime not committed; Services provided 'AS-IS', no warranty of uninterrupted service",
+      "confidence": "high",
+      "citation": "THE SERVICES ARE PROVIDED “AS-IS”",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Lambda Terms of Service",
+        "url": "https://lambda.ai/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+        "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537"
+      },
+      "human_verified": false
+    },
+    "credit_regime": {
+      "value": "No service-level uptime credit regime. Only discretionary credits (coupons, promos, prepaid, fee adjustments) expiring 12 months from issuance; no tiers, no sole-remedy language for uptime.",
+      "confidence": "high",
+      "citation": "Lambda may, at its sole discretion, choose to offer credits",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Lambda Terms of Service",
+        "url": "https://lambda.ai/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+        "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537"
+      },
+      "human_verified": false
+    },
+    "claim_mechanics": {
+      "value": "not specified (no SLA credit claim process; credits are discretionary and not claim-based)",
+      "confidence": "medium",
+      "citation": "",
+      "citation_document": "none",
+      "source": null,
+      "human_verified": false
+    },
+    "sla_exclusions": {
+      "value": "No SLA exists. Related risk-shifting present: force majeure; customer fault/misuse; scheduled/emergency maintenance ('planned downtime for upgrades and maintenance'); beta/preview services; external network/ISP issues; throttling.",
+      "confidence": "medium",
+      "citation": "temporarily suspend access to the Services during planned downtime for upgrades and maintenance",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Lambda Terms of Service",
+        "url": "https://lambda.ai/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+        "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537"
+      },
+      "human_verified": false
+    },
+    "capacity_reservation": {
+      "value": "Public terms reference only Orders and published pricing; no reserved-instance, committed-use, take-or-pay or cancellation terms published. Meaningful commitment terms are negotiated, not published (per-Order).",
+      "confidence": "medium",
+      "citation": "Each Order for the Services will describe additional mutually agreed-upon limitations",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Lambda Terms of Service",
+        "url": "https://lambda.ai/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+        "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537"
+      },
+      "human_verified": false
+    },
+    "data_use_ai_training": {
+      "value": "No explicit AI/ML training statement. Provider may process Customer Property to provide Services and may use aggregated/anonymized 'Usage Information' to improve Services; no opt-out stated. Default: may use anonymized/aggregated data to improve services.",
+      "confidence": "medium",
+      "citation": "use data ... in an aggregated and anonymous manner ... improving the Services",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Lambda Terms of Service",
+        "url": "https://lambda.ai/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+        "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537"
+      },
+      "human_verified": false
+    },
+    "suspension_rights": {
+      "value": "Grounds: breach of Agreement/AUP, non-payment, excessive utilization affecting availability, suspected unauthorized access, legal/court/regulatory requirement. Suspension may be immediate ('immediately suspend, throttle or terminate').",
+      "confidence": "high",
+      "citation": "Lambda may immediately suspend, throttle or terminate access to the Services",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Lambda Terms of Service",
+        "url": "https://lambda.ai/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+        "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537"
+      },
+      "human_verified": false
+    },
+    "termination": {
+      "value": "Termination for convenience: either party may terminate when no Orders in effect; for-cause with 30-day cure. Post-termination data retrieval: no window guaranteed — Lambda may delete Customer Property upon termination without liability.",
+      "confidence": "high",
+      "citation": "Lambda may ... delete the Customer Property in its possession without liability",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Lambda Terms of Service",
+        "url": "https://lambda.ai/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+        "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537"
+      },
+      "human_verified": false
+    },
+    "unilateral_modification": {
+      "value": "Lambda may update Agreement unilaterally; updated version binding at start of next billing cycle. (Website Terms: changes effective 10 days after posting.)",
+      "confidence": "high",
+      "citation": "updated version of this Agreement shall be binding upon the Parties at the start of the next billing cycle",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Lambda Terms of Service",
+        "url": "https://lambda.ai/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+        "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537"
+      },
+      "human_verified": false
+    },
+    "governing_law_disputes": {
+      "value": "Governing law: California. Forum if not arbitrated: N.D. Cal. or Santa Clara County state court. Binding arbitration: yes (AAA, FAA; 30-day opt-out). Class-action waiver: yes.",
+      "confidence": "high",
+      "citation": "The Parties agree to arbitrate all claims ... waiving ... class or representative action",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Lambda Terms of Service",
+        "url": "https://lambda.ai/legal/terms-of-service",
+        "fetched_at": "2026-07-14T22:50:11.932540+00:00",
+        "text_sha256": "7b6fe1851664f35b31c0b47e6c06b42a7f64b71e683932cb0478a3fd70d65537"
+      },
+      "human_verified": false
+    }
+  }
+}

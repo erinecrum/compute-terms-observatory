@@ -18,6 +18,14 @@ providers:
     provider_name: Amazon Web Services
     documents:
       - doc_type: service_terms
+        name: AWS Customer Agreement
+        slug: customer_agreement
+        url: https://aws.amazon.com/agreement/
+        notes: >-
+          The master contract (incorporates the Service Terms by reference). Carries
+          governing law, disputes, termination-for-convenience, and data terms that
+          the Service Terms leave to the Agreement.
+      - doc_type: service_terms
         name: AWS Service Terms
         url: https://aws.amazon.com/service-terms/
         notes: Governs use of all AWS services; contains service-specific and AI/ML sections.

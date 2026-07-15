@@ -36,15 +36,23 @@ class Document:
 
     provider: str          # stable slug, e.g. "aws" (used in snapshot paths)
     provider_name: str     # human-readable, e.g. "Amazon Web Services"
-    doc_type: str          # one of DOC_TYPES
+    doc_type: str          # one of DOC_TYPES — the schema/comparison category
     name: str              # human-readable document name for citations
     url: str               # public URL (no login-gated content, ever)
+    slug: str = ""         # storage key, unique per provider; defaults to doc_type
     notes: str = ""        # e.g. "compute SLA; GPU instances covered here"
+
+    def __post_init__(self):
+        # A provider can have several documents of one doc_type (e.g. two SLAs, or
+        # Service Terms + a master Customer Agreement). The slug disambiguates
+        # them in storage; doc_type stays the comparison category.
+        if not self.slug:
+            self.slug = self.doc_type
 
     @property
     def doc_id(self) -> str:
         """Stable identifier used for snapshot directories and dataset keys."""
-        return f"{self.provider}/{self.doc_type}"
+        return f"{self.provider}/{self.slug}"
 
 
 @dataclass
@@ -57,6 +65,7 @@ class FetchResult:
     doc_type: str
     name: str
     url: str
+    slug: str = ""  # storage key (defaults to doc_type); set from the Document
 
     fetched_at: str = field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat()
@@ -82,7 +91,7 @@ class FetchResult:
 
     @property
     def doc_id(self) -> str:
-        return f"{self.provider}/{self.doc_type}"
+        return f"{self.provider}/{self.slug or self.doc_type}"
 
 
 def sha256_text(s: str) -> str:

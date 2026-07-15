@@ -55,6 +55,7 @@ def load_registry(path: str | Path = "registry.yaml") -> Registry:
         raise ValueError(f"{path}: expected a top-level 'providers:' list")
 
     documents: List[Document] = []
+    seen_slugs: set = set()
     for p in raw["providers"]:
         provider = p["provider"]
         provider_name = p["provider_name"]
@@ -65,16 +66,23 @@ def load_registry(path: str | Path = "registry.yaml") -> Registry:
                     f"{provider}: unknown doc_type {doc_type!r}. "
                     f"Known types: {', '.join(DOC_TYPES)}"
                 )
-            documents.append(
-                Document(
-                    provider=provider,
-                    provider_name=provider_name,
-                    doc_type=doc_type,
-                    name=d["name"],
-                    url=d["url"],
-                    notes=d.get("notes", ""),
-                )
+            doc = Document(
+                provider=provider,
+                provider_name=provider_name,
+                doc_type=doc_type,
+                name=d["name"],
+                url=d["url"],
+                slug=d.get("slug", ""),
+                notes=d.get("notes", ""),
             )
+            key = (provider, doc.slug)
+            if key in seen_slugs:
+                raise ValueError(
+                    f"{provider}: duplicate slug {doc.slug!r}. Give one document an "
+                    f"explicit 'slug:' so its snapshots don't collide."
+                )
+            seen_slugs.add(key)
+            documents.append(doc)
     if not documents:
         raise ValueError(f"{path}: no documents found")
     return Registry(documents)

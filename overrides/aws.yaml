@@ -1,0 +1,14 @@
+# Human-verified overrides for AWS.
+# This is a real, editable example — replace/extend with your own reviewed values,
+# or delete this file if you have no AWS corrections. See overrides/README.md.
+overrides:
+  governing_law_disputes:
+    value: >-
+      Governing law and forum vary by AWS Contracting Party. For Amazon Web
+      Services, Inc. (US): Washington State law, King County, WA courts. Disputes
+      are subject to binding arbitration (AAA commercial rules) and a class-action
+      waiver (individual basis only).
+    citation: "any dispute resolution proceedings will be conducted only on an individual basis"
+    citation_document: customer_agreement
+    confidence: high
+    note: "Verified by counsel 2026-07-14 against the AWS Customer Agreement, Section 12."

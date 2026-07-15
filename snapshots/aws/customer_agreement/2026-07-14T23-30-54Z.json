@@ -1,0 +1,17 @@
+{
+  "provider": "aws",
+  "provider_name": "Amazon Web Services",
+  "doc_type": "service_terms",
+  "name": "AWS Customer Agreement",
+  "url": "https://aws.amazon.com/agreement/",
+  "slug": "customer_agreement",
+  "fetched_at": "2026-07-14T23:30:54.569782+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "raw_ext": "html",
+  "text_sha256": "11afedaae0cc0d4d806c8b154e6e2c6cbd14eb4a97871fe746da9c5b80ec9398",
+  "raw_sha256": "ab5f4e6450cd6b1a69bd49937a5e8ff6fe116c71fa431eddde1d728f3ca8f7e8",
+  "char_count": 61874,
+  "meta": {}
+}

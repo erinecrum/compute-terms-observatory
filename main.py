@@ -15,7 +15,10 @@ import argparse
 import sys
 from typing import List
 
+from dotenv import load_dotenv
+
 from observatory.differ import diff_text
+from observatory.extractor import extract_provider, save_extraction
 from observatory.fetcher import fetch_document
 from observatory.registry import load_registry
 from observatory.snapshot import SnapshotStore
@@ -69,7 +72,7 @@ def cmd_changes(providers: List[str]) -> int:
 
     changed = baseline = 0
     for doc in docs:
-        history = store.history(doc.provider, doc.doc_type)
+        history = store.history(doc.provider, doc.slug)
         if len(history) < 2:
             baseline += 1
             print(f"  ·  base  {doc.doc_id:32}  {len(history)} snapshot(s) — baseline, nothing to report")
@@ -92,6 +95,31 @@ def cmd_changes(providers: List[str]) -> int:
     return 0
 
 
+def cmd_extract(providers: List[str]) -> int:
+    """Run the Claude API schema extraction for the given providers (or all).
+    Needs ANTHROPIC_API_KEY (loaded from .env)."""
+    load_dotenv()
+    registry = load_registry("registry.yaml")
+    store = SnapshotStore("snapshots")
+
+    targets = providers or registry.providers()
+    print(f"Extracting {len(targets)} provider(s) with Opus 4.8...\n")
+    failed = 0
+    for provider in targets:
+        try:
+            record = extract_provider(provider, registry, store)
+            path = save_extraction(record)
+            trunc = [d["doc_type"] for d in record["documents_used"] if d["truncated"]]
+            low = sum(1 for f in record["fields"].values() if f["confidence"] == "low")
+            note = f"  (truncated: {', '.join(trunc)})" if trunc else ""
+            print(f"  ✓ {provider:12}  {len(record['fields'])} dims, {low} low-confidence  -> {path}{note}")
+        except Exception as exc:  # noqa: BLE001
+            failed += 1
+            print(f"  ✗ {provider:12}  {type(exc).__name__}: {exc}")
+    print(f"\nDone. {len(targets) - failed} extracted, {failed} failed.")
+    return 0 if failed == 0 else 2
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(prog="observatory")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -109,11 +137,18 @@ def main() -> int:
     )
     p_changes.add_argument("--provider", action="append", default=[])
 
+    p_extract = sub.add_parser(
+        "extract", help="run the Claude API schema extraction (needs ANTHROPIC_API_KEY)"
+    )
+    p_extract.add_argument("--provider", action="append", default=[])
+
     args = parser.parse_args()
     if args.command == "fetch":
         return cmd_fetch(args.provider)
     if args.command == "changes":
         return cmd_changes(args.provider)
+    if args.command == "extract":
+        return cmd_extract(args.provider)
     parser.error(f"unknown command {args.command!r}")
     return 1
 

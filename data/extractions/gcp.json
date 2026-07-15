@@ -1,0 +1,200 @@
+{
+  "provider": "gcp",
+  "provider_name": "Google Cloud",
+  "extracted_at": "2026-07-15T00:57:24.866276+00:00",
+  "model": "claude-opus-4-8",
+  "documents_used": [
+    {
+      "slug": "sla",
+      "doc_type": "sla",
+      "name": "Compute Engine Service Level Agreement",
+      "url": "https://cloud.google.com/compute/sla",
+      "fetched_at": "2026-07-14T22:34:29.088326+00:00",
+      "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9",
+      "included_chars": 9406,
+      "truncated": false
+    },
+    {
+      "slug": "service_terms",
+      "doc_type": "service_terms",
+      "name": "Google Cloud Platform Terms of Service",
+      "url": "https://cloud.google.com/terms",
+      "fetched_at": "2026-07-14T22:34:28.288467+00:00",
+      "text_sha256": "cbb13687e8591a4610e5716dc649c689aa45919af6c50b441328630b23ad85de",
+      "included_chars": 59123,
+      "truncated": false
+    },
+    {
+      "slug": "ai_terms",
+      "doc_type": "ai_terms",
+      "name": "Google Cloud Service Specific Terms (AI/ML data use)",
+      "url": "https://cloud.google.com/terms/service-terms",
+      "fetched_at": "2026-07-14T22:34:30.333005+00:00",
+      "text_sha256": "02842c721259cc88e9613fccac7e87e272c4bf9c410ab4f57fc69e06d66cc55f",
+      "included_chars": 141115,
+      "truncated": false
+    },
+    {
+      "slug": "aup",
+      "doc_type": "aup",
+      "name": "Google Cloud Platform Acceptable Use Policy",
+      "url": "https://cloud.google.com/terms/aup",
+      "fetched_at": "2026-07-14T22:34:29.695996+00:00",
+      "text_sha256": "72e2fe1b11c10bd80316b55d7ecd043b006d3b31a3d79a23e0da96397446c879",
+      "included_chars": 4441,
+      "truncated": false
+    }
+  ],
+  "fields": {
+    "availability_definition": {
+      "value": "Instance-level and multi-zone availability, measured as Monthly Uptime Percentage (minutes-based). Commitments: Instances in Multiple Zones >=99.99% (Premium), Load balancing >=99.99%, Single Instance Memory Optimized >=99.95%, Single Instance other families >=99.9%; Standard Tier >=99.9%; lower tiers (99.95%) for Mexico/Stockholm regions.",
+      "confidence": "high",
+      "citation": "Monthly Uptime Percentage ... Instances in Multiple Zones >= 99.99%",
+      "citation_document": "sla",
+      "source": {
+        "slug": "sla",
+        "doc_type": "sla",
+        "name": "Compute Engine Service Level Agreement",
+        "url": "https://cloud.google.com/compute/sla",
+        "fetched_at": "2026-07-14T22:34:29.088326+00:00",
+        "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9"
+      },
+      "human_verified": false
+    },
+    "credit_regime": {
+      "value": "Tiered credit of % of monthly bill for the non-compliant Covered Service. Multi-Zone/LB (Premium): 99.00%-<99.99% =10%, 95.00%-<99.00% =25%, <95.00% =100%. Single Instance: 95.00%-<99.9x% =10%, 90.00%-<95.00% =25%, <90.00% =100%. Sole and exclusive remedy stated.",
+      "confidence": "high",
+      "citation": "This SLA states Customer's sole and exclusive remedy",
+      "citation_document": "sla",
+      "source": {
+        "slug": "sla",
+        "doc_type": "sla",
+        "name": "Compute Engine Service Level Agreement",
+        "url": "https://cloud.google.com/compute/sla",
+        "fetched_at": "2026-07-14T22:34:29.088326+00:00",
+        "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9"
+      },
+      "human_verified": false
+    },
+    "claim_mechanics": {
+      "value": "Customer must file a claim: notify Google technical support within 60 days from becoming eligible, and provide log files showing Downtime Periods and dates/times. Failure to comply forfeits credit.",
+      "confidence": "high",
+      "citation": "must notify Google technical support within 60 days",
+      "citation_document": "sla",
+      "source": {
+        "slug": "sla",
+        "doc_type": "sla",
+        "name": "Compute Engine Service Level Agreement",
+        "url": "https://cloud.google.com/compute/sla",
+        "fetched_at": "2026-07-14T22:34:29.088326+00:00",
+        "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9"
+      },
+      "human_verified": false
+    },
+    "sla_exclusions": {
+      "value": "Present: pre-GA/beta features; features excluded in Documentation; force majeure (factors outside Google's reasonable control); customer or third-party software/hardware; abuse/Agreement violations; quota-based errors. Also Access Approval disruptions; Pre-GA offerings not covered.",
+      "confidence": "high",
+      "citation": "SLA Exclusions ... caused by factors outside of Google's reasonable control",
+      "citation_document": "sla",
+      "source": {
+        "slug": "sla",
+        "doc_type": "sla",
+        "name": "Compute Engine Service Level Agreement",
+        "url": "https://cloud.google.com/compute/sla",
+        "fetched_at": "2026-07-14T22:34:29.088326+00:00",
+        "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9"
+      },
+      "human_verified": false
+    },
+    "capacity_reservation": {
+      "value": "Public terms include Committed Units (non-cancellable, take-or-pay: pay whether or not used) with auto-renewal, no resell/transfer; Compute Engine future reservations (Google approves in its discretion). Refund of unused prepaid Fees only if Google non-renews/terminates or discontinues. Specific commitment amounts negotiated, not published.",
+      "confidence": "high",
+      "citation": "Customer will pay the Fees for those Committed Units ... whether or not they are used",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Google Cloud Platform Terms of Service",
+        "url": "https://cloud.google.com/terms",
+        "fetched_at": "2026-07-14T22:34:28.288467+00:00",
+        "text_sha256": "cbb13687e8591a4610e5716dc649c689aa45919af6c50b441328630b23ad85de"
+      },
+      "human_verified": false
+    },
+    "data_use_ai_training": {
+      "value": "Default: does not train on customer data. 'Google will not use Customer Data to train or fine-tune any AI/ML models without Customer's prior permission or instruction.' Generally Google only processes Customer Data per the Cloud Data Processing Addendum. Opt-in via customer permission/instruction.",
+      "confidence": "high",
+      "citation": "Google will not use Customer Data to train or fine-tune any AI/ML models",
+      "citation_document": "ai_terms",
+      "source": {
+        "slug": "ai_terms",
+        "doc_type": "ai_terms",
+        "name": "Google Cloud Service Specific Terms (AI/ML data use)",
+        "url": "https://cloud.google.com/terms/service-terms",
+        "fetched_at": "2026-07-14T22:34:30.333005+00:00",
+        "text_sha256": "02842c721259cc88e9613fccac7e87e272c4bf9c410ab4f57fc69e06d66cc55f"
+      },
+      "human_verified": false
+    },
+    "suspension_rights": {
+      "value": "Grounds: AUP violation (notice + 24 hrs to cure before suspension); non-payment/late payment; protecting Services/infrastructure/other customers; suspected unauthorized access; legal compliance; breach of Restrictions/Service Specific Terms. Immediate suspension allowed for the 'Other Suspension' grounds; AUP violations get notice and 24-hour cure.",
+      "confidence": "high",
+      "citation": "Google may immediately Suspend all or part of Customer's use",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Google Cloud Platform Terms of Service",
+        "url": "https://cloud.google.com/terms",
+        "fetched_at": "2026-07-14T22:34:28.288467+00:00",
+        "text_sha256": "cbb13687e8591a4610e5716dc649c689aa45919af6c50b441328630b23ad85de"
+      },
+      "human_verified": false
+    },
+    "termination": {
+      "value": "Customer may terminate for convenience anytime on prior written notice (subject to financial commitments). Google may terminate GCP Services for convenience on 30 days' prior written notice. On termination, access to Services and Customer Data terminates unless otherwise stated; no general post-termination data retrieval window (EU Data Act adds a Data Recovery Period of >=30 days where applicable).",
+      "confidence": "high",
+      "citation": "Google may terminate this Agreement ... with 30 days' prior written notice",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Google Cloud Platform Terms of Service",
+        "url": "https://cloud.google.com/terms",
+        "fetched_at": "2026-07-14T22:34:28.288467+00:00",
+        "text_sha256": "cbb13687e8591a4610e5716dc649c689aa45919af6c50b441328630b23ad85de"
+      },
+      "human_verified": false
+    },
+    "unilateral_modification": {
+      "value": "Google may update the Agreement; material updates to GCP terms become effective 30 days after posting (immediately if for new functionality or required by law). Service discontinuation: at least 12 months' notice (with exceptions). URL Terms/SLA updates: material updates effective 30 days after posting.",
+      "confidence": "high",
+      "citation": "material updates to this Agreement will become effective 30 days after they are posted",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Google Cloud Platform Terms of Service",
+        "url": "https://cloud.google.com/terms",
+        "fetched_at": "2026-07-14T22:34:28.288467+00:00",
+        "text_sha256": "cbb13687e8591a4610e5716dc649c689aa45919af6c50b441328630b23ad85de"
+      },
+      "human_verified": false
+    },
+    "governing_law_disputes": {
+      "value": "Governing law: California (excluding conflict rules); venue: state/federal courts of Santa Clara County, California. Binding arbitration: no (litigation in courts). Class-action waiver: not specified. (Different rules for US government entities.)",
+      "confidence": "high",
+      "citation": "GOVERNED BY CALIFORNIA LAW ... LITIGATED EXCLUSIVELY IN ... SANTA CLARA COUNTY",
+      "citation_document": "service_terms",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Google Cloud Platform Terms of Service",
+        "url": "https://cloud.google.com/terms",
+        "fetched_at": "2026-07-14T22:34:28.288467+00:00",
+        "text_sha256": "cbb13687e8591a4610e5716dc649c689aa45919af6c50b441328630b23ad85de"
+      },
+      "human_verified": false
+    }
+  }
+}

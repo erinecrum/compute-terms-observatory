@@ -53,30 +53,30 @@ class SnapshotStore:
     def __init__(self, root: str | Path = "snapshots"):
         self.root = Path(root)
 
-    def _dir(self, provider: str, doc_type: str) -> Path:
-        return self.root / provider / doc_type
+    def _dir(self, provider: str, slug: str) -> Path:
+        return self.root / provider / slug
 
-    def _stamps(self, provider: str, doc_type: str) -> List[str]:
-        d = self._dir(provider, doc_type)
+    def _stamps(self, provider: str, slug: str) -> List[str]:
+        d = self._dir(provider, slug)
         if not d.exists():
             return []
         return sorted(p.stem for p in d.glob("*.json"))
 
-    def latest(self, provider: str, doc_type: str) -> Optional[Snapshot]:
-        stamps = self._stamps(provider, doc_type)
+    def latest(self, provider: str, slug: str) -> Optional[Snapshot]:
+        stamps = self._stamps(provider, slug)
         if not stamps:
             return None
-        return self._load(provider, doc_type, stamps[-1])
+        return self._load(provider, slug, stamps[-1])
 
-    def history(self, provider: str, doc_type: str) -> List[Snapshot]:
+    def history(self, provider: str, slug: str) -> List[Snapshot]:
         """All snapshots oldest→newest (for a document's change history page)."""
         return [
-            self._load(provider, doc_type, s)
-            for s in self._stamps(provider, doc_type)
+            self._load(provider, slug, s)
+            for s in self._stamps(provider, slug)
         ]
 
-    def _load(self, provider: str, doc_type: str, stamp: str) -> Snapshot:
-        d = self._dir(provider, doc_type)
+    def _load(self, provider: str, slug: str, stamp: str) -> Snapshot:
+        d = self._dir(provider, slug)
         meta = json.loads((d / f"{stamp}.json").read_text(encoding="utf-8"))
         text_path = d / f"{stamp}.txt"
         text = text_path.read_text(encoding="utf-8") if text_path.exists() else None
@@ -86,7 +86,7 @@ class SnapshotStore:
         """Persist a FetchResult as a new, timestamped snapshot. Append-only —
         never touches existing files. Filename is the fetch time (UTC,
         filesystem-safe) so ordering is chronological and stable."""
-        d = self._dir(result.provider, result.doc_type)
+        d = self._dir(result.provider, result.slug or result.doc_type)
         d.mkdir(parents=True, exist_ok=True)
 
         stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
@@ -118,7 +118,7 @@ class SnapshotStore:
         free of weekly duplicates."""
         if not result.ok or result.text is None:
             return None
-        prev = self.latest(result.provider, result.doc_type)
+        prev = self.latest(result.provider, result.slug or result.doc_type)
         if prev is not None and prev.text_sha256 == result.text_sha256:
             return None
         return self.save(result)
