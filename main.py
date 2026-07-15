@@ -30,12 +30,12 @@ def cmd_fetch(providers: List[str]) -> int:
     registry = load_registry("registry.yaml")
     store = SnapshotStore("snapshots")
 
-    docs = registry.documents()
+    docs = registry.fetchable()
     if providers:
         wanted = set(providers)
         docs = [d for d in docs if d.provider in wanted]
         if not docs:
-            print(f"No registry documents match providers: {', '.join(providers)}")
+            print(f"No fetchable registry documents match providers: {', '.join(providers)}")
             return 1
 
     saved = unchanged = failed = 0
@@ -133,7 +133,7 @@ def cmd_run(skip_extract: bool) -> int:
     changed_providers = set()
     fetch_failed = extract_failed = 0
     print("1/4 Fetching + snapshotting changed documents...")
-    for doc in registry.documents():
+    for doc in registry.fetchable():
         result = fetch_document(doc)
         if not result.ok:
             fetch_failed += 1

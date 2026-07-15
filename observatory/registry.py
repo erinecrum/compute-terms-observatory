@@ -35,6 +35,12 @@ class Registry:
     def documents(self) -> List[Document]:
         return list(self._documents)
 
+    def fetchable(self) -> List[Document]:
+        """Only documents with a confirmed URL are fetched. Gap entries
+        (not_published / within_service_terms) are coverage records, not fetch
+        targets."""
+        return [d for d in self._documents if d.is_fetchable]
+
     def for_provider(self, provider: str) -> List[Document]:
         return [d for d in self._documents if d.provider == provider]
 
@@ -66,14 +72,32 @@ def load_registry(path: str | Path = "registry.yaml") -> Registry:
                     f"{provider}: unknown doc_type {doc_type!r}. "
                     f"Known types: {', '.join(DOC_TYPES)}"
                 )
+            status = d.get("status", "verified")
+            valid_status = ("verified", "unverified", "not_published", "within_service_terms")
+            if status not in valid_status:
+                raise ValueError(
+                    f"{provider}/{doc_type}: unknown status {status!r}. "
+                    f"Valid: {', '.join(valid_status)}"
+                )
+            url = d.get("url", "")
+            if status in ("verified", "unverified") and not url:
+                raise ValueError(
+                    f"{provider}/{doc_type}: status {status!r} requires a url."
+                )
+            if status in ("not_published", "within_service_terms") and url:
+                raise ValueError(
+                    f"{provider}/{doc_type}: status {status!r} must not carry a url "
+                    f"(it records a coverage gap, not a fetchable document)."
+                )
             doc = Document(
                 provider=provider,
                 provider_name=provider_name,
                 doc_type=doc_type,
                 name=d["name"],
-                url=d["url"],
+                url=url,
                 slug=d.get("slug", ""),
                 notes=d.get("notes", ""),
+                status=status,
             )
             key = (provider, doc.slug)
             if key in seen_slugs:

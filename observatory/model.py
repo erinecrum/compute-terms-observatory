@@ -38,9 +38,17 @@ class Document:
     provider_name: str     # human-readable, e.g. "Amazon Web Services"
     doc_type: str          # one of DOC_TYPES — the schema/comparison category
     name: str              # human-readable document name for citations
-    url: str               # public URL (no login-gated content, ever)
+    url: str = ""          # public URL (empty when the document has no standalone URL)
     slug: str = ""         # storage key, unique per provider; defaults to doc_type
     notes: str = ""        # e.g. "compute SLA; GPU instances covered here"
+    # Honest coverage status. Only 'verified' documents are fetched; the rest
+    # record a gap so we never guess a URL:
+    #   verified            — confirmed to resolve to the right document (has url)
+    #   unverified          — url present but not yet confirmed this pass
+    #   not_published       — no such public document/commitment exists (no url)
+    #   within_service_terms— content is only a section of the provider's Terms
+    #                         (no separate URL); extracted from service_terms
+    status: str = "verified"
 
     def __post_init__(self):
         # A provider can have several documents of one doc_type (e.g. two SLAs, or
@@ -48,6 +56,10 @@ class Document:
         # them in storage; doc_type stays the comparison category.
         if not self.slug:
             self.slug = self.doc_type
+
+    @property
+    def is_fetchable(self) -> bool:
+        return bool(self.url) and self.status in ("verified", "unverified")
 
     @property
     def doc_id(self) -> str:

@@ -17,25 +17,71 @@ from __future__ import annotations
 
 import io
 import re
+import time
+from urllib import robotparser
+from urllib.parse import urljoin, urlparse
 
 import requests
 from bs4 import BeautifulSoup
 
 from .model import Document, FetchResult, sha256_bytes, sha256_text
 
-# A normal browser UA. Many providers serve a stripped or blocked response to an
-# empty UA; this gets the real page. We identify politely in a comment-free way
-# consistent with the radar project.
+# We identify honestly as an archival bot (not a spoofed browser) and link back to
+# the project, so any site owner can see exactly who we are. We are archivists,
+# not scrapers evading anyone.
+_UA = (
+    "ComputeTermsObservatory/1.0 "
+    "(+https://github.com/erinecrum/compute-terms-observatory; public terms archival)"
+)
 _HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/124.0 Safari/537.36"
-    ),
+    "User-Agent": _UA,
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9",
 }
 _TIMEOUT = 45
+_RETRIES = 3  # polite exponential back-off on transient network/5xx errors
+
+# robots.txt parsers, cached per host so we read each site's rules once per run.
+_robots_cache: dict = {}
+
+
+def _robots_allows(url: str) -> tuple:
+    """Return (allowed, reason). We honor robots.txt: if a host disallows a path
+    for us, we do not fetch it and record the refusal as a failure. A missing or
+    unreadable robots.txt is treated as 'allowed' (the web default)."""
+    parsed = urlparse(url)
+    host = f"{parsed.scheme}://{parsed.netloc}"
+    if host not in _robots_cache:
+        rp = None
+        try:
+            r = requests.get(urljoin(host, "/robots.txt"), headers=_HEADERS, timeout=20)
+            if r.status_code == 200:
+                rp = robotparser.RobotFileParser()
+                rp.parse(r.text.splitlines())
+        except requests.RequestException:
+            rp = None  # unreadable robots.txt -> treat as allowed
+        _robots_cache[host] = rp
+    rp = _robots_cache[host]
+    if rp is None:
+        return True, ""
+    return (rp.can_fetch(_UA, url), "disallowed by robots.txt")
+
+
+def _get_politely(url: str) -> requests.Response:
+    """One GET with exponential back-off on transient errors. Callers fetch
+    sequentially (one request at a time) so we never hammer a host in parallel."""
+    last = None
+    for attempt in range(_RETRIES):
+        try:
+            resp = requests.get(url, headers=_HEADERS, timeout=_TIMEOUT)
+            if resp.status_code >= 500:
+                resp.raise_for_status()
+            return resp
+        except requests.RequestException as exc:
+            last = exc
+            if attempt < _RETRIES - 1:
+                time.sleep(2 ** attempt)  # 1s, 2s
+    raise last
 
 # Preferred content containers, tried in order, with a whole-body fallback so a
 # template tweak never blanks a snapshot.
@@ -112,7 +158,13 @@ def fetch_document(doc: Document) -> FetchResult:
         slug=doc.slug,
     )
     try:
-        resp = requests.get(doc.url, headers=_HEADERS, timeout=_TIMEOUT)
+        allowed, reason = _robots_allows(doc.url)
+        if not allowed:
+            result.ok = False
+            result.error = reason
+            return result
+
+        resp = _get_politely(doc.url)
         result.http_status = resp.status_code
         resp.raise_for_status()
 
@@ -123,6 +175,18 @@ def fetch_document(doc: Document) -> FetchResult:
             or "application/pdf" in content_type
             or doc.url.lower().endswith(".pdf")
         )
+
+        # Guard: an Office/binary document (e.g. a DOCX SLA) would otherwise be
+        # decoded as HTML and snapshotted as garbage. Record a clean failure
+        # instead — we never store garbage, and we never touch prior snapshots.
+        is_zip_office = content[:4] == b"PK\x03\x04" or doc.url.lower().endswith(
+            (".docx", ".xlsx", ".pptx")
+        )
+        if is_zip_office and not is_pdf:
+            raise RuntimeError(
+                "unsupported document format (DOCX/Office); ingestion not enabled "
+                "for this format yet"
+            )
 
         if is_pdf:
             text = _pdf_text(content)
