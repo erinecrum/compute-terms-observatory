@@ -32,6 +32,9 @@ from .registry import Registry, load_registry
 from .schema import DIMENSIONS
 from .snapshot import SnapshotStore
 
+# Which dimensions are SLA-specific (grouped at the bottom of the matrix).
+_SLA_DIMS = {"availability_definition", "credit_regime", "claim_mechanics", "sla_exclusions"}
+
 DISCLAIMER = (
     "These values are an AI's reading of each provider's public terms, not the terms "
     "themselves and not legal advice. They can be wrong, incomplete, or out of date. "
@@ -100,7 +103,17 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "disclaimer": DISCLAIMER,
-        "dimensions": [{"key": d.key, "label": d.label, "guidance": d.guidance} for d in DIMENSIONS],
+        "dimensions": [
+            {
+                "key": d.key,
+                "label": d.label,
+                "guidance": d.guidance,
+                "group": "Service level (SLA) terms"
+                if d.key in _SLA_DIMS
+                else "General contract terms",
+            }
+            for d in DIMENSIONS
+        ],
         "providers": providers_meta,
         "matrix": matrix,
         "change_log": _build_change_log(registry, store),
