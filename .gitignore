@@ -14,3 +14,6 @@ __pycache__/
 # NOTE: snapshots/ is deliberately NOT ignored — the raw corpus is the asset
 # and is committed on every run (see README, "Archival discipline").
 site/
+
+# macOS Finder metadata
+.DS_Store
