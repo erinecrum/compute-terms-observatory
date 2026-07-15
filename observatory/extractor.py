@@ -39,6 +39,13 @@ _DOC_PRIORITY = ["sla", "service_terms", "ai_terms", "aup"]
 CONFIDENCE_LEVELS = ["high", "medium", "low"]
 
 
+def _clip_citation(s: str, max_words: int = 14) -> str:
+    """Hard rule: quoted excerpts stay under 15 words. Clip an over-long citation
+    rather than reproduce a long passage."""
+    words = s.split()
+    return s if len(words) <= max_words else " ".join(words[:max_words]) + "…"
+
+
 @dataclass
 class DocSource:
     slug: str
@@ -63,7 +70,12 @@ def _gather_sources(provider: str, registry: Registry, store: SnapshotStore) -> 
             else len(_DOC_PRIORITY)
         )
 
-    ordered = sorted(registry.for_provider(provider), key=priority)
+    # Only fetchable documents feed extraction. Gap entries (not_published /
+    # within_service_terms) have no URL; skipping them also prevents an orphaned
+    # snapshot under a reused slug from leaking into a provider's extraction.
+    ordered = sorted(
+        [d for d in registry.for_provider(provider) if d.is_fetchable], key=priority
+    )
 
     sources: List[DocSource] = []
     remaining = MAX_TOTAL_CHARS
@@ -247,7 +259,7 @@ def extract_provider(
         fields[key] = {
             "value": e.get("value", "").strip(),
             "confidence": e.get("confidence", "low"),
-            "citation": e.get("citation", "").strip(),
+            "citation": _clip_citation(e.get("citation", "").strip()),
             "citation_document": cited,
             # Provenance: the exact source this value is anchored to.
             "source": None

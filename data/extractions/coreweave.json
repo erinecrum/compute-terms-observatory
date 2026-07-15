@@ -1,19 +1,9 @@
 {
   "provider": "coreweave",
   "provider_name": "CoreWeave",
-  "extracted_at": "2026-07-15T00:57:43.626403+00:00",
+  "extracted_at": "2026-07-15T03:41:52.846211+00:00",
   "model": "claude-opus-4-8",
   "documents_used": [
-    {
-      "slug": "sla",
-      "doc_type": "sla",
-      "name": "CoreWeave AI Object Storage SLA",
-      "url": "https://docs.coreweave.com/docs/policies/terms-of-service/coreweave-ai-object-storage-policy",
-      "fetched_at": "2026-07-14T22:50:10.259185+00:00",
-      "text_sha256": "e9ff257f5161bf68269324d7e5f9445b50d55dcf5ba7a694c7345bb29f40cf90",
-      "included_chars": 4624,
-      "truncated": false
-    },
     {
       "slug": "service_terms",
       "doc_type": "service_terms",
@@ -37,85 +27,71 @@
   ],
   "fields": {
     "availability_definition": {
-      "value": "API-error-rate-based: Storage Monthly Uptime Percentage >= 99.9% for AI Object Storage (cwobject.com endpoint); computed as 100% minus average Error Percentage per 5-minute interval (InternalError/ServiceUnavailable errors / total requests). Applies only to Object Storage, not compute.",
+      "value": "no SLA / uptime not committed; sites provided 'as is, as available' with no uptime commitment",
       "confidence": "high",
-      "citation": "Storage Monthly Uptime Percentage of >= 99.9%",
-      "citation_document": "sla",
+      "citation": "THE COREWEAVE SITES ARE PROVIDED ON AN \"AS IS, AS AVAILABLE\" BASIS",
+      "citation_document": "service_terms",
       "source": {
-        "slug": "sla",
-        "doc_type": "sla",
-        "name": "CoreWeave AI Object Storage SLA",
-        "url": "https://docs.coreweave.com/docs/policies/terms-of-service/coreweave-ai-object-storage-policy",
-        "fetched_at": "2026-07-14T22:50:10.259185+00:00",
-        "text_sha256": "e9ff257f5161bf68269324d7e5f9445b50d55dcf5ba7a694c7345bb29f40cf90"
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "CoreWeave Terms of Use",
+        "url": "https://docs.coreweave.com/policies/terms-of-service/terms-of-use",
+        "fetched_at": "2026-07-14T22:50:09.689454+00:00",
+        "text_sha256": "88d876cd2087f912340547eb718a5e77ef485871dd1be94f644abc048a51d527"
       },
       "human_verified": false
     },
     "credit_regime": {
-      "value": "Tiers (% of monthly bill for affected AZ credited to future bills): 99%-99.9% -> 10%; 95%-98.999% -> 25%; <94.999% -> 100%. Credits are future-use monetary credits only, no refund. Stated as sole and exclusive remedy.",
+      "value": "not specified (no service-credit structure in provided documents)",
       "confidence": "high",
-      "citation": "sole and exclusive remedy for any failure",
-      "citation_document": "sla",
-      "source": {
-        "slug": "sla",
-        "doc_type": "sla",
-        "name": "CoreWeave AI Object Storage SLA",
-        "url": "https://docs.coreweave.com/docs/policies/terms-of-service/coreweave-ai-object-storage-policy",
-        "fetched_at": "2026-07-14T22:50:10.259185+00:00",
-        "text_sha256": "e9ff257f5161bf68269324d7e5f9445b50d55dcf5ba7a694c7345bb29f40cf90"
-      },
+      "citation": "",
+      "citation_document": "none",
+      "source": null,
       "human_verified": false
     },
     "claim_mechanics": {
-      "value": "Customer must request credit: notify support@coreweave.com within 30 days of becoming eligible; must provide applicable AZ and request logs documenting dates/times of each Error. Non-compliance forfeits the credit.",
+      "value": "not specified (no credit claim process in provided documents)",
       "confidence": "high",
-      "citation": "must notify CoreWeave technical support ... within thirty (30) days",
-      "citation_document": "sla",
-      "source": {
-        "slug": "sla",
-        "doc_type": "sla",
-        "name": "CoreWeave AI Object Storage SLA",
-        "url": "https://docs.coreweave.com/docs/policies/terms-of-service/coreweave-ai-object-storage-policy",
-        "fetched_at": "2026-07-14T22:50:10.259185+00:00",
-        "text_sha256": "e9ff257f5161bf68269324d7e5f9445b50d55dcf5ba7a694c7345bb29f40cf90"
-      },
+      "citation": "",
+      "citation_document": "none",
+      "source": null,
       "human_verified": false
     },
     "sla_exclusions": {
-      "value": "Present: force majeure / factors outside CoreWeave's reasonable control (incl. internet beyond demarcation point); customer fault/misuse (customer actions/inactions, customer/third-party software/hardware); TOS/AUP violations & suspension/termination; throttling (system quotas); scheduled maintenance (in-advance communicated); beta/pre-GA features.",
-      "confidence": "high",
-      "citation": "Exclusions. The Storage Financial Credits do not apply",
-      "citation_document": "sla",
+      "value": "No SLA present, so no formal SLA exclusions. General liability disclaimer covers force majeure ('events beyond the Company's reasonable control, including acts of God'), DDoS, viruses, interruptions/delays.",
+      "confidence": "medium",
+      "citation": "FAILURE OF PERFORMANCE WHETHER OR NOT CAUSED BY EVENTS BEYOND THE COMPANY'S REASONABLE CONTROL",
+      "citation_document": "service_terms",
       "source": {
-        "slug": "sla",
-        "doc_type": "sla",
-        "name": "CoreWeave AI Object Storage SLA",
-        "url": "https://docs.coreweave.com/docs/policies/terms-of-service/coreweave-ai-object-storage-policy",
-        "fetched_at": "2026-07-14T22:50:10.259185+00:00",
-        "text_sha256": "e9ff257f5161bf68269324d7e5f9445b50d55dcf5ba7a694c7345bb29f40cf90"
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "CoreWeave Terms of Use",
+        "url": "https://docs.coreweave.com/policies/terms-of-service/terms-of-use",
+        "fetched_at": "2026-07-14T22:50:09.689454+00:00",
+        "text_sha256": "88d876cd2087f912340547eb718a5e77ef485871dd1be94f644abc048a51d527"
       },
       "human_verified": false
     },
     "capacity_reservation": {
-      "value": "not specified in the provided public documents (no reserved instance, committed-use, take-or-pay, or cancellation terms appear)",
-      "confidence": "low",
+      "value": "not specified in public documents; no reserved-instance/committed-use/take-or-pay terms published (likely negotiated, not published)",
+      "confidence": "medium",
       "citation": "",
       "citation_document": "none",
       "source": null,
       "human_verified": false
     },
     "data_use_ai_training": {
-      "value": "not specified; provided documents (Terms of Use, AUP, Storage SLA) contain no language on provider use of customer data for training/improving AI/ML models (governed by TOS/Privacy Policy not included here)",
-      "confidence": "low",
+      "value": "not specified; no language on using customer data or content to train/improve AI/ML models. Terms reference Privacy Policy (not provided).",
+      "confidence": "medium",
       "citation": "",
       "citation_document": "none",
       "source": null,
       "human_verified": false
     },
     "suspension_rights": {
-      "value": "Under AUP, CoreWeave may suspend or terminate use of Services if it determines in good faith the Customer violated the AUP; may also intercept/block content or traffic where used unlawfully. Applies even if violation unintentional/unauthorized; exercisable at any time in sole discretion (no prior-notice requirement stated). Terms of Use: payment method problems may suspend/cancel a Transaction.",
+      "value": "May suspend or terminate for AUP violation (even unintentional/unauthorized), in good faith discretion; may also block content/traffic when used unlawfully. Payment problems may suspend/cancel a Transaction. No prior notice required; may act at any time in sole discretion.",
       "confidence": "high",
-      "citation": "suspend or terminate Customer's use ... applies even if a violation is committed unintentionally",
+      "citation": "CoreWeave may... suspend or terminate Customer's use of CoreWeave Services",
       "citation_document": "aup",
       "source": {
         "slug": "aup",
@@ -128,8 +104,8 @@
       "human_verified": false
     },
     "termination": {
-      "value": "Termination for convenience and post-termination data retrieval window not specified in the provided documents. Terms of Use: right to use CoreWeave Sites ceases immediately upon breach; AUP allows CoreWeave to terminate for violations. No customer termination-for-convenience or data-retrieval period stated.",
-      "confidence": "low",
+      "value": "Right to withdraw/amend sites and cease access in sole discretion without notice; AUP allows termination of service use on violation. No termination-for-convenience by customer or post-termination data-retrieval window specified.",
+      "confidence": "medium",
       "citation": "your right to use the CoreWeave Sites will cease immediately",
       "citation_document": "service_terms",
       "source": {
@@ -143,7 +119,7 @@
       "human_verified": false
     },
     "unilateral_modification": {
-      "value": "Terms of Use: Company may update Terms in its sole discretion; 'All changes are effective immediately when we post them.' AUP: 'CoreWeave may modify this AUP at any time by posting a revised version.' No advance-notice commitment; effective on posting.",
+      "value": "Provider may update terms in sole discretion; changes effective immediately upon posting, with continued use constituting agreement. AUP may be modified at any time by posting revised version.",
       "confidence": "high",
       "citation": "All changes are effective immediately when we post them",
       "citation_document": "service_terms",
@@ -158,9 +134,9 @@
       "human_verified": false
     },
     "governing_law_disputes": {
-      "value": "Governing law: New York (Terms of Use). Forum/venue: courts in New York, New York. Arbitration: optional at Company's sole discretion (binding, AAA rules, NY law) - not mandatory. Class-action waiver: yes (disputes resolved individually, no class action).",
+      "value": "Governing law: New York. Venue: courts in New York, New York. Arbitration: yes, at Company's sole discretion (AAA rules, NY law), binding. Class-action waiver: yes (disputes resolved individually, no class action).",
       "confidence": "high",
-      "citation": "resolved individually, without resort to any form of class action",
+      "citation": "any disputes... to final and binding arbitration... WITHOUT RESORT TO ANY FORM OF CLASS…",
       "citation_document": "service_terms",
       "source": {
         "slug": "service_terms",
