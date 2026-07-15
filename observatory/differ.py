@@ -13,6 +13,7 @@ This mirrors the radar project's diff engine, trimmed to the text case.
 from __future__ import annotations
 
 import difflib
+import re
 from dataclasses import dataclass, field
 from typing import List, Optional
 
@@ -43,22 +44,50 @@ def _lines(text: Optional[str]) -> List[str]:
     return text.splitlines() if text else []
 
 
-def focused_excerpt(old: str, new: str, context: int = 90):
-    """Return (old_excerpt, new_excerpt) windowed around the FIRST place the two
-    strings actually differ, so a reader sees what moved rather than the shared
-    paragraph head."""
+# Hard rule: quoted excerpts from provider documents stay UNDER 15 words
+# everywhere they are shown. Excerpts are word-limited and centered on the change.
+_MAX_WORDS = 12
+
+
+def focused_excerpt(old: str, new: str):
+    """Return (old_excerpt, new_excerpt) centered on the FIRST place the two
+    strings differ, each kept under 15 words so a reader sees what moved without
+    reproducing a long passage."""
     sm = difflib.SequenceMatcher(a=old, b=new, autojunk=False)
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
         if tag != "equal":
-            return _window(old, i1, i2, context), _window(new, j1, j2, context)
-    return old[: context * 2], new[: context * 2]
+            return _word_window(old, i1, i2), _word_window(new, j1, j2)
+    return _word_window(old, 0, len(old)), _word_window(new, 0, len(new))
 
 
-def _window(s: str, start: int, end: int, context: int) -> str:
-    a = max(0, start - context)
-    b = min(len(s), end + context)
-    snippet = s[a:b].replace("\n", " ")
-    return ("…" if a > 0 else "") + snippet + ("…" if b < len(s) else "")
+def _word_window(s: str, start: int, end: int) -> str:
+    """A short excerpt of `s` around the changed span [start:end], budgeted to
+    _MAX_WORDS whole words and centered on the change, with ellipses marking any
+    trimming. Works on whole tokens so numbers like '99.99%' stay intact."""
+    tokens = [(m.group(), m.start(), m.end()) for m in re.finditer(r"\S+", s)]
+    if not tokens:
+        return s.strip()
+
+    changed = [i for i, (_, a, b) in enumerate(tokens) if b > start and a < end]
+    if not changed:  # change sits at a boundary; anchor on the nearest token
+        changed = [min(range(len(tokens)), key=lambda i: abs(tokens[i][1] - start))]
+    lo, hi = changed[0], changed[-1]
+
+    span = hi - lo + 1
+    if span >= _MAX_WORDS:
+        return " ".join(w for w, _, _ in tokens[lo : lo + _MAX_WORDS]) + "…"
+
+    remaining = _MAX_WORDS - span
+    lead, trail = remaining // 2, remaining - remaining // 2
+    a = max(0, lo - lead)
+    b = min(len(tokens), hi + 1 + trail)
+
+    out = " ".join(w for w, _, _ in tokens[a:b])
+    if a > 0:
+        out = "…" + out
+    if b < len(tokens):
+        out = out + "…"
+    return out
 
 
 def diff_text(old: Optional[str], new: Optional[str]) -> TextDiff:
