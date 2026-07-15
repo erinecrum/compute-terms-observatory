@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-07-15T02:33:52.292765+00:00",
-  "disclaimer": "This is an informational comparison of published documents, not legal advice. It describes what public documents say, with citations. Provider documents change and automated extraction can be wrong or stale — always review the current source documents yourself.",
+  "generated_at": "2026-07-15T03:52:33.358768+00:00",
+  "disclaimer": "This is an informational comparison of published documents, not legal advice. It describes what public documents say, with citations. Provider documents change and automated extraction can be wrong or stale. Always review the current source documents yourself.",
   "dimensions": [
     {
       "key": "availability_definition",
@@ -118,17 +118,17 @@
     {
       "provider": "azure",
       "provider_name": "Microsoft Azure",
-      "extracted_at": "2026-07-15T02:33:52.285356+00:00",
+      "extracted_at": "2026-07-15T03:41:37.571278+00:00",
       "model": "claude-opus-4-8",
       "documents": [
         {
           "slug": "sla",
           "doc_type": "sla",
-          "name": "SLA for Azure Virtual Machines (compute & GPU)",
-          "url": "https://azure.microsoft.com/en-us/support/legal/sla/virtual-machines/",
-          "fetched_at": "2026-07-15T02:33:26.930752+00:00",
-          "text_sha256": "bf611247e655516f632799b51bc15dc097154cbc18cab5de78615d8dc31dbaa2",
-          "included_chars": 11004,
+          "name": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
+          "url": "https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx",
+          "fetched_at": "2026-07-15T03:35:20.778700+00:00",
+          "text_sha256": "eccd116476753f05885ac10a6bff38dcb35d95008a82c07cea170335799ff773",
+          "included_chars": 349546,
           "truncated": false
         },
         {
@@ -216,19 +216,9 @@
     {
       "provider": "coreweave",
       "provider_name": "CoreWeave",
-      "extracted_at": "2026-07-15T00:57:43.626403+00:00",
+      "extracted_at": "2026-07-15T03:41:52.846211+00:00",
       "model": "claude-opus-4-8",
       "documents": [
-        {
-          "slug": "sla",
-          "doc_type": "sla",
-          "name": "CoreWeave AI Object Storage SLA",
-          "url": "https://docs.coreweave.com/docs/policies/terms-of-service/coreweave-ai-object-storage-policy",
-          "fetched_at": "2026-07-14T22:50:10.259185+00:00",
-          "text_sha256": "e9ff257f5161bf68269324d7e5f9445b50d55dcf5ba7a694c7345bb29f40cf90",
-          "included_chars": 4624,
-          "truncated": false
-        },
         {
           "slug": "service_terms",
           "doc_type": "service_terms",
@@ -491,70 +481,77 @@
     },
     "azure": {
       "availability_definition": {
-        "value": "Provided documents index SLA editions but do not include the actual uptime percentages or availability definition text; commitment percentage not present in provided text",
-        "confidence": "low",
-        "citation": "The Service Level Agreements (SLA) describe Microsoft's commitments for uptime",
+        "value": "instance-level and cluster/throughput-based (varies by service); VM in Availability Zones 99.99%, Availability Set/Dedicated Host Group 99.95%, Single-Instance VM 99.9% (Premium SSD); AKS API server 99.95% (AZ) / 99.9% (non-AZ); Capacity Blocks capacity-availability based",
+        "confidence": "high",
+        "citation": "Uptime Calculation and Service Levels for Virtual Machines in Availability Zones",
         "citation_document": "sla",
         "source": {
           "slug": "sla",
           "doc_type": "sla",
-          "name": "SLA for Azure Virtual Machines (compute & GPU)",
-          "url": "https://azure.microsoft.com/en-us/support/legal/sla/virtual-machines/",
-          "fetched_at": "2026-07-15T02:33:26.930752+00:00",
-          "text_sha256": "bf611247e655516f632799b51bc15dc097154cbc18cab5de78615d8dc31dbaa2"
+          "name": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
+          "url": "https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx",
+          "fetched_at": "2026-07-15T03:35:20.778700+00:00",
+          "text_sha256": "eccd116476753f05885ac10a6bff38dcb35d95008a82c07cea170335799ff773"
         },
         "human_verified": false
       },
       "credit_regime": {
-        "value": "not specified in provided text; SLA warranty remedies referenced but tier mapping/credit percentages/max/sole-remedy not included",
-        "confidence": "low",
-        "citation": "Customer's remedies for breach of this warranty are described in the SLA",
-        "citation_document": "service_terms",
+        "value": "Tiered by service; e.g. VM Availability Zones: <99.99%=10%, <99%=25%, <95%=100%. Standard tier VMs <99.9%=10%, <99%=25%, <95%=100%. Max credit 100% of monthly fees for affected resource. Service Credits are sole and exclusive remedy.",
+        "confidence": "high",
+        "citation": "Service Credits are your sole and exclusive remedy",
+        "citation_document": "sla",
         "source": {
-          "slug": "service_terms",
-          "doc_type": "service_terms",
-          "name": "Microsoft Customer Agreement (published)",
-          "url": "https://www.microsoft.com/licensing/docs/documents/download/Microsoft%20Customer%20Agreement.pdf",
-          "fetched_at": "2026-07-14T23:07:54.110573+00:00",
-          "text_sha256": "0d4f51d9d52ba28432acadf123f3e24dc067aa3aa1eefbdfafaa703decec09e7"
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
+          "url": "https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx",
+          "fetched_at": "2026-07-15T03:35:20.778700+00:00",
+          "text_sha256": "eccd116476753f05885ac10a6bff38dcb35d95008a82c07cea170335799ff773"
         },
         "human_verified": false
       },
       "claim_mechanics": {
-        "value": "not specified; claim filing, window, and evidence requirements not contained in provided SLA text",
-        "confidence": "low",
-        "citation": "",
-        "citation_document": "none",
-        "source": null,
+        "value": "Customer must submit a claim to Microsoft customer support with detailed description, time/duration of downtime, affected resource names, number/location of affected users, and error description. For Azure, claim must be received within 60 days of the Incident.",
+        "confidence": "high",
+        "citation": "we must receive the claim within 60 days of the Incident",
+        "citation_document": "sla",
+        "source": {
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
+          "url": "https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx",
+          "fetched_at": "2026-07-15T03:35:20.778700+00:00",
+          "text_sha256": "eccd116476753f05885ac10a6bff38dcb35d95008a82c07cea170335799ff773"
+        },
         "human_verified": false
       },
       "sla_exclusions": {
-        "value": "Beta/preview services excluded from SLA (Previews 'not included in the SLA'); throttling for excessive use present. Other exclusions not in provided text.",
-        "confidence": "medium",
-        "citation": "Previews are not included in the SLA for the corresponding Online Service",
-        "citation_document": "ai_terms",
+        "value": "Present: force majeure/outside reasonable control; external network/ISP/third-party; single-datacenter non-geo-resilient; customer fault/misuse; beta/preview/trial; throttling/abuse; exceeding quotas; scheduled/maintenance windows; customer-initiated operations (restart, scale). Performance degradation without unavailability excluded.",
+        "confidence": "high",
+        "citation": "This SLA and any applicable Service Levels do not apply to any performance or…",
+        "citation_document": "sla",
         "source": {
-          "slug": "ai_terms",
-          "doc_type": "ai_terms",
-          "name": "Microsoft Product Terms for Online Services",
-          "url": "https://www.microsoft.com/licensing/terms/product/ForOnlineServices/all",
-          "fetched_at": "2026-07-14T22:50:09.052258+00:00",
-          "text_sha256": "0853193df49254fe5976349bbf1722328d2a4b94c9b4aea84f3d4c7c85afe828"
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
+          "url": "https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx",
+          "fetched_at": "2026-07-15T03:35:20.778700+00:00",
+          "text_sha256": "eccd116476753f05885ac10a6bff38dcb35d95008a82c07cea170335799ff773"
         },
         "human_verified": false
       },
       "capacity_reservation": {
-        "value": "Consumption services may be sold as prepayments, reservations or other subscriptions (Azure reservations/meters); specific reservation commitment terms negotiated, not published",
-        "confidence": "medium",
-        "citation": "Consumption services may be sold as prepayments, reservations or other subscriptions",
-        "citation_document": "ai_terms",
+        "value": "Public docs describe On Demand Capacity Reservations for VMs and Capacity Blocks (reservation of compute capacity for a specified duration), each with their own SLA. Broader enterprise commitment vehicles (e.g. Enterprise Agreement pricing/commitments) negotiated, not published. Cancellation may incur fee per Product Terms.",
+        "confidence": "high",
+        "citation": "Capacity Block means a reservation of compute capacity for a specified duration",
+        "citation_document": "sla",
         "source": {
-          "slug": "ai_terms",
-          "doc_type": "ai_terms",
-          "name": "Microsoft Product Terms for Online Services",
-          "url": "https://www.microsoft.com/licensing/terms/product/ForOnlineServices/all",
-          "fetched_at": "2026-07-14T22:50:09.052258+00:00",
-          "text_sha256": "0853193df49254fe5976349bbf1722328d2a4b94c9b4aea84f3d4c7c85afe828"
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
+          "url": "https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx",
+          "fetched_at": "2026-07-15T03:35:20.778700+00:00",
+          "text_sha256": "eccd116476753f05885ac10a6bff38dcb35d95008a82c07cea170335799ff773"
         },
         "human_verified": false,
         "commitment_program": {
@@ -565,9 +562,9 @@
         }
       },
       "data_use_ai_training": {
-        "value": "Does not train on customer data by default: generative AI services will not use Customer Data to train foundation models except per customer's documented instructions; Output Content is Customer Data",
+        "value": "Does not train on customer data by default: Microsoft Generative AI Services will not use Customer Data to train any generative AI foundation model except per Customer's documented instructions. Output Content is Customer Data; Microsoft does not own it.",
         "confidence": "high",
-        "citation": "will not use Customer Data to train any generative AI foundation model, except pursuant to Customer's documented instructions",
+        "citation": "will not use Customer Data to train any generative AI foundation model",
         "citation_document": "ai_terms",
         "source": {
           "slug": "ai_terms",
@@ -580,22 +577,22 @@
         "human_verified": false
       },
       "suspension_rights": {
-        "value": "Grounds: AUP/Code of Conduct breach, material breach, non-payment (declined charge), security risk, trade-law risk. Reasonable/30-day notice generally; immediate suspension if needed to prevent unauthorized access or protect systems",
+        "value": "Grounds: material breach (non-payment), AUP/Code of Conduct violation, security risk, trade-law risk. 30 days' notice before suspension normally, but immediate suspension if payment declined or to prevent unauthorized access / protect systems. AUP violations suspended only to extent reasonably necessary with reasonable notice unless immediate needed.",
         "confidence": "high",
-        "citation": "Microsoft will provide reasonable notice before suspending... Unless Microsoft believes an immediate suspension is required",
-        "citation_document": "ai_terms",
+        "citation": "Microsoft will give Customer 30 days' notice before such suspension unless",
+        "citation_document": "service_terms",
         "source": {
-          "slug": "ai_terms",
-          "doc_type": "ai_terms",
-          "name": "Microsoft Product Terms for Online Services",
-          "url": "https://www.microsoft.com/licensing/terms/product/ForOnlineServices/all",
-          "fetched_at": "2026-07-14T22:50:09.052258+00:00",
-          "text_sha256": "0853193df49254fe5976349bbf1722328d2a4b94c9b4aea84f3d4c7c85afe828"
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "Microsoft Customer Agreement (published)",
+          "url": "https://www.microsoft.com/licensing/docs/documents/download/Microsoft%20Customer%20Agreement.pdf",
+          "fetched_at": "2026-07-14T23:07:54.110573+00:00",
+          "text_sha256": "0d4f51d9d52ba28432acadf123f3e24dc067aa3aa1eefbdfafaa703decec09e7"
         },
         "human_verified": false
       },
       "termination": {
-        "value": "Termination without cause by either party on 60 days' notice; subscriptions continue to end of current period. Post-termination data: 90 days to extract Customer Data from a disabled account",
+        "value": "Termination for convenience: either party on 60 days' notice. Post-termination data retrieval: for non-renewed Online Services, access continues 30 days after expiration; disabled account gives Customer 90 days to extract Customer Data.",
         "confidence": "high",
         "citation": "Either party may terminate this Agreement without cause on 60 days' notice",
         "citation_document": "service_terms",
@@ -610,22 +607,22 @@
         "human_verified": false
       },
       "unilateral_modification": {
-        "value": "Microsoft may update the Agreement; for General Terms/other terms, at least 60 days' notice and changes take effect upon renewal. AUP may be amended anytime without notice. DPA/SLA/Product Terms have their own update rules",
+        "value": "Microsoft may update the Agreement. General Terms/other terms: at least 60 days' notice, effective on renewal. SLA: at least 90 days' notice for adverse material changes. Product Terms: Material Adverse Changes apply at renewal; other changes effective on posting. No changes during initial subscription term for SLA.",
         "confidence": "high",
-        "citation": "Customer will be notified at least 60 days before changes take effect to these General Terms",
-        "citation_document": "service_terms",
+        "citation": "We will provide at least 90 days' notice for adverse material changes to this…",
+        "citation_document": "sla",
         "source": {
-          "slug": "service_terms",
-          "doc_type": "service_terms",
-          "name": "Microsoft Customer Agreement (published)",
-          "url": "https://www.microsoft.com/licensing/docs/documents/download/Microsoft%20Customer%20Agreement.pdf",
-          "fetched_at": "2026-07-14T23:07:54.110573+00:00",
-          "text_sha256": "0d4f51d9d52ba28432acadf123f3e24dc067aa3aa1eefbdfafaa703decec09e7"
+          "slug": "sla",
+          "doc_type": "sla",
+          "name": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
+          "url": "https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx",
+          "fetched_at": "2026-07-15T03:35:20.778700+00:00",
+          "text_sha256": "eccd116476753f05885ac10a6bff38dcb35d95008a82c07cea170335799ff773"
         },
         "human_verified": false
       },
       "governing_law_disputes": {
-        "value": "Governing law: State of Washington and US federal law. Venue: King County, WA (or Customer HQ / Ireland per party). Binding arbitration: not specified for enterprise customers. Class-action waiver: not specified",
+        "value": "Governing law: State of Washington and US federal law. Venue: if Customer sues (non-Europe Affiliate) King County, WA; if Microsoft sues, Customer's HQ; Europe = Ireland. Binding arbitration: no (court venues specified). Class-action waiver: not specified.",
         "confidence": "high",
         "citation": "governed by and construed in accordance with the laws of the State of Washington",
         "citation_document": "service_terms",
@@ -800,85 +797,71 @@
     },
     "coreweave": {
       "availability_definition": {
-        "value": "API-error-rate-based: Storage Monthly Uptime Percentage >= 99.9% for AI Object Storage (cwobject.com endpoint); computed as 100% minus average Error Percentage per 5-minute interval (InternalError/ServiceUnavailable errors / total requests). Applies only to Object Storage, not compute.",
+        "value": "no SLA / uptime not committed; sites provided 'as is, as available' with no uptime commitment",
         "confidence": "high",
-        "citation": "Storage Monthly Uptime Percentage of >= 99.9%",
-        "citation_document": "sla",
+        "citation": "THE COREWEAVE SITES ARE PROVIDED ON AN \"AS IS, AS AVAILABLE\" BASIS",
+        "citation_document": "service_terms",
         "source": {
-          "slug": "sla",
-          "doc_type": "sla",
-          "name": "CoreWeave AI Object Storage SLA",
-          "url": "https://docs.coreweave.com/docs/policies/terms-of-service/coreweave-ai-object-storage-policy",
-          "fetched_at": "2026-07-14T22:50:10.259185+00:00",
-          "text_sha256": "e9ff257f5161bf68269324d7e5f9445b50d55dcf5ba7a694c7345bb29f40cf90"
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "CoreWeave Terms of Use",
+          "url": "https://docs.coreweave.com/policies/terms-of-service/terms-of-use",
+          "fetched_at": "2026-07-14T22:50:09.689454+00:00",
+          "text_sha256": "88d876cd2087f912340547eb718a5e77ef485871dd1be94f644abc048a51d527"
         },
         "human_verified": false
       },
       "credit_regime": {
-        "value": "Tiers (% of monthly bill for affected AZ credited to future bills): 99%-99.9% -> 10%; 95%-98.999% -> 25%; <94.999% -> 100%. Credits are future-use monetary credits only, no refund. Stated as sole and exclusive remedy.",
+        "value": "not specified (no service-credit structure in provided documents)",
         "confidence": "high",
-        "citation": "sole and exclusive remedy for any failure",
-        "citation_document": "sla",
-        "source": {
-          "slug": "sla",
-          "doc_type": "sla",
-          "name": "CoreWeave AI Object Storage SLA",
-          "url": "https://docs.coreweave.com/docs/policies/terms-of-service/coreweave-ai-object-storage-policy",
-          "fetched_at": "2026-07-14T22:50:10.259185+00:00",
-          "text_sha256": "e9ff257f5161bf68269324d7e5f9445b50d55dcf5ba7a694c7345bb29f40cf90"
-        },
+        "citation": "",
+        "citation_document": "none",
+        "source": null,
         "human_verified": false
       },
       "claim_mechanics": {
-        "value": "Customer must request credit: notify support@coreweave.com within 30 days of becoming eligible; must provide applicable AZ and request logs documenting dates/times of each Error. Non-compliance forfeits the credit.",
+        "value": "not specified (no credit claim process in provided documents)",
         "confidence": "high",
-        "citation": "must notify CoreWeave technical support ... within thirty (30) days",
-        "citation_document": "sla",
-        "source": {
-          "slug": "sla",
-          "doc_type": "sla",
-          "name": "CoreWeave AI Object Storage SLA",
-          "url": "https://docs.coreweave.com/docs/policies/terms-of-service/coreweave-ai-object-storage-policy",
-          "fetched_at": "2026-07-14T22:50:10.259185+00:00",
-          "text_sha256": "e9ff257f5161bf68269324d7e5f9445b50d55dcf5ba7a694c7345bb29f40cf90"
-        },
+        "citation": "",
+        "citation_document": "none",
+        "source": null,
         "human_verified": false
       },
       "sla_exclusions": {
-        "value": "Present: force majeure / factors outside CoreWeave's reasonable control (incl. internet beyond demarcation point); customer fault/misuse (customer actions/inactions, customer/third-party software/hardware); TOS/AUP violations & suspension/termination; throttling (system quotas); scheduled maintenance (in-advance communicated); beta/pre-GA features.",
-        "confidence": "high",
-        "citation": "Exclusions. The Storage Financial Credits do not apply",
-        "citation_document": "sla",
+        "value": "No SLA present, so no formal SLA exclusions. General liability disclaimer covers force majeure ('events beyond the Company's reasonable control, including acts of God'), DDoS, viruses, interruptions/delays.",
+        "confidence": "medium",
+        "citation": "FAILURE OF PERFORMANCE WHETHER OR NOT CAUSED BY EVENTS BEYOND THE COMPANY'S REASONABLE CONTROL",
+        "citation_document": "service_terms",
         "source": {
-          "slug": "sla",
-          "doc_type": "sla",
-          "name": "CoreWeave AI Object Storage SLA",
-          "url": "https://docs.coreweave.com/docs/policies/terms-of-service/coreweave-ai-object-storage-policy",
-          "fetched_at": "2026-07-14T22:50:10.259185+00:00",
-          "text_sha256": "e9ff257f5161bf68269324d7e5f9445b50d55dcf5ba7a694c7345bb29f40cf90"
+          "slug": "service_terms",
+          "doc_type": "service_terms",
+          "name": "CoreWeave Terms of Use",
+          "url": "https://docs.coreweave.com/policies/terms-of-service/terms-of-use",
+          "fetched_at": "2026-07-14T22:50:09.689454+00:00",
+          "text_sha256": "88d876cd2087f912340547eb718a5e77ef485871dd1be94f644abc048a51d527"
         },
         "human_verified": false
       },
       "capacity_reservation": {
-        "value": "not specified in the provided public documents (no reserved instance, committed-use, take-or-pay, or cancellation terms appear)",
-        "confidence": "low",
+        "value": "not specified in public documents; no reserved-instance/committed-use/take-or-pay terms published (likely negotiated, not published)",
+        "confidence": "medium",
         "citation": "",
         "citation_document": "none",
         "source": null,
         "human_verified": false
       },
       "data_use_ai_training": {
-        "value": "not specified; provided documents (Terms of Use, AUP, Storage SLA) contain no language on provider use of customer data for training/improving AI/ML models (governed by TOS/Privacy Policy not included here)",
-        "confidence": "low",
+        "value": "not specified; no language on using customer data or content to train/improve AI/ML models. Terms reference Privacy Policy (not provided).",
+        "confidence": "medium",
         "citation": "",
         "citation_document": "none",
         "source": null,
         "human_verified": false
       },
       "suspension_rights": {
-        "value": "Under AUP, CoreWeave may suspend or terminate use of Services if it determines in good faith the Customer violated the AUP; may also intercept/block content or traffic where used unlawfully. Applies even if violation unintentional/unauthorized; exercisable at any time in sole discretion (no prior-notice requirement stated). Terms of Use: payment method problems may suspend/cancel a Transaction.",
+        "value": "May suspend or terminate for AUP violation (even unintentional/unauthorized), in good faith discretion; may also block content/traffic when used unlawfully. Payment problems may suspend/cancel a Transaction. No prior notice required; may act at any time in sole discretion.",
         "confidence": "high",
-        "citation": "suspend or terminate Customer's use ... applies even if a violation is committed unintentionally",
+        "citation": "CoreWeave may... suspend or terminate Customer's use of CoreWeave Services",
         "citation_document": "aup",
         "source": {
           "slug": "aup",
@@ -891,8 +874,8 @@
         "human_verified": false
       },
       "termination": {
-        "value": "Termination for convenience and post-termination data retrieval window not specified in the provided documents. Terms of Use: right to use CoreWeave Sites ceases immediately upon breach; AUP allows CoreWeave to terminate for violations. No customer termination-for-convenience or data-retrieval period stated.",
-        "confidence": "low",
+        "value": "Right to withdraw/amend sites and cease access in sole discretion without notice; AUP allows termination of service use on violation. No termination-for-convenience by customer or post-termination data-retrieval window specified.",
+        "confidence": "medium",
         "citation": "your right to use the CoreWeave Sites will cease immediately",
         "citation_document": "service_terms",
         "source": {
@@ -906,7 +889,7 @@
         "human_verified": false
       },
       "unilateral_modification": {
-        "value": "Terms of Use: Company may update Terms in its sole discretion; 'All changes are effective immediately when we post them.' AUP: 'CoreWeave may modify this AUP at any time by posting a revised version.' No advance-notice commitment; effective on posting.",
+        "value": "Provider may update terms in sole discretion; changes effective immediately upon posting, with continued use constituting agreement. AUP may be modified at any time by posting revised version.",
         "confidence": "high",
         "citation": "All changes are effective immediately when we post them",
         "citation_document": "service_terms",
@@ -921,9 +904,9 @@
         "human_verified": false
       },
       "governing_law_disputes": {
-        "value": "Governing law: New York (Terms of Use). Forum/venue: courts in New York, New York. Arbitration: optional at Company's sole discretion (binding, AAA rules, NY law) - not mandatory. Class-action waiver: yes (disputes resolved individually, no class action).",
+        "value": "Governing law: New York. Venue: courts in New York, New York. Arbitration: yes, at Company's sole discretion (AAA rules, NY law), binding. Class-action waiver: yes (disputes resolved individually, no class action).",
         "confidence": "high",
-        "citation": "resolved individually, without resort to any form of class action",
+        "citation": "any disputes... to final and binding arbitration... WITHOUT RESORT TO ANY FORM OF CLASS…",
         "citation_document": "service_terms",
         "source": {
           "slug": "service_terms",
@@ -1544,15 +1527,30 @@
       "provider_name": "Microsoft Azure",
       "doc_type": "sla",
       "slug": "sla",
-      "document": "SLA for Azure Virtual Machines (compute & GPU)",
+      "document": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
+      "url": "https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx",
+      "detected_at": "2026-07-15T03:35:20.778700+00:00",
+      "source_changed": true,
+      "added_lines": 0,
+      "removed_lines": 0,
+      "blocks": [],
+      "note": "Tracked source document changed; not an edit of the same document."
+    },
+    {
+      "provider": "azure",
+      "provider_name": "Microsoft Azure",
+      "doc_type": "sla",
+      "slug": "sla",
+      "document": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
       "url": "https://azure.microsoft.com/en-us/support/legal/sla/virtual-machines/",
       "detected_at": "2026-07-15T02:33:26.930752+00:00",
+      "source_changed": false,
       "added_lines": 5,
       "removed_lines": 0,
       "blocks": [
         {
           "old": "",
-          "new": "Service Level Agreement for Microsoft Online Services (WW) July 15 2026 English"
+          "new": "Service Level Agreement for Microsoft Online Services (WW) July 15 2026 English…"
         }
       ]
     }

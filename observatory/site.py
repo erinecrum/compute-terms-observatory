@@ -19,7 +19,11 @@ _CONF_LABEL = {"high": "high", "medium": "medium", "low": "low", "verified": "ve
 
 
 def esc(s) -> str:
-    return html.escape(str(s if s is not None else ""))
+    # House style (CLAUDE.md): no em/en dashes in any site copy. Sanitize at the
+    # render boundary so dashes from model output, notes, or citations never leak
+    # into the page.
+    text = str(s if s is not None else "").replace("—", "-").replace("–", "-")
+    return html.escape(text)
 
 
 def _shell(title: str, body: str, active: str, subtitle: str = "") -> str:
@@ -46,7 +50,7 @@ def _shell(title: str, body: str, active: str, subtitle: str = "") -> str:
 </header>
 <div class="disclaimer"><div class="wrap"><strong>Not legal advice.</strong>
   An informational comparison of published documents, with citations. Documents change and
-  automated extraction can be wrong or stale — review the current source documents yourself.</div></div>
+  automated extraction can be wrong or stale. Review the current source documents yourself.</div></div>
 <main class="wrap">
   <h1>{esc(title)}</h1>
   {f'<p class="subtitle">{esc(subtitle)}</p>' if subtitle else ''}
@@ -128,7 +132,7 @@ def render_matrix(dataset: dict) -> str:
         for p in providers:
             field = matrix.get(p["provider"], {}).get(d["key"])
             if field is None:
-                cells.append(f'<td class="cell empty" data-provider="{esc(p["provider"])}" data-dim="{esc(d["key"])}">—</td>')
+                cells.append(f'<td class="cell empty" data-provider="{esc(p["provider"])}" data-dim="{esc(d["key"])}">n/a</td>')
             else:
                 cells.append(_cell(p["provider"], d["key"], field))
         rows.append(
@@ -156,7 +160,7 @@ def render_about(dataset: dict) -> str:
     providers = dataset["providers"]
     dims = dataset["dimensions"]
     prov_list = "".join(
-        f"<li><strong>{esc(p['provider_name'])}</strong> — "
+        f"<li><strong>{esc(p['provider_name'])}</strong>: "
         + ", ".join(esc(doc["name"]) for doc in p["documents"])
         + "</li>"
         for p in providers
@@ -165,13 +169,13 @@ def render_about(dataset: dict) -> str:
     return f"""
 <h2>What this is</h2>
 <p>An informational, citation-first comparison of the <em>published</em> legal terms of
-cloud and GPU compute providers — their terms of service, SLAs, acceptable use policies,
+cloud and GPU compute providers: their terms of service, SLAs, acceptable use policies,
 and AI-specific terms. It states what documents say. It does not advise, recommend, or rate.</p>
 
 <h2>Methodology</h2>
 <ul>
 <li><strong>Archival.</strong> Every fetched document version is preserved with a timestamp and content hash; nothing is overwritten.</li>
-<li><strong>Extraction.</strong> A structured pass with Claude (Opus) reads each provider's documents against a fixed 10-term schema, returning a value, a confidence level, and a citation for every field. Values it cannot support are recorded as “not specified” or “unclear” — never guessed.</li>
+<li><strong>Extraction.</strong> A structured pass with Claude (Opus) reads each provider's documents against a fixed 10-term schema, returning a value, a confidence level, and a citation for every field. Values it cannot support are recorded as “not specified” or “unclear”, never guessed.</li>
 <li><strong>Human verification.</strong> Extractions can be corrected; corrected fields are marked human-verified and survive re-extraction.</li>
 <li><strong>Provenance.</strong> Every value links to its source document, with the fetch date and version hash behind it.</li>
 </ul>
@@ -183,7 +187,7 @@ and AI-specific terms. It states what documents say. It does not advise, recomme
 <ul class="coverage">{dim_list}</ul>
 
 <h2>Disclaimer</h2>
-<p>{esc(dataset.get("disclaimer",""))} Nothing here creates an attorney–client relationship.</p>
+<p>{esc(dataset.get("disclaimer",""))} Nothing here creates an attorney-client relationship.</p>
 """
 
 
@@ -219,7 +223,7 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
         progline = ""
         if prog:
             progline = (f'<div class="prog"><strong>{esc(prog["program"])}:</strong> {esc(prog["value"])} '
-                        f'(<a href="{esc(prog["citation_url"])}" target="_blank" rel="noopener">program page</a>) — {esc(prog.get("note",""))}</div>')
+                        f'(<a href="{esc(prog["citation_url"])}" target="_blank" rel="noopener">program page</a>). {esc(prog.get("note",""))}</div>')
         badge = '<span class="badge verified">✓ human-verified</span>' if verified else ''
         note = f'<div class="ovnote">{esc(f.get("override_note",""))}</div>' if f.get("override_note") else ''
         rows.append(f"""
@@ -235,7 +239,7 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
         chitems = "".join(_change_item(c) for c in changes)
         change_html = f'<div class="changes">{chitems}</div>'
     else:
-        change_html = '<p class="empty">No changes detected yet — the current snapshots are the baseline.</p>'
+        change_html = '<p class="empty">No changes detected yet. The current snapshots are the baseline.</p>'
 
     return f"""
 <p><a href="index.html">← Back to matrix</a></p>
@@ -254,13 +258,19 @@ def _change_item(c: dict) -> str:
         f'<div class="cblock"><div class="old">− {esc(b["old"])}</div><div class="new">+ {esc(b["new"])}</div></div>'
         for b in c.get("blocks", [])
     )
+    if c.get("source_changed"):
+        meta = f'<div class="cmeta">{esc(c.get("note",""))} <a href="{esc(c["url"])}" target="_blank" rel="noopener">source</a></div>'
+    else:
+        meta = (
+            f'<div class="cmeta">+{c.get("added_lines",0)} / {c.get("removed_lines",0)} lines removed · '
+            f'<a href="{esc(c["url"])}" target="_blank" rel="noopener">source</a></div>'
+        )
     return f"""
 <article class="change">
-  <div class="chead"><strong>{esc(c["provider_name"])}</strong> — {esc(c["document"])}
+  <div class="chead"><strong>{esc(c["provider_name"])}</strong>: {esc(c["document"])}
     <span class="tag">{esc(c["doc_type"])}</span>
     <span class="cdate">{esc(c["detected_at"][:10])}</span></div>
-  <div class="cmeta">+{c.get("added_lines",0)} / −{c.get("removed_lines",0)} lines ·
-    <a href="{esc(c["url"])}" target="_blank" rel="noopener">source</a></div>
+  {meta}
   {blocks}
 </article>"""
 
@@ -269,8 +279,8 @@ def render_changes(dataset: dict) -> str:
     log = dataset.get("change_log", [])
     if not log:
         return """
-<p class="empty">No document changes detected yet. This feed is the observatory's heartbeat —
-once a provider edits a tracked document, the change (with short before/after excerpts) appears
+<p class="empty">No document changes detected yet. This feed is the observatory's heartbeat.
+Once a provider edits a tracked document, the change (with short before/after excerpts) appears
 here in reverse-chronological order. The current run establishes the baseline.</p>"""
     return f'<div class="changes">{"".join(_change_item(c) for c in log)}</div>'
 
@@ -280,7 +290,7 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
     written = []
     n = len(dataset["providers"])
     pages = {
-        "index.html": ("Compute provider terms — comparison matrix", render_matrix(dataset), "index",
+        "index.html": ("Compute provider terms: comparison matrix", render_matrix(dataset), "index",
                         f"What {n} cloud & GPU providers' published terms say, side by side."),
         "changes.html": ("Change feed", render_changes(dataset), "changes",
                           "Detected changes to tracked documents, newest first."),

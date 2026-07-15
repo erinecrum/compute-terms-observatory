@@ -35,7 +35,7 @@ from .snapshot import SnapshotStore
 DISCLAIMER = (
     "This is an informational comparison of published documents, not legal advice. "
     "It describes what public documents say, with citations. Provider documents "
-    "change and automated extraction can be wrong or stale — always review the "
+    "change and automated extraction can be wrong or stale. Always review the "
     "current source documents yourself."
 )
 
@@ -114,25 +114,37 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
     for doc in registry.documents():
         history = store.history(doc.provider, doc.slug)
         for prev, curr in zip(history, history[1:]):
-            d = diff_text(prev.text, curr.text)
-            if not d.has_changes:
+            # If the tracked source URL changed between snapshots, this is a source
+            # swap, not a provider edit of the same document. A text diff across two
+            # different documents is meaningless as an "edit", so we flag it and
+            # withhold the excerpts rather than present a misleading change.
+            source_changed = prev.meta.get("url") != curr.meta.get("url")
+            # A source swap compares two different documents; the diff would be
+            # both meaningless and expensive (char-level on very long text), so we
+            # skip it entirely and only record that the source changed.
+            d = None if source_changed else diff_text(prev.text, curr.text)
+            if not source_changed and not d.has_changes:
                 continue
-            entries.append(
-                {
-                    "provider": doc.provider,
-                    "provider_name": doc.provider_name,
-                    "doc_type": doc.doc_type,
-                    "slug": doc.slug,
-                    "document": doc.name,
-                    "url": doc.url,
-                    "detected_at": curr.fetched_at,
-                    "added_lines": d.added_lines,
-                    "removed_lines": d.removed_lines,
-                    "blocks": [
-                        {"old": b.old_focus, "new": b.new_focus} for b in d.blocks[:5]
-                    ],
-                }
-            )
+            entry = {
+                "provider": doc.provider,
+                "provider_name": doc.provider_name,
+                "doc_type": doc.doc_type,
+                "slug": doc.slug,
+                "document": doc.name,
+                "url": curr.meta.get("url", doc.url),
+                "detected_at": curr.fetched_at,
+                "source_changed": source_changed,
+                "added_lines": 0 if source_changed else d.added_lines,
+                "removed_lines": 0 if source_changed else d.removed_lines,
+                "blocks": []
+                if source_changed
+                else [{"old": b.old_focus, "new": b.new_focus} for b in d.blocks[:5]],
+            }
+            if source_changed:
+                entry["note"] = (
+                    "Tracked source document changed; not an edit of the same document."
+                )
+            entries.append(entry)
     entries.sort(key=lambda e: e["detected_at"], reverse=True)
     return entries
 
