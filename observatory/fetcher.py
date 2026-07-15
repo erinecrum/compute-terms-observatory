@@ -126,6 +126,20 @@ def _pdf_text(content: bytes) -> str:
     return _lineify("\n".join(pages))
 
 
+def _docx_text(content: bytes) -> str:
+    """Extract text from a DOCX document, including table cells — SLA credit tiers
+    are usually laid out in tables, so paragraph text alone would miss them. Used
+    for documents published only as DOCX (e.g. the Azure consolidated SLA)."""
+    from docx import Document as DocxDocument
+
+    d = DocxDocument(io.BytesIO(content))
+    parts = [p.text for p in d.paragraphs]
+    for table in d.tables:
+        for row in table.rows:
+            parts.append(" | ".join(cell.text for cell in row.cells))
+    return _lineify("\n".join(parts))
+
+
 def _normalize(html: str) -> str:
     """Extract the document text and render it line-oriented for clean diffing."""
     soup = BeautifulSoup(html, "html.parser")
@@ -176,23 +190,30 @@ def fetch_document(doc: Document) -> FetchResult:
             or doc.url.lower().endswith(".pdf")
         )
 
-        # Guard: an Office/binary document (e.g. a DOCX SLA) would otherwise be
-        # decoded as HTML and snapshotted as garbage. Record a clean failure
-        # instead — we never store garbage, and we never touch prior snapshots.
-        is_zip_office = content[:4] == b"PK\x03\x04" or doc.url.lower().endswith(
-            (".docx", ".xlsx", ".pptx")
+        is_docx = doc.url.lower().endswith(".docx") or (
+            "wordprocessingml" in content_type
         )
-        if is_zip_office and not is_pdf:
-            raise RuntimeError(
-                "unsupported document format (DOCX/Office); ingestion not enabled "
-                "for this format yet"
-            )
+        # Any other zip-based Office binary (xlsx/pptx) we do not support: refuse
+        # rather than decode as HTML and store garbage. We never store garbage and
+        # never touch prior snapshots.
+        is_other_office = (
+            content[:4] == b"PK\x03\x04" and not is_docx
+        ) or doc.url.lower().endswith((".xlsx", ".pptx"))
 
         if is_pdf:
             text = _pdf_text(content)
             result.raw_bytes = content
             result.raw_ext = "pdf"
             result.raw_sha256 = sha256_bytes(content)
+        elif is_docx:
+            text = _docx_text(content)
+            result.raw_bytes = content
+            result.raw_ext = "docx"
+            result.raw_sha256 = sha256_bytes(content)
+        elif is_other_office:
+            raise RuntimeError(
+                "unsupported document format (Office binary other than DOCX/PDF)"
+            )
         else:
             raw_html = resp.text
             text = _normalize(raw_html)

@@ -60,9 +60,8 @@ providers:
         url: https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx
         notes: >-
           Verified: first-party download of the consolidated Online Services SLA
-          (DOCX, 372 KB, dated July 15 2026) with the actual uptime figures. TWO
-          caveats for fetching (Step 2): (1) it is a DOCX, so ingesting it needs a
-          docx text-extraction dependency you have not yet approved; (2) the URL is
+          (DOCX, 372 KB, dated July 15 2026) with the actual uptime figures and
+          credit-tier tables. Ingested via the DOCX path. CAVEAT: the URL is
           version-dated and will change when Microsoft revises the SLA, so a future
           run will report a fetch failure that prompts updating this URL.
       - doc_type: aup

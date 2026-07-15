@@ -1,0 +1,17 @@
+{
+  "provider": "azure",
+  "provider_name": "Microsoft Azure",
+  "doc_type": "sla",
+  "name": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
+  "url": "https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx",
+  "slug": "sla",
+  "fetched_at": "2026-07-15T03:35:20.778700+00:00",
+  "http_status": 200,
+  "ok": true,
+  "error": "",
+  "raw_ext": "docx",
+  "text_sha256": "eccd116476753f05885ac10a6bff38dcb35d95008a82c07cea170335799ff773",
+  "raw_sha256": "f44588029b50a5cf2c3062905290bacdecaa854d0d5bb6a9dd76d3a8384f9346",
+  "char_count": 349546,
+  "meta": {}
+}
