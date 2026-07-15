@@ -122,6 +122,51 @@ def cmd_extract(providers: List[str]) -> int:
     return 0 if failed == 0 else 2
 
 
+def cmd_run(skip_extract: bool) -> int:
+    """Full pipeline: fetch every document, snapshot what changed, re-extract only
+    the providers whose documents changed, then rebuild the dataset and site.
+    This is the weekly-run entry point and the 'one command locally' path."""
+    load_dotenv()
+    registry = load_registry("registry.yaml")
+    store = SnapshotStore("snapshots")
+
+    changed_providers = set()
+    fetch_failed = extract_failed = 0
+    print("1/4 Fetching + snapshotting changed documents...")
+    for doc in registry.documents():
+        result = fetch_document(doc)
+        if not result.ok:
+            fetch_failed += 1
+            print(f"     ✗ {doc.doc_id}: {result.error}")
+            continue
+        if store.save_if_changed(result) is not None:
+            changed_providers.add(doc.provider)
+            print(f"     ✎ changed: {doc.doc_id}")
+    print(f"     {len(changed_providers)} provider(s) changed, {fetch_failed} fetch failure(s).")
+
+    if changed_providers and not skip_extract:
+        print(f"2/4 Re-extracting changed providers: {', '.join(sorted(changed_providers))}")
+        for provider in sorted(changed_providers):
+            try:
+                save_extraction(extract_provider(provider, registry, store))
+                print(f"     ✓ {provider}")
+            except Exception as exc:  # noqa: BLE001
+                extract_failed += 1
+                print(f"     ✗ {provider}: {type(exc).__name__}: {exc}")
+    else:
+        print("2/4 No changed providers to re-extract (or extraction skipped).")
+
+    print("3/4 Building dataset...")
+    dataset = build_dataset(registry)
+    save_dataset(dataset)
+    print("4/4 Rendering site...")
+    render_site(dataset)
+    print("Done.")
+    # Transient page-fetch failures don't fail the run (partial corpus update is
+    # still useful); an extraction (API) failure does, so it's visible in CI.
+    return 0 if extract_failed == 0 else 2
+
+
 def cmd_build() -> int:
     """Assemble the comparison dataset from extractions + overrides + programs."""
     dataset = build_dataset()
@@ -168,6 +213,9 @@ def main() -> int:
 
     sub.add_parser("build", help="assemble the comparison dataset (data/dataset.json)")
     sub.add_parser("site", help="build the dataset and render the static site into site/")
+    p_run = sub.add_parser("run", help="full pipeline: fetch -> re-extract changed -> build -> site")
+    p_run.add_argument("--skip-extract", action="store_true",
+                       help="skip the Claude API step (rebuild dataset/site only)")
 
     args = parser.parse_args()
     if args.command == "fetch":
@@ -180,6 +228,8 @@ def main() -> int:
         return cmd_build()
     if args.command == "site":
         return cmd_site()
+    if args.command == "run":
+        return cmd_run(args.skip_extract)
     parser.error(f"unknown command {args.command!r}")
     return 1
 

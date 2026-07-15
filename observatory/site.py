@@ -118,7 +118,8 @@ def render_matrix(dataset: dict) -> str:
     )
 
     head_cells = "".join(
-        f'<th class="prov-col" data-provider="{esc(p["provider"])}">{esc(p["provider_name"])}</th>'
+        f'<th class="prov-col" data-provider="{esc(p["provider"])}">'
+        f'<a href="provider-{esc(p["provider"])}.html">{esc(p["provider_name"])}</a></th>'
         for p in providers
     )
     rows = []
@@ -186,16 +187,116 @@ and AI-specific terms. It states what documents say. It does not advise, recomme
 """
 
 
+def render_provider(dataset: dict, pmeta: dict) -> str:
+    provider = pmeta["provider"]
+    fields = dataset["matrix"].get(provider, {})
+    dims = dataset["dimensions"]
+
+    # Documents used, with provenance.
+    docs = "".join(
+        f'<li><a href="{esc(d["url"])}" target="_blank" rel="noopener">{esc(d["name"])}</a> '
+        f'<span class="tag">{esc(d["doc_type"])}</span> · fetched {esc(d["fetched_at"][:10])} · '
+        f'<code>{esc(d["text_sha256"][:12])}</code>'
+        f'{" · <em>truncated for length</em>" if d.get("truncated") else ""}</li>'
+        for d in pmeta.get("documents", [])
+    )
+
+    rows = []
+    for dim in dims:
+        f = fields.get(dim["key"])
+        if not f:
+            continue
+        verified = f.get("human_verified", False)
+        conf = f.get("confidence", "low")
+        source = f.get("source")
+        prog = f.get("commitment_program")
+        cite = f'<div class="cite">“{esc(f.get("citation",""))}”</div>' if f.get("citation") else ""
+        src = ""
+        if source:
+            src = (f'<div class="src">Source: <a href="{esc(source["url"])}" target="_blank" rel="noopener">'
+                   f'{esc(source["name"])}</a> · fetched {esc(source.get("fetched_at","")[:10])} · '
+                   f'<code>{esc(source.get("text_sha256","")[:12])}</code></div>')
+        progline = ""
+        if prog:
+            progline = (f'<div class="prog"><strong>{esc(prog["program"])}:</strong> {esc(prog["value"])} '
+                        f'(<a href="{esc(prog["citation_url"])}" target="_blank" rel="noopener">program page</a>) — {esc(prog.get("note",""))}</div>')
+        badge = '<span class="badge verified">✓ human-verified</span>' if verified else ''
+        note = f'<div class="ovnote">{esc(f.get("override_note",""))}</div>' if f.get("override_note") else ''
+        rows.append(f"""
+<section class="pdim">
+  <h3>{_conf_dot(conf, verified)} {esc(dim["label"])} {badge}</h3>
+  <p class="pval">{esc(f.get("value",""))}</p>
+  {cite}{progline}{note}{src}
+</section>""")
+
+    # This provider's change history.
+    changes = [c for c in dataset.get("change_log", []) if c["provider"] == provider]
+    if changes:
+        chitems = "".join(_change_item(c) for c in changes)
+        change_html = f'<div class="changes">{chitems}</div>'
+    else:
+        change_html = '<p class="empty">No changes detected yet — the current snapshots are the baseline.</p>'
+
+    return f"""
+<p><a href="index.html">← Back to matrix</a></p>
+<h2>Documents archived</h2>
+<ul class="coverage">{docs}</ul>
+<h2>Extracted terms</h2>
+{"".join(rows)}
+<h2>Change history</h2>
+{change_html}
+<p class="genline">Extracted {esc(pmeta.get("extracted_at","")[:16].replace("T"," "))} UTC with {esc(pmeta.get("model",""))}.</p>
+"""
+
+
+def _change_item(c: dict) -> str:
+    blocks = "".join(
+        f'<div class="cblock"><div class="old">− {esc(b["old"])}</div><div class="new">+ {esc(b["new"])}</div></div>'
+        for b in c.get("blocks", [])
+    )
+    return f"""
+<article class="change">
+  <div class="chead"><strong>{esc(c["provider_name"])}</strong> — {esc(c["document"])}
+    <span class="tag">{esc(c["doc_type"])}</span>
+    <span class="cdate">{esc(c["detected_at"][:10])}</span></div>
+  <div class="cmeta">+{c.get("added_lines",0)} / −{c.get("removed_lines",0)} lines ·
+    <a href="{esc(c["url"])}" target="_blank" rel="noopener">source</a></div>
+  {blocks}
+</article>"""
+
+
+def render_changes(dataset: dict) -> str:
+    log = dataset.get("change_log", [])
+    if not log:
+        return """
+<p class="empty">No document changes detected yet. This feed is the observatory's heartbeat —
+once a provider edits a tracked document, the change (with short before/after excerpts) appears
+here in reverse-chronological order. The current run establishes the baseline.</p>"""
+    return f'<div class="changes">{"".join(_change_item(c) for c in log)}</div>'
+
+
 def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     written = []
+    n = len(dataset["providers"])
     pages = {
         "index.html": ("Compute provider terms — comparison matrix", render_matrix(dataset), "index",
-                        "What eight cloud & GPU providers' published terms say, side by side."),
+                        f"What {n} cloud & GPU providers' published terms say, side by side."),
+        "changes.html": ("Change feed", render_changes(dataset), "changes",
+                          "Detected changes to tracked documents, newest first."),
         "about.html": ("About & methodology", render_about(dataset), "about", ""),
     }
     for fname, (title, body, active, subtitle) in pages.items():
         (out_dir / fname).write_text(_shell(title, body, active, subtitle), encoding="utf-8")
+        written.append(out_dir / fname)
+    # One detail page per provider.
+    for pmeta in dataset["providers"]:
+        fname = f"provider-{pmeta['provider']}.html"
+        title = pmeta["provider_name"]
+        (out_dir / fname).write_text(
+            _shell(title, render_provider(dataset, pmeta), "", "Published terms, citations, and change history."),
+            encoding="utf-8",
+        )
         written.append(out_dir / fname)
     return written
 
@@ -253,6 +354,27 @@ vertical-align:top;text-align:left;padding:10px 12px}
 ul.coverage li{margin-bottom:6px}
 .site-foot{border-top:1px solid var(--line);color:var(--muted);font-size:13px;margin-top:40px}
 .site-foot .wrap{padding:18px 20px}
+.tag{display:inline-block;background:var(--panel);border:1px solid var(--line);border-radius:4px;
+padding:0 6px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+code{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:0 4px;font-size:12px}
+.pdim{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0;background:var(--bg)}
+.pdim h3{margin:0 0 8px;font-size:15px;color:var(--fg);text-transform:none;letter-spacing:0;display:flex;align-items:center;gap:8px}
+.pval{margin:0 0 8px}
+.cite{color:var(--muted);font-style:italic}
+.prog{margin-top:8px;background:#eef3f9;border-radius:6px;padding:8px 10px;font-size:13px}
+.src{margin-top:8px;font-size:12px;color:var(--muted)}
+.ovnote{margin-top:6px;font-size:12px;color:var(--accent)}
+.empty{color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+.changes{display:flex;flex-direction:column;gap:14px}
+.change{border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.chead{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.cdate{margin-left:auto;color:var(--muted);font-size:13px}
+.cmeta{color:var(--muted);font-size:12px;margin:4px 0 8px}
+.cblock{margin:6px 0;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.cblock .old{background:#fbeaea;color:#7a1f1f;border-radius:4px;padding:3px 6px;margin-bottom:3px}
+.cblock .new{background:#e9f6ec;color:#1f5a2e;border-radius:4px;padding:3px 6px}
+.matrix th.prov-col a{color:var(--accent);text-decoration:none}
+.matrix th.prov-col a:hover{text-decoration:underline}
 @media(max-width:640px){.matrix td.cell{min-width:200px}.nav a{margin-left:12px}}
 """
 

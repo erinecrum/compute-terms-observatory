@@ -1,7 +1,7 @@
 {
   "provider": "azure",
   "provider_name": "Microsoft Azure",
-  "extracted_at": "2026-07-15T00:57:01.270509+00:00",
+  "extracted_at": "2026-07-15T02:33:52.285356+00:00",
   "model": "claude-opus-4-8",
   "documents_used": [
     {
@@ -9,9 +9,9 @@
       "doc_type": "sla",
       "name": "SLA for Azure Virtual Machines (compute & GPU)",
       "url": "https://azure.microsoft.com/en-us/support/legal/sla/virtual-machines/",
-      "fetched_at": "2026-07-14T22:50:07.407432+00:00",
-      "text_sha256": "496b3717f1c530179566eb7c5e8ce185c249cad35e1e9a937f60ec30c92bfc7f",
-      "included_chars": 10924,
+      "fetched_at": "2026-07-15T02:33:26.930752+00:00",
+      "text_sha256": "bf611247e655516f632799b51bc15dc097154cbc18cab5de78615d8dc31dbaa2",
+      "included_chars": 11004,
       "truncated": false
     },
     {
@@ -47,15 +47,22 @@
   ],
   "fields": {
     "availability_definition": {
-      "value": "not specified in provided text; the actual SLA percentages/definitions are only in downloadable SLA PDFs, not in the page content provided",
+      "value": "Provided documents index SLA editions but do not include the actual uptime percentages or availability definition text; commitment percentage not present in provided text",
       "confidence": "low",
-      "citation": "",
-      "citation_document": "none",
-      "source": null,
+      "citation": "The Service Level Agreements (SLA) describe Microsoft's commitments for uptime",
+      "citation_document": "sla",
+      "source": {
+        "slug": "sla",
+        "doc_type": "sla",
+        "name": "SLA for Azure Virtual Machines (compute & GPU)",
+        "url": "https://azure.microsoft.com/en-us/support/legal/sla/virtual-machines/",
+        "fetched_at": "2026-07-15T02:33:26.930752+00:00",
+        "text_sha256": "bf611247e655516f632799b51bc15dc097154cbc18cab5de78615d8dc31dbaa2"
+      },
       "human_verified": false
     },
     "credit_regime": {
-      "value": "not specified in provided text; SLA describes 'Microsoft's commitments for uptime' but tier/credit details are in the downloadable PDF, not shown. Customer Agreement states SLA remedies are Customer's remedies for breach of Online Services warranty",
+      "value": "not specified in provided text; SLA warranty remedies referenced but tier mapping/credit percentages/max/sole-remedy not included",
       "confidence": "low",
       "citation": "Customer's remedies for breach of this warranty are described in the SLA",
       "citation_document": "service_terms",
@@ -70,7 +77,7 @@
       "human_verified": false
     },
     "claim_mechanics": {
-      "value": "not specified in provided text; claim filing procedure and window are in the downloadable SLA PDF, not shown",
+      "value": "not specified; claim filing, window, and evidence requirements not contained in provided SLA text",
       "confidence": "low",
       "citation": "",
       "citation_document": "none",
@@ -78,7 +85,7 @@
       "human_verified": false
     },
     "sla_exclusions": {
-      "value": "Beta/preview services excluded ('Previews are not included in the SLA'). Full SLA exclusion list is in downloadable PDF, not shown. Present: beta/preview; throttling referenced ('temporary throttling') though not framed as SLA exclusion",
+      "value": "Beta/preview services excluded from SLA (Previews 'not included in the SLA'); throttling for excessive use present. Other exclusions not in provided text.",
       "confidence": "medium",
       "citation": "Previews are not included in the SLA for the corresponding Online Service",
       "citation_document": "ai_terms",
@@ -93,7 +100,7 @@
       "human_verified": false
     },
     "capacity_reservation": {
-      "value": "Consumption services may be sold as prepayments, reservations, or other subscriptions (Azure reservations); prices subject to change. Detailed commitment/cancellation terms largely negotiated, not published in these docs",
+      "value": "Consumption services may be sold as prepayments, reservations or other subscriptions (Azure reservations/meters); specific reservation commitment terms negotiated, not published",
       "confidence": "medium",
       "citation": "Consumption services may be sold as prepayments, reservations or other subscriptions",
       "citation_document": "ai_terms",
@@ -108,9 +115,9 @@
       "human_verified": false
     },
     "data_use_ai_training": {
-      "value": "Does not train on customer data by default: 'Microsoft Generative AI Services will not use Customer Data to train any generative AI foundation model, except pursuant to Customer's documented instructions.' Output Content is Customer Data",
+      "value": "Does not train on customer data by default: generative AI services will not use Customer Data to train foundation models except per customer's documented instructions; Output Content is Customer Data",
       "confidence": "high",
-      "citation": "will not use Customer Data to train any generative AI foundation model",
+      "citation": "will not use Customer Data to train any generative AI foundation model, except pursuant to Customer's documented instructions",
       "citation_document": "ai_terms",
       "source": {
         "slug": "ai_terms",
@@ -123,22 +130,22 @@
       "human_verified": false
     },
     "suspension_rights": {
-      "value": "Grounds: AUP violation, non-payment/declined charge, material breach, security risk, trade-law risk. Prior notice generally required (30 days for breach; reasonable notice for AUP) but immediate suspension allowed to prevent unauthorized data access or protect systems",
+      "value": "Grounds: AUP/Code of Conduct breach, material breach, non-payment (declined charge), security risk, trade-law risk. Reasonable/30-day notice generally; immediate suspension if needed to prevent unauthorized access or protect systems",
       "confidence": "high",
-      "citation": "Microsoft reasonably believes immediate suspension is required to prevent unauthorized access",
-      "citation_document": "service_terms",
+      "citation": "Microsoft will provide reasonable notice before suspending... Unless Microsoft believes an immediate suspension is required",
+      "citation_document": "ai_terms",
       "source": {
-        "slug": "service_terms",
-        "doc_type": "service_terms",
-        "name": "Microsoft Customer Agreement (published)",
-        "url": "https://www.microsoft.com/licensing/docs/documents/download/Microsoft%20Customer%20Agreement.pdf",
-        "fetched_at": "2026-07-14T23:07:54.110573+00:00",
-        "text_sha256": "0d4f51d9d52ba28432acadf123f3e24dc067aa3aa1eefbdfafaa703decec09e7"
+        "slug": "ai_terms",
+        "doc_type": "ai_terms",
+        "name": "Microsoft Product Terms for Online Services",
+        "url": "https://www.microsoft.com/licensing/terms/product/ForOnlineServices/all",
+        "fetched_at": "2026-07-14T22:50:09.052258+00:00",
+        "text_sha256": "0853193df49254fe5976349bbf1722328d2a4b94c9b4aea84f3d4c7c85afe828"
       },
       "human_verified": false
     },
     "termination": {
-      "value": "Termination for convenience: either party on 60 days' notice. Post-termination data retrieval: for non-renewed/disabled subscriptions, Customer has 90 days to extract Customer Data",
+      "value": "Termination without cause by either party on 60 days' notice; subscriptions continue to end of current period. Post-termination data: 90 days to extract Customer Data from a disabled account",
       "confidence": "high",
       "citation": "Either party may terminate this Agreement without cause on 60 days' notice",
       "citation_document": "service_terms",
@@ -153,7 +160,7 @@
       "human_verified": false
     },
     "unilateral_modification": {
-      "value": "Microsoft may update the Agreement. For General Terms/other terms, 60 days' notice before changes take effect (effective on renewal). Product Terms: material adverse changes apply at renewal, others on publication. SLA/DPA changes per those documents. AUP may change at any time without notice",
+      "value": "Microsoft may update the Agreement; for General Terms/other terms, at least 60 days' notice and changes take effect upon renewal. AUP may be amended anytime without notice. DPA/SLA/Product Terms have their own update rules",
       "confidence": "high",
       "citation": "Customer will be notified at least 60 days before changes take effect to these General Terms",
       "citation_document": "service_terms",
@@ -168,7 +175,7 @@
       "human_verified": false
     },
     "governing_law_disputes": {
-      "value": "Governing law: State of Washington and US federal law. Venue: King County, WA for actions against Microsoft (non-Europe); Ireland for European affiliates; Customer HQ if Microsoft sues. Arbitration: no (exclusive court venues). Class-action waiver: not specified",
+      "value": "Governing law: State of Washington and US federal law. Venue: King County, WA (or Customer HQ / Ireland per party). Binding arbitration: not specified for enterprise customers. Class-action waiver: not specified",
       "confidence": "high",
       "citation": "governed by and construed in accordance with the laws of the State of Washington",
       "citation_document": "service_terms",

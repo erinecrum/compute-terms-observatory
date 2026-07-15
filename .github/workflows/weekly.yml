@@ -1,0 +1,64 @@
+name: Weekly observatory run
+
+# Fetches all sources, snapshots anything changed, re-extracts only changed
+# providers, rebuilds the dataset + site, commits the corpus, and deploys Pages.
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # Mondays 06:00 UTC
+  workflow_dispatch: {}     # allow manual runs
+
+# Least-privilege: contents to commit the corpus; pages/id-token to deploy.
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: observatory-weekly
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run pipeline (fetch -> extract changed -> build -> site)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python main.py run
+
+      - name: Commit updated corpus, dataset, and extractions
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add snapshots data
+          if git diff --cached --quiet; then
+            echo "No corpus or dataset changes this run."
+          else
+            git commit -m "chore: weekly observatory update [skip ci]"
+            git push
+          fi
+
+      - name: Upload site as Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: run
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
