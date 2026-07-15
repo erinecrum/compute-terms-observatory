@@ -8,7 +8,7 @@ terms say side by side, plus a feed of what changed over time.
 
 Built for technology and infrastructure attorneys, founders signing compute
 deals, and analysts. It answers *"what do compute providers' published terms
-actually say, how do they compare, and what changed"* — using only public
+actually say, how do they compare, and what changed"*, using only public
 documents. **It states what documents say. It never advises or recommends.**
 
 ---
@@ -20,7 +20,7 @@ It describes and compares what public documents say, with citations to the sourc
 document and section. It does not recommend providers, rate them, or tell you what
 to do. Provider documents change, and automated extraction can be wrong or stale.
 **Always review the current source documents yourself** before relying on anything
-here. Nothing in this repository or on the site creates an attorney–client
+here. Nothing in this repository or on the site creates an attorney-client
 relationship.
 
 ---
@@ -37,16 +37,16 @@ rights · termination · unilateral modification · governing law & disputes.
 
 ### How to read the site
 
-- **Matrix** (`index.html`) — providers as columns, the 10 dimensions as rows.
+- **Matrix** (`index.html`): providers as columns, the 10 dimensions as rows.
   Click any cell for the full value, the quoted citation, a link to the source
   document, the fetch date, and a model-confidence indicator. Filter by provider
   or dimension.
-- **Provider pages** — every term for one provider with citations and source
+- **Provider pages**: every term for one provider with citations and source
   links, the documents archived (with fetch date and version hash), and that
   provider's change history.
-- **Change feed** (`changes.html`) — the heartbeat: detected document changes in
+- **Change feed** (`changes.html`): the heartbeat. Detected document changes in
   reverse-chronological order, with short before/after excerpts.
-- **About** — methodology, coverage, and the disclaimer.
+- **About**: methodology, coverage, and the disclaimer.
 
 ## Design principles (non-negotiable)
 
@@ -60,11 +60,11 @@ rights · termination · unilateral modification · governing law & disputes.
    document says, with a citation. No recommendations, no risk ratings.
 4. **Everything traceable.** Each value stores its source URL, fetch date, and
    document version hash, plus the quoted basis. Values that can't be confidently
-   supported are recorded as **"not specified"** or **"unclear"** — never guessed.
+   supported are recorded as **"not specified"** or **"unclear"**, never guessed.
 
 ### The "not published" rule
 
-Some terms are negotiated privately and never published — e.g. the Microsoft
+Some terms are negotiated privately and never published, for example the Microsoft
 Azure Consumption Commitment (MACC), the AWS Enterprise Discount Program (EDP),
 and Google Cloud committed-use discounts. These are recorded under the
 capacity & reservation dimension as **"negotiated, not published"** with a
@@ -75,7 +75,7 @@ public evidence, and never substitute a third-party copy.
 
 ## How it works
 
-Python, minimal dependencies. The pipeline is data-driven — **adding a provider
+Python, minimal dependencies. The pipeline is data-driven. **Adding a provider
 or document is a [`registry.yaml`](registry.yaml) edit, not a code change.**
 
 ```
@@ -114,7 +114,7 @@ python main.py build          # assemble data/dataset.json
 python main.py site           # render the static site into site/
 ```
 
-The fetch / snapshot / diff layers need **no API key** — the corpus can be built
+The fetch / snapshot / diff layers need **no API key**. The corpus can be built
 and updated with no secret present. Only extraction calls the Claude API.
 
 ## Secrets
