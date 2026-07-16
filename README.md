@@ -146,3 +146,10 @@ confidential inputs). To publish later:
 Negotiated-terms data, user accounts/submissions, email subscriptions, provider
 ratings/scores, and more than 8 providers. The code is structured so providers
 and features can be added without rework.
+
+## License
+
+Released under the [MIT License](LICENSE). You may use, modify, and redistribute
+the code freely, including commercially, provided the copyright notice is kept.
+The license covers the software; the site's contents remain AI-generated
+summaries of public documents and are not legal advice (see the disclaimer above).
