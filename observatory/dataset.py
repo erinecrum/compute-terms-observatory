@@ -89,19 +89,28 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
             )
 
         matrix[provider] = fields
+        docs_used = record.get("documents_used", [])
+        # "Last updated" = the most recent time any of this provider's tracked
+        # documents was fetched (i.e. how current the archived source is).
+        last_updated = max((d.get("fetched_at", "") for d in docs_used), default="")
         providers_meta.append(
             {
                 "provider": provider,
                 "provider_name": provider_names.get(provider, provider),
                 "extracted_at": record.get("extracted_at", ""),
+                "last_updated": last_updated,
                 "model": record.get("model", ""),
-                "documents": record.get("documents_used", []),
+                "documents": docs_used,
                 "human_verified_dimensions": record.get("human_verified_dimensions", []),
             }
         )
 
+    data_current_as_of = max(
+        (p.get("last_updated", "") for p in providers_meta), default=""
+    )
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "data_current_as_of": data_current_as_of,
         "disclaimer": DISCLAIMER,
         "dimensions": [
             {

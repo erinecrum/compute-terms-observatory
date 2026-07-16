@@ -36,10 +36,12 @@ rights · termination · unilateral modification · governing law & disputes.
 
 ### How to read the site
 
-- **Matrix** (`index.html`): providers as columns, the 10 dimensions as rows.
-  Click any cell for the full value, the quoted citation, a link to the source
-  document, the fetch date, and a model-confidence indicator. Filter by provider
-  or dimension.
+- **Matrix** (`index.html`): providers as columns, the 10 dimensions as rows
+  (grouped into general contract terms and SLA terms), with a "last updated" date
+  per provider. Click any cell for the full value, the quoted citation, a link to
+  the source document, the fetch date, and a model-confidence indicator. Filter by
+  provider or dimension. Download the whole comparison as **Excel (.xlsx)** or use
+  **Print / Save as PDF**.
 - **Provider pages**: every term for one provider with citations and source
   links, the documents archived (with fetch date and version hash), and that
   provider's change history.

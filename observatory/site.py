@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import List
 
 SITE_DIR = Path("site")
+EXPORT_XLSX = "compute-terms-observatory.xlsx"
 
 _CONF_LABEL = {"high": "high", "medium": "medium", "low": "low", "verified": "verified"}
 
@@ -144,7 +145,8 @@ def render_matrix(dataset: dict) -> str:
 
     head_cells = "".join(
         f'<th class="prov-col" data-provider="{esc(p["provider"])}">'
-        f'<a href="provider-{esc(p["provider"])}.html">{esc(p["provider_name"])}</a></th>'
+        f'<a href="provider-{esc(p["provider"])}.html">{esc(p["provider_name"])}</a>'
+        f'<span class="col-updated">updated {esc((p.get("last_updated") or "")[:10])}</span></th>'
         for p in providers
     )
     rows = []
@@ -179,7 +181,13 @@ def render_matrix(dataset: dict) -> str:
     )
 
     gen = dataset.get("generated_at", "")[:16].replace("T", " ")
+    current = esc((dataset.get("data_current_as_of", "") or "")[:10])
     return f"""
+<div class="actions">
+  <a class="btn" href="{EXPORT_XLSX}" download>Download Excel (.xlsx)</a>
+  <button class="btn ghost" type="button" onclick="window.print()">Print / Save as PDF</button>
+  <span class="updated">Data current as of {current}</span>
+</div>
 <div class="filters">
   <details open><summary>Filter providers</summary><div class="checks">{prov_checks}</div></details>
   <details><summary>Filter dimensions</summary><div class="checks">{dim_checks}</div></details>
@@ -350,6 +358,11 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
             encoding="utf-8",
         )
         written.append(out_dir / fname)
+
+    # Downloadable Excel workbook, linked from the matrix page.
+    from .export import write_workbook
+
+    written.append(write_workbook(dataset, out_dir / EXPORT_XLSX))
     return written
 
 
@@ -488,9 +501,45 @@ font-family:var(--sans);display:flex;align-items:center;gap:9px}
 .site-foot{border-top:1px solid var(--line);color:var(--faint);font-size:13px;margin-top:52px}
 .site-foot .wrap{padding:22px 24px}
 
+/* Actions bar, buttons, last-updated */
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 18px}
+.btn{display:inline-flex;align-items:center;gap:7px;background:var(--accent);color:#fff;
+border:1px solid var(--accent);border-radius:9px;padding:8px 14px;font-size:13.5px;font-weight:600;
+cursor:pointer;text-decoration:none;font-family:var(--sans)}
+.btn:hover{background:var(--accent-2);border-color:var(--accent-2);text-decoration:none}
+.btn.ghost{background:transparent;color:var(--accent-2)}
+.btn.ghost:hover{background:var(--accent-soft)}
+.updated{margin-left:auto;color:var(--faint);font-size:12.5px}
+.col-updated{display:block;margin-top:3px;font-weight:400;font-size:11px;color:var(--faint);
+letter-spacing:0;text-transform:none}
+
+/* Print / Save as PDF: hide chrome, expand full values, fit to landscape paper */
+@media print{
+@page{size:landscape;margin:12mm}
+.site-head,.filters,.actions,.toolbar,.site-foot,.genline{display:none!important}
+.disclaimer{background:#fff!important;border:0;color:#000}
+.disclaimer .wrap{padding:0 0 8px}.disc-icon{display:none}
+body{color:#000;background:#fff;font-size:10px}
+.wrap{max-width:none;padding:0}
+h1{font-size:18px;margin:0 0 2px}.subtitle{font-size:11px;margin:0 0 10px}
+.table-scroll{overflow:visible;max-height:none;border:1px solid #999;border-radius:0;box-shadow:none}
+table.matrix{min-width:0;width:100%;font-size:9px}
+.matrix th,.matrix td{padding:5px 6px;border-color:#bbb}
+.matrix thead th{background:#eee!important;color:#000;position:static}
+.matrix th.dim-col{position:static;background:#f5f5f5!important;min-width:0}
+.matrix tr.grouprow th.groupcell{position:static;background:#e5e5e5!important;color:#000}
+.matrix tbody tr:hover td.cell{background:transparent}
+.toggle{display:none!important}
+.detail{display:block!important;border:0;background:transparent;padding:2px 0 0;color:#000}
+.detail .meta{display:none}.detail .src,.detail .cite{color:#333}
+.matrix td.cell,.matrix th.dim-col{max-width:none}
+tr,.change,.pdim{page-break-inside:avoid}
+}
+
 @media(max-width:680px){
 .wrap{padding:0 16px}.nav{gap:15px}.wordmark-2{font-size:17px}
 h1{font-size:24px}.matrix td.cell{min-width:210px}.table-scroll{max-height:74vh}
+.updated{margin-left:0}
 }
 """
 
