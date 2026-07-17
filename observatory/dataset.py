@@ -131,7 +131,11 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
 
 def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
     """Reverse-chronological detected document changes across all documents.
-    Each entry: provider, document, date detected, short old/new excerpts."""
+    Each entry: provider, document, date detected, short old/new excerpts, and a
+    cached plain-English AI description of the change (if one was generated)."""
+    from .change_notes import change_key, load_notes
+
+    notes = load_notes()
     entries: List[dict] = []
     for doc in registry.documents():
         history = store.history(doc.provider, doc.slug)
@@ -166,6 +170,10 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
                 entry["note"] = (
                     "Tracked source document changed; not an edit of the same document."
                 )
+            else:
+                note = notes.get(change_key(doc.provider, doc.slug, prev.stamp, curr.stamp))
+                if note:
+                    entry["ai_explanation"] = note.get("explanation", "")
             entries.append(entry)
     entries.sort(key=lambda e: e["detected_at"], reverse=True)
     return entries

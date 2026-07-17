@@ -156,6 +156,12 @@ def cmd_run(skip_extract: bool) -> int:
     else:
         print("2/4 No changed providers to re-extract (or extraction skipped).")
 
+    from observatory.change_notes import generate_missing
+
+    n_notes = generate_missing(registry, store)
+    if n_notes:
+        print(f"     described {n_notes} new change(s) for the change feed.")
+
     print("3/4 Building dataset...")
     dataset = build_dataset(registry)
     save_dataset(dataset)

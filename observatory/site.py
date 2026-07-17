@@ -315,12 +315,21 @@ def _change_item(c: dict) -> str:
             f'<div class="cmeta">+{c.get("added_lines",0)} / {c.get("removed_lines",0)} lines removed · '
             f'<a href="{esc(c["url"])}" target="_blank" rel="noopener">source</a></div>'
         )
+    ai = ""
+    if c.get("ai_explanation"):
+        ai = (
+            f'<div class="ai-note"><span class="ai-label">AI summary of this change</span>'
+            f'<p>{esc(c["ai_explanation"])}</p>'
+            f'<span class="ai-verify">This is an AI-generated description. Verify it against the '
+            f'source document before relying on it.</span></div>'
+        )
     return f"""
 <article class="change">
   <div class="chead"><strong>{esc(c["provider_name"])}</strong>: {esc(c["document"])}
     <span class="tag">{esc(c["doc_type"])}</span>
     <span class="cdate">{esc(c["detected_at"][:10])}</span></div>
   {meta}
+  {ai}
   {blocks}
 </article>"""
 
@@ -496,6 +505,11 @@ font-family:var(--sans);display:flex;align-items:center;gap:9px}
 .cblock{margin:6px 0;font-size:13px;font-family:var(--mono)}
 .cblock .old{background:var(--old-bg);color:var(--old-fg);border-radius:6px;padding:4px 7px;margin-bottom:4px}
 .cblock .new{background:var(--new-bg);color:var(--new-fg);border-radius:6px;padding:4px 7px}
+.ai-note{background:var(--accent-soft);border:1px solid var(--line-2);border-left:3px solid var(--accent);
+border-radius:0 8px 8px 0;padding:9px 12px;margin:8px 0}
+.ai-note p{margin:5px 0;font-size:13.5px;max-width:none}
+.ai-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent-2)}
+.ai-verify{font-size:11.5px;font-style:italic;color:var(--muted)}
 
 /* Footer */
 .site-foot{border-top:1px solid var(--line);color:var(--faint);font-size:13px;margin-top:52px}
