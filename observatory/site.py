@@ -316,15 +316,23 @@ def _change_item(c: dict) -> str:
             f'<a href="{esc(c["url"])}" target="_blank" rel="noopener">source</a></div>'
         )
     ai = ""
+    dims = c.get("dimensions", [])
+    chips = ""
+    if dims:
+        chips = '<div class="chips">' + "".join(
+            f'<span class="chip">{esc(d["label"])}</span>' for d in dims
+        ) + "</div>"
     if c.get("ai_explanation"):
         ai = (
             f'<div class="ai-note"><span class="ai-label">AI summary of this change</span>'
-            f'<p>{esc(c["ai_explanation"])}</p>'
+            f'<p>{esc(c["ai_explanation"])}</p>{chips}'
             f'<span class="ai-verify">This is an AI-generated description. Verify it against the '
             f'source document before relying on it.</span></div>'
         )
+    dim_keys = " ".join(d["key"] for d in dims)
     return f"""
-<article class="change">
+<article class="change" data-provider="{esc(c["provider"])}" data-pname="{esc(c["provider_name"])}"
+  data-date="{esc(c["detected_at"][:10])}" data-dims="{esc(dim_keys)}">
   <div class="chead"><strong>{esc(c["provider_name"])}</strong>: {esc(c["document"])}
     <span class="tag">{esc(c["doc_type"])}</span>
     <span class="cdate">{esc(c["detected_at"][:10])}</span></div>
@@ -341,7 +349,48 @@ def render_changes(dataset: dict) -> str:
 <p class="empty">No document changes detected yet. This feed is the observatory's heartbeat.
 Once a provider edits a tracked document, the change (with short before/after excerpts) appears
 here in reverse-chronological order. The current run establishes the baseline.</p>"""
-    return f'<div class="changes">{"".join(_change_item(c) for c in log)}</div>'
+
+    # Build filter options from the changes that actually exist.
+    providers = {}
+    for c in log:
+        providers.setdefault(c["provider"], c["provider_name"])
+    provisions = {}
+    for c in log:
+        for d in c.get("dimensions", []):
+            provisions.setdefault(d["key"], d["label"])
+
+    dates = sorted(c["detected_at"][:10] for c in log)
+    prov_checks = "".join(
+        f'<label><input type="checkbox" class="cf-prov" value="{esc(k)}" checked> {esc(v)}</label>'
+        for k, v in providers.items()
+    )
+    prv_checks = "".join(
+        f'<label><input type="checkbox" class="cf-dim" value="{esc(k)}" checked> {esc(v)}</label>'
+        for k, v in sorted(provisions.items(), key=lambda kv: kv[1])
+    )
+    controls = f"""
+<div class="cf-controls">
+  <div class="cf-row">
+    <label>Sort
+      <select id="cf-sort">
+        <option value="date-desc">Newest first</option>
+        <option value="date-asc">Oldest first</option>
+        <option value="prov">Provider A to Z</option>
+      </select>
+    </label>
+    <label>From <input type="date" id="cf-from" min="{esc(dates[0])}" max="{esc(dates[-1])}"></label>
+    <label>To <input type="date" id="cf-to" min="{esc(dates[0])}" max="{esc(dates[-1])}"></label>
+    <button type="button" id="cf-clear" class="btn ghost">Clear filters</button>
+  </div>
+  <div class="cf-facets">
+    <details><summary>Filter providers</summary><div class="checks">{prov_checks}</div></details>
+    <details><summary>Filter provisions</summary><div class="checks">{prv_checks}</div></details>
+  </div>
+</div>"""
+    items = "".join(_change_item(c) for c in log)
+    return f"""{controls}
+<div class="changes" id="cf-list">{items}</div>
+<p class="empty" id="cf-empty" hidden>No changes match your filters.</p>"""
 
 
 def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
@@ -510,6 +559,18 @@ border-radius:0 8px 8px 0;padding:9px 12px;margin:8px 0}
 .ai-note p{margin:5px 0;font-size:13.5px;max-width:none}
 .ai-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent-2)}
 .ai-verify{font-size:11.5px;font-style:italic;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 2px}
+.chip{background:var(--bg);border:1px solid var(--line-2);border-radius:20px;padding:1px 10px;
+font-size:11.5px;color:var(--accent-2);font-weight:600}
+.cf-controls{margin:0 0 20px;display:flex;flex-direction:column;gap:10px}
+.cf-row{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center}
+.cf-row label{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center}
+.cf-row select,.cf-row input[type=date]{font:inherit;font-size:13px;padding:6px 9px;
+border:1px solid var(--line-2);border-radius:8px;background:var(--bg);color:var(--ink)}
+.cf-facets{display:flex;flex-wrap:wrap;gap:12px}
+.cf-facets details{border:1px solid var(--line-2);border-radius:10px;padding:9px 13px;background:var(--panel)}
+.cf-facets details[open]{box-shadow:var(--shadow)}
+.cf-facets summary{cursor:pointer;font-weight:600;font-size:13px;color:var(--ink)}
 
 /* Footer */
 .site-foot{border-top:1px solid var(--line);color:var(--faint);font-size:13px;margin-top:52px}
@@ -584,4 +645,45 @@ function applyFilters(){
 document.addEventListener('change',function(e){
   if(e.target.classList.contains('f-prov')||e.target.classList.contains('f-dim')) applyFilters();
 });
+
+// Change-feed: sort + filter by provider, date range, and provision.
+(function(){
+  var list=document.getElementById('cf-list');
+  if(!list) return;
+  var items=[].slice.call(list.querySelectorAll('.change'));
+  var totalDim=document.querySelectorAll('.cf-dim').length;
+  function checked(cls){return [].slice.call(document.querySelectorAll(cls)).filter(function(c){return c.checked;}).map(function(c){return c.value;});}
+  function apply(){
+    var provs=checked('.cf-prov'), dims=checked('.cf-dim');
+    var from=document.getElementById('cf-from').value, to=document.getElementById('cf-to').value;
+    var sort=document.getElementById('cf-sort').value;
+    var dimsNarrowed=dims.length<totalDim, visible=0;
+    items.forEach(function(a){
+      var show=true;
+      if(provs.indexOf(a.dataset.provider)<0) show=false;
+      if(from && a.dataset.date<from) show=false;
+      if(to && a.dataset.date>to) show=false;
+      if(dimsNarrowed){
+        var ad=(a.dataset.dims||'').split(' ').filter(Boolean);
+        if(!ad.some(function(d){return dims.indexOf(d)>=0;})) show=false;
+      }
+      a.style.display=show?'':'none'; if(show) visible++;
+    });
+    items.slice().sort(function(x,y){
+      if(sort==='prov'){var c=(x.dataset.pname||'').localeCompare(y.dataset.pname||''); return c||(y.dataset.date).localeCompare(x.dataset.date);}
+      if(sort==='date-asc') return (x.dataset.date).localeCompare(y.dataset.date);
+      return (y.dataset.date).localeCompare(x.dataset.date);
+    }).forEach(function(a){list.appendChild(a);});
+    document.getElementById('cf-empty').hidden=visible>0;
+  }
+  document.addEventListener('change',function(e){
+    if(e.target.matches('.cf-prov,.cf-dim,#cf-sort,#cf-from,#cf-to')) apply();
+  });
+  document.getElementById('cf-clear').addEventListener('click',function(){
+    document.querySelectorAll('.cf-prov,.cf-dim').forEach(function(c){c.checked=true;});
+    document.getElementById('cf-from').value=''; document.getElementById('cf-to').value='';
+    document.getElementById('cf-sort').value='date-desc'; apply();
+  });
+  apply();
+})();
 """

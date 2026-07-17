@@ -19,17 +19,45 @@ from typing import Dict
 
 from .differ import diff_text
 from .registry import Registry
+from .schema import DIMENSION_KEYS, DIMENSIONS
 from .snapshot import SnapshotStore
 
 MODEL = "claude-sonnet-5"  # light, fast model is enough for short change summaries
 
 _SYSTEM = (
-    "You describe, in plain English, what changed between two versions of a cloud "
-    "provider's public legal document. Reply with one or two neutral, factual "
-    "sentences stating what the edit did (e.g. a number, a clause, or a policy that "
-    "was added, removed, or reworded). Do not give advice, opinions, or risk "
-    "assessments. Do not quote more than a few words from the document."
+    "You are given the passages that changed between two versions of a cloud "
+    "provider's public legal document. Summarize the SUBSTANTIVE changes (clauses, "
+    "terms, numbers, or policies added, removed, or reworded) in one to three "
+    "neutral, factual sentences. A routine 'Last Updated' date bump usually "
+    "accompanies substantive edits: do not describe only the date, and do not call "
+    "the whole edit administrative if any substantive clause also changed. Look at "
+    "every passage, not just the first. Do not give advice, opinions, or risk "
+    "assessments, and do not quote more than a few words. Then tag EVERY provided "
+    "provision dimension whose subject matter any changed passage falls within or "
+    "concerns (a renamed heading, a new subsection, or a reworded clause all count). "
+    "Return an empty dimension list only when every changed passage is purely "
+    "cosmetic page furniture: navigation links, formatting, or a date/version stamp."
 )
+
+_TOOL = {
+    "name": "record_change",
+    "description": "Record the plain-English change description and the provisions it affects.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "explanation": {
+                "type": "string",
+                "description": "One or two neutral sentences on what the edit did.",
+            },
+            "dimensions": {
+                "type": "array",
+                "items": {"type": "string", "enum": DIMENSION_KEYS},
+                "description": "Provision dimensions the change relates to; empty if purely administrative.",
+            },
+        },
+        "required": ["explanation", "dimensions"],
+    },
+}
 
 
 def notes_path() -> Path:
@@ -60,22 +88,39 @@ def _client():
     return Anthropic()
 
 
-def _explain(client, provider_name: str, document: str, blocks) -> str:
+def _clip(s: str, n: int = 350) -> str:
+    s = " ".join((s or "").split())
+    return s if len(s) <= n else s[:n] + "…"
+
+
+def _explain(client, provider_name: str, document: str, blocks):
+    """Return (explanation, dimension_keys) for one detected change. The model is
+    given the fuller changed passages for context; only the site display is held to
+    the under-15-words excerpt rule."""
+    dims_help = "\n".join(f"- {d.key}: {d.label}" for d in DIMENSIONS)
     excerpts = "\n".join(
-        f"- BEFORE: {b.old_focus}\n  AFTER:  {b.new_focus}" for b in blocks[:8]
+        f"- BEFORE: {_clip(b.old)}\n  AFTER:  {_clip(b.new)}" for b in blocks[:12]
     )
     prompt = (
         f"Provider: {provider_name}\nDocument: {document}\n\n"
+        f"Provision dimensions:\n{dims_help}\n\n"
         f"The following passages changed (before/after excerpts):\n{excerpts}\n\n"
-        "Describe what this change did."
+        "Describe what this change did and tag the provisions it affects."
     )
     resp = client.messages.create(
         model=MODEL,
-        max_tokens=200,
+        max_tokens=400,
         system=_SYSTEM,
+        tools=[_TOOL],
+        tool_choice={"type": "tool", "name": "record_change"},
         messages=[{"role": "user", "content": prompt}],
     )
-    return "".join(b.text for b in resp.content if getattr(b, "type", None) == "text").strip()
+    for b in resp.content:
+        if getattr(b, "type", None) == "tool_use":
+            inp = b.input
+            dims = [d for d in inp.get("dimensions", []) if d in DIMENSION_KEYS]
+            return inp.get("explanation", "").strip(), dims
+    return "", []
 
 
 def generate_missing(registry: Registry, store: SnapshotStore) -> int:
@@ -96,7 +141,8 @@ def generate_missing(registry: Registry, store: SnapshotStore) -> int:
             if prev.meta.get("url") != curr.meta.get("url"):
                 continue
             key = change_key(doc.provider, doc.slug, prev.stamp, curr.stamp)
-            if key in notes:
+            # Regenerate if absent or if it predates the provision-tagging field.
+            if key in notes and "dimensions" in notes[key]:
                 continue
             d = diff_text(prev.text, curr.text)
             if not d.has_changes:
@@ -104,11 +150,11 @@ def generate_missing(registry: Registry, store: SnapshotStore) -> int:
             if client is None:
                 client = _client()
             try:
-                text = _explain(client, doc.provider_name, doc.name, d.blocks)
+                text, dims = _explain(client, doc.provider_name, doc.name, d.blocks)
             except Exception as exc:  # noqa: BLE001 — record nothing rather than fail the run
                 print(f"  change note failed for {key}: {type(exc).__name__}: {exc}")
                 continue
-            notes[key] = {"explanation": text, "model": MODEL}
+            notes[key] = {"explanation": text, "dimensions": dims, "model": MODEL}
             generated += 1
 
     if generated:

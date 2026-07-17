@@ -136,6 +136,7 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
     from .change_notes import change_key, load_notes
 
     notes = load_notes()
+    dim_label = {d.key: d.label for d in DIMENSIONS}
     entries: List[dict] = []
     for doc in registry.documents():
         history = store.history(doc.provider, doc.slug)
@@ -174,6 +175,11 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
                 note = notes.get(change_key(doc.provider, doc.slug, prev.stamp, curr.stamp))
                 if note:
                     entry["ai_explanation"] = note.get("explanation", "")
+                    entry["dimensions"] = [
+                        {"key": k, "label": dim_label.get(k, k)}
+                        for k in note.get("dimensions", [])
+                        if k in dim_label
+                    ]
             entries.append(entry)
     entries.sort(key=lambda e: e["detected_at"], reverse=True)
     return entries
