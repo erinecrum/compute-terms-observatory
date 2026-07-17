@@ -11,9 +11,14 @@ __pycache__/
 *.egg-info/
 
 # Generated site output is a build artifact, rebuilt from the corpus + dataset.
-# NOTE: snapshots/ is deliberately NOT ignored — the raw corpus is the asset
-# and is committed on every run (see README, "Archival discipline").
 site/
+
+# Data corpus lives in the PRIVATE repo compute-terms-observatory-data. New
+# snapshots and dataset files are NOT committed to this public repo going forward.
+# The already-committed snapshots/ + data/ remain as a frozen public baseline
+# (git keeps tracking files added before this rule; only NEW files are ignored).
+snapshots/
+data/
 
 # macOS Finder metadata
 .DS_Store

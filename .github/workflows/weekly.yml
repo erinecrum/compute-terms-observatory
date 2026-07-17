@@ -1,20 +1,26 @@
 name: Weekly observatory run
 
-# Fetches all sources, snapshots anything changed, re-extracts only changed
-# providers, rebuilds the dataset + site, commits the corpus, and deploys Pages.
+# Refreshes the data corpus, which lives in the PRIVATE repo
+# compute-terms-observatory-data: fetch all sources, snapshot anything changed,
+# re-extract only changed providers, rebuild the dataset + site, push the updated
+# corpus back to the private repo, and deploy the site to Pages.
+#
+# Requires two repository secrets:
+#   ANTHROPIC_API_KEY - for the extraction layer
+#   DATA_REPO_TOKEN   - read/write access to the private data repo
+
 on:
   schedule:
     - cron: "0 6 * * 1"   # Mondays 06:00 UTC
   workflow_dispatch: {}     # allow manual runs
 
-# Least-privilege: contents to commit the corpus; pages/id-token to deploy.
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
 concurrency:
-  group: observatory-weekly
+  group: pages
   cancel-in-progress: false
 
 jobs:
@@ -23,10 +29,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Pull private data corpus
+        uses: actions/checkout@v4
+        with:
+          repository: erinecrum/compute-terms-observatory-data
+          token: ${{ secrets.DATA_REPO_TOKEN }}
+          path: _data
+
+      - name: Place corpus into the working tree
+        run: |
+          rm -rf snapshots data
+          cp -R _data/snapshots snapshots
+          cp -R _data/data data
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
       - name: Install dependencies
         run: pip install -r requirements.txt
 
@@ -35,20 +53,23 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python main.py run
 
-      - name: Commit updated corpus, dataset, and extractions
+      - name: Push refreshed corpus to the private data repo
         run: |
+          rm -rf _data/snapshots _data/data
+          cp -R snapshots _data/snapshots
+          cp -R data _data/data
+          cd _data
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add snapshots data
+          git add -A
           if git diff --cached --quiet; then
             echo "No corpus or dataset changes this run."
           else
-            git commit -m "chore: weekly observatory update [skip ci]"
+            git commit -m "chore: weekly corpus refresh [skip ci]"
             git push
           fi
 
-      - name: Upload site as Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: site
 

@@ -54,7 +54,9 @@ rights · termination · unilateral modification · governing law & disputes.
 1. **Archival discipline is the product.** Every fetched document version is
    preserved forever under `snapshots/<provider>/<slug>/<timestamp>.{html|pdf,txt,json}`,
    timestamped and content-hashed, committed to git, append-only. Nothing is
-   overwritten. The versioned corpus is the long-term asset.
+   overwritten. The versioned corpus is the long-term asset. The growing corpus
+   lives in a separate private repo (see "Code and data" below); this public repo
+   carries the code plus a frozen data baseline.
 2. **Public data only.** Only published documents at public URLs. No login-gated
    content, no user submissions, no confidential inputs anywhere.
 3. **Descriptive, never advisory.** Every generated value describes what a
@@ -99,6 +101,18 @@ registry.yaml ──▶ fetcher ──▶ snapshot store ──▶ differ ──
 Modules live in `observatory/`: `registry`, `fetcher`, `snapshot`, `differ`,
 `schema`, `extractor`, `overrides`, `dataset`, `site`.
 
+### Code and data (public code, private data)
+
+The code in this repo is open source (MIT). The **data corpus** (the growing
+`snapshots/` and `data/`) lives in a **separate private repository**,
+`compute-terms-observatory-data`. Going forward, `snapshots/` and `data/` are
+gitignored here, so new corpus versions land only in the private repo; the copies
+already committed to this repo stay as a frozen public baseline. The site build
+pulls the latest corpus from the private repo when a `DATA_REPO_TOKEN` is
+configured, and otherwise falls back to the committed baseline, so it always
+builds. (Note: the site still publishes the extracted comparison values, since
+that is the product; the private repo keeps the raw archived documents.)
+
 ### Run it locally
 
 ```bash
@@ -120,16 +134,22 @@ and updated with no secret present. Only extraction calls the Claude API.
 
 ## Secrets
 
-`ANTHROPIC_API_KEY` lives in a local `.env` (gitignored, never committed). The
-weekly GitHub Action reads it from a repository secret of the same name. See
-[`.env.example`](.env.example). No key string appears anywhere in the repo.
+- `ANTHROPIC_API_KEY` - the extraction layer's Claude API key. Local `.env`
+  (gitignored, never committed); repository secret for Actions. No key string
+  appears anywhere in the repo. See [`.env.example`](.env.example).
+- `DATA_REPO_TOKEN` - a token with read/write access to the private
+  `compute-terms-observatory-data` repo, so Actions can read the corpus at build
+  time and push refreshed data back. Repository secret only.
 
 ## Automation
 
-[`.github/workflows/weekly.yml`](.github/workflows/weekly.yml) runs every Monday
-(and on demand): fetch all sources, snapshot anything changed, re-extract only the
-changed providers, rebuild the dataset and site, commit the corpus, and deploy the
-site to GitHub Pages.
+- [`.github/workflows/pages.yml`](.github/workflows/pages.yml) - on every push and
+  on demand, builds the site (from the private corpus if `DATA_REPO_TOKEN` is set,
+  else the committed baseline) and deploys it to GitHub Pages.
+- [`.github/workflows/weekly.yml`](.github/workflows/weekly.yml) - every Monday
+  (and on demand): fetch all sources, snapshot anything changed, re-extract only
+  the changed providers, rebuild the dataset and site, push the refreshed corpus
+  to the private data repo, and deploy the site.
 
 ## Going public (one-time steps)
 

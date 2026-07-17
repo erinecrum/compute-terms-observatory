@@ -1,8 +1,10 @@
 name: Deploy site to GitHub Pages
 
-# Builds the static site from data already committed to the repo (no API key
-# needed) and deploys it to GitHub Pages. Runs on every push to main and on
-# demand. The weekly workflow refreshes the underlying data separately.
+# Builds the static site and deploys it to GitHub Pages on push and on demand.
+# Data lives in the PRIVATE repo compute-terms-observatory-data. If the
+# DATA_REPO_TOKEN secret is configured, the latest corpus is pulled from there;
+# otherwise the build falls back to the frozen data baseline committed to this
+# repo, so the site always deploys.
 
 on:
   push:
@@ -23,13 +25,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Pull private data corpus (if token configured)
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: erinecrum/compute-terms-observatory-data
+          token: ${{ secrets.DATA_REPO_TOKEN }}
+          path: _data
+
+      - name: Use private corpus when available, else the committed baseline
+        run: |
+          if [ -d _data/snapshots ]; then
+            rm -rf snapshots data
+            cp -R _data/snapshots snapshots
+            cp -R _data/data data
+            echo "Built from the private data corpus."
+          else
+            echo "No private corpus available; built from the committed baseline."
+          fi
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - name: Install dependencies
         run: pip install -r requirements.txt
-      - name: Build the site from committed data (no API key required)
+      - name: Build the site
         run: python main.py site
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
