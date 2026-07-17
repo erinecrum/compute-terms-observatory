@@ -15,6 +15,10 @@ from typing import List
 
 SITE_DIR = Path("site")
 EXPORT_XLSX = "compute-terms-observatory.xlsx"
+# Custom domain for GitHub Pages. Written into the build as a CNAME file so that
+# Actions deploys keep the custom domain (a deploy without it would clear the
+# Pages custom-domain setting).
+CUSTOM_DOMAIN = "www.computeterms.ai"
 
 _CONF_LABEL = {"high": "high", "medium": "medium", "low": "low", "verified": "verified"}
 
@@ -416,6 +420,11 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
             encoding="utf-8",
         )
         written.append(out_dir / fname)
+
+    # Custom domain marker for GitHub Pages.
+    if CUSTOM_DOMAIN:
+        (out_dir / "CNAME").write_text(CUSTOM_DOMAIN + "\n", encoding="utf-8")
+        written.append(out_dir / "CNAME")
 
     # Downloadable Excel workbook, linked from the matrix page.
     from .export import write_workbook
