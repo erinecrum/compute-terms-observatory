@@ -184,13 +184,14 @@ def _wordmark() -> str:
     )
 
 
-# The serif-italic deck line. Only the lead phrase links to the methodology. A short
-# variant is shown on narrow viewports (item 5), the full sentence on desktop.
-_DECK_LINK = '<a href="methodology.html">AI-generated summaries of public terms</a>'
+# The serif-italic deck line. "documented methodology" is the only link. A short
+# variant is shown on narrow viewports, the full sentence on desktop.
+_DECK_LINK = '<a href="methodology.html">documented methodology</a>'
 _DECK_HTML = (
-    f'<span class="deck-full">{_DECK_LINK} of cloud infrastructure providers and AI '
-    'model providers, not legal advice. Every value links to its source.</span>'
-    f'<span class="deck-short">{_DECK_LINK}, not legal advice.</span>'
+    '<span class="deck-full">The public terms of cloud infrastructure and AI model '
+    f'providers, summarized by AI under a {_DECK_LINK}. Not legal advice. '
+    'Every value links to its source.</span>'
+    '<span class="deck-short">Public terms, summarized by AI. Not legal advice.</span>'
 )
 
 
