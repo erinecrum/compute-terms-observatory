@@ -196,6 +196,24 @@ providers:
         name: CoreWeave AI-specific terms
         status: not_published
         notes: No dedicated AI terms document found; data terms sit in the Terms of Use / DPA.
+      # -- Data protection (Phase B) --
+      - doc_type: dpa
+        name: CoreWeave Data Processing Agreement
+        status: unverified
+        url: https://docs.coreweave.com/docs/policies/terms-of-service/data-processing-agreement
+      - doc_type: subprocessor_list
+        name: CoreWeave Sub-processors
+        status: unverified
+        url: https://docs.coreweave.com/docs/policies/terms-of-service/sub-processors
+        notes: 30-day advance notice of new sub-processors.
+      - doc_type: privacy_policy
+        name: CoreWeave Privacy Policy
+        status: unverified
+        url: https://www.coreweave.com/privacy-policy
+      - doc_type: transparency_report
+        name: CoreWeave transparency report
+        status: not_published
+        notes: No published transparency report (neocloud); dim 4 renders silent.
 
   - provider: lambda
     provider_name: Lambda
@@ -218,6 +236,23 @@ providers:
         name: Lambda AI-specific terms
         status: not_published
         notes: No dedicated AI terms document; only minimal AI-related language within the Terms.
+      # -- Data protection (Phase B) --
+      - doc_type: dpa
+        name: Lambda Data Processing Agreement
+        status: not_published
+        notes: DPA incorporated by reference / executed on request; no public URL.
+      - doc_type: privacy_policy
+        name: Lambda Privacy Policy
+        status: unverified
+        url: https://lambda.ai/legal/privacy-policy
+      - doc_type: subprocessor_list
+        name: Lambda sub-processor list
+        status: not_published
+        notes: No public list; dim 3 silent.
+      - doc_type: transparency_report
+        name: Lambda transparency report
+        status: not_published
+        notes: None published; dim 4 silent.
 
   - provider: crusoe
     provider_name: Crusoe
@@ -242,6 +277,25 @@ providers:
         name: Crusoe AI/service-specific terms
         status: within_service_terms
         notes: Service Specific Terms are a section of the legal center; no separate URL.
+      # -- Data protection (Phase B) --
+      - doc_type: dpa
+        name: Crusoe Data Processing and Security Terms
+        status: unverified
+        url: https://legal.crusoe.ai/
+        notes: DPA is a PDF via the legal center; confirm exact URL during capture.
+      - doc_type: subprocessor_list
+        name: Crusoe Cloud Subprocessors
+        status: unverified
+        url: https://trust.crusoe.ai/
+        notes: Via trust center (may be JS-rendered).
+      - doc_type: privacy_policy
+        name: Crusoe Privacy Notice
+        status: unverified
+        url: https://privacy.crusoe.ai/
+      - doc_type: transparency_report
+        name: Crusoe transparency report
+        status: not_published
+        notes: None published; dim 4 silent.
 
   - provider: runpod
     provider_name: Runpod
@@ -264,6 +318,23 @@ providers:
         name: Runpod AI-specific terms
         status: not_published
         notes: No dedicated AI terms document; data/content terms within the Terms of Service.
+      # -- Data protection (Phase B) --
+      - doc_type: dpa
+        name: Runpod Data Processing Agreement
+        status: unverified
+        url: https://www.runpod.io/legal/data-processing-agreement
+      - doc_type: privacy_policy
+        name: Runpod Privacy Policy
+        status: unverified
+        url: https://www.runpod.io/legal/privacy-policy
+      - doc_type: subprocessor_list
+        name: Runpod sub-processor list
+        status: not_published
+        notes: No public list; dim 3 silent.
+      - doc_type: transparency_report
+        name: Runpod transparency report
+        status: not_published
+        notes: None published; dim 4 silent.
 
   - provider: vast
     provider_name: Vast.ai
@@ -286,6 +357,23 @@ providers:
         name: Vast.ai AI-specific terms
         status: not_published
         notes: No dedicated AI terms document; data terms within the Terms / DPA.
+      # -- Data protection (Phase B) --
+      - doc_type: dpa
+        name: Vast.ai Data Processing Agreement
+        status: unverified
+        url: https://vast.ai/data-processing-agreement
+      - doc_type: privacy_policy
+        name: Vast.ai Privacy Policy
+        status: unverified
+        url: https://vast.ai/privacy
+      - doc_type: subprocessor_list
+        name: Vast.ai sub-processor list
+        status: not_published
+        notes: No public list; dim 3 silent.
+      - doc_type: transparency_report
+        name: Vast.ai transparency report
+        status: not_published
+        notes: None published; dim 4 silent.
 
   # ─────────────────── Neoclouds (inference platforms) ───────────────────
   - provider: together
@@ -301,6 +389,24 @@ providers:
         name: Together AI acceptable-use terms
         status: within_service_terms
         notes: Acceptable-use language within the Terms; no confirmed standalone AUP.
+      # -- Data protection (Phase B) --
+      - doc_type: dpa
+        name: Together AI Data Processing Addendum
+        status: unverified
+        url: https://www.together.ai/privacy
+        notes: DPA is a hosted PDF linked from privacy/legal; confirm exact URL during capture.
+      - doc_type: privacy_policy
+        name: Together AI Privacy Policy
+        status: unverified
+        url: https://www.together.ai/privacy
+      - doc_type: subprocessor_list
+        name: Together AI sub-processors
+        status: not_published
+        notes: Sub-processor terms within the DPA; no standalone list.
+      - doc_type: transparency_report
+        name: Together AI transparency report
+        status: not_published
+        notes: None published; dim 4 silent.
 
   - provider: baseten
     provider_name: Baseten
@@ -316,6 +422,25 @@ providers:
         status: unverified
         url: https://www.baseten.co/service-level-agreement/
         notes: Candidate SLA URL; confirm in the re-fetch pass.
+      # -- Data protection (Phase B) --
+      - doc_type: dpa
+        name: Baseten Data Processing Addendum
+        status: unverified
+        url: https://www.baseten.co/terms-and-conditions/
+        notes: DPA terms in / linked from the T&Cs; confirm during capture.
+      - doc_type: subprocessor_list
+        name: Baseten Sub-processors (Trust Center)
+        status: unverified
+        url: https://trust.baseten.co/
+        notes: SafeBase trust portal (JS-rendered; browser tier, else not_published).
+      - doc_type: privacy_policy
+        name: Baseten Privacy Policy
+        status: unverified
+        url: https://www.baseten.co/privacy-policy/
+      - doc_type: transparency_report
+        name: Baseten transparency report
+        status: not_published
+        notes: None published; dim 4 silent.
 
   # ═══════════════════ AI Model Providers (family entries) ═══════════════════
   # Display unit = model family. openness = closed_api | open_weight. License
