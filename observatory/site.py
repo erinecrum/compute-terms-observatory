@@ -128,11 +128,26 @@ CUSTOM_DOMAIN = "www.computeterms.ai"
 
 _CONF_LABEL = {"high": "high", "medium": "medium", "low": "low", "verified": "verified"}
 
-# The bespoke "O." brand mark (a chunky organic letter O with a detached dot,
-# reading as a period and, at size, a magnifier). Its vector source is a reserved
-# brand asset kept OUT of this public repo: it is loaded at build time from the
-# private brand store (data/brand.json). When that asset is absent (a code-only
-# build) a neutral geometric ring+dot placeholder is used instead.
+# The bespoke ".O" brand mark (a leading dot, then a chunky organic letter O, so
+# the lockup reads ".Observatory"). Its vector source is a reserved brand asset
+# kept OUT of this public repo: it is loaded at build time from the private brand
+# store (data/brand.json). When that asset is absent (a code-only build) a neutral
+# geometric dot+ring placeholder is used instead.
+#
+# Dot placement: the dot led to be misread as a Q when it sat at the bottom right,
+# because it overlapped the bowl horizontally and hung below the baseline, reading
+# as a tail rather than punctuation. Moving it in front removes the ambiguity
+# outright at any size. The mark canvas is therefore 120x100, not square: the dot
+# occupies the leading 30 units and the bowl sits at x35-113.
+# Source glyphs are drawn on a 100x100 canvas: the bowl spans x8-86 / y8-89, the
+# dot x71-95 / y71-94. Positioned here as: dot leading at x4-28, bowl at x31-109,
+# leaving a 3-unit gap between them (tight, the way a leading period sits against
+# a capital) and a 7-unit right margin that the wordmark's negative margin trims.
+MARK_VIEWBOX = "0 0 116 100"
+_DOT_SHIFT = "translate(-67,-5)"   # dot to the leading position, bottom on the baseline
+_O_SHIFT = "translate(23,0)"       # bowl right of the dot, 3 units clear
+
+
 def _load_brand_mark():
     p = Path("data/brand.json")
     if p.exists():
@@ -149,21 +164,26 @@ def _load_brand_mark():
 
 
 _MARK_O, _MARK_DOT = _load_brand_mark()
+# The two glyphs, positioned into the .O arrangement once at import.
+_MARK_INK = (f'<g transform="{_DOT_SHIFT}">{_MARK_DOT}</g>'
+             f'<g transform="{_O_SHIFT}">{_MARK_O}</g>')
 
 
 def _brand_mark(color: str = "#14120f", cls: str = "", title: str = "") -> str:
-    """The O. mark as inline SVG in a single color. `cls` sets a CSS class for
+    """The .O mark as inline SVG in a single color. `cls` sets a CSS class for
     sizing; `title` adds an accessible label (else the mark is decorative)."""
     c = f' class="{cls}"' if cls else ""
     a = f'<title>{esc(title)}</title>' if title else ' aria-hidden="true"'
-    return (f'<svg{c} viewBox="0 0 100 100" fill="{color}" xmlns="http://www.w3.org/2000/svg">'
-            f'{a}{_MARK_O}{_MARK_DOT}</svg>')
+    return (f'<svg{c} viewBox="{MARK_VIEWBOX}" fill="{color}" xmlns="http://www.w3.org/2000/svg">'
+            f'{a}{_MARK_INK}</svg>')
 
 
-# The favicon is the standalone O. glyph (ink), inline data URI, legible at 16px.
+# The favicon is the standalone .O glyph (ink), inline data URI, legible at 16px.
+# It uses a tight viewBox around the ink so the glyph is not letterboxed inside a
+# square tab icon.
 _FAVICON = "data:image/svg+xml," + urllib.parse.quote(
-    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='#14120f'>"
-    + _MARK_O + _MARK_DOT + "</svg>"
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 2 114 94' fill='#14120f'>"
+    + _MARK_INK + "</svg>"
 )
 
 
@@ -1001,7 +1021,11 @@ letter-spacing:.14em;text-transform:uppercase;line-height:1}
    eyebrow's cap height so the two lines read as one locked-up mark. */
 .wm-word{display:flex;align-items:flex-end;line-height:.85;color:var(--ink);font-size:31px;
 margin-top:-.06em}
-.wm-o{width:1.3em;height:1.3em;flex:0 0 auto;margin-bottom:-.18em;margin-right:-.14em}
+/* The mark canvas is 116x100 (dot + bowl), so width tracks height at 1.16:1 to keep
+   the bowl the same optical size as before. The bowl now ends 7 units short of the
+   box edge instead of 14, so the pull into "bservatory" halves to keep the same
+   join. Vertical geometry is unchanged, so margin-bottom stays. */
+.wm-o{width:1.51em;height:1.3em;flex:0 0 auto;margin-bottom:-.18em;margin-right:-.05em}
 .wm-word .wm-o path{fill:var(--ink)}
 .wm-txt{font-family:var(--wordmark);font-weight:800;letter-spacing:-.005em}
 .nav{display:flex;gap:26px}
@@ -1090,7 +1114,7 @@ padding-bottom:6px;border-bottom:1px solid var(--line)}
 .cmp-card.cmp-na .na-cross-lbl{font-size:13px}
 /* Mark used muted on empty states / 404, with a serif italic caption. */
 .mark-state{display:flex;flex-direction:column;align-items:center;gap:16px;padding:56px 0 24px;text-align:center}
-.mark-state svg{width:120px;height:120px;opacity:.4}
+.mark-state svg{width:139px;height:120px;opacity:.4}   /* 116x100 canvas */
 .mark-state p{margin:0;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-style:italic;color:var(--muted);font-size:17px}
 .ms-link{margin-top:2px!important}
 .ms-link a{font-family:var(--display);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
