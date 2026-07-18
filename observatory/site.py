@@ -92,6 +92,13 @@ _DECK_TEXT = ("AI-generated summaries of public terms, not legal advice. "
               "Every value links to its source.")
 
 
+def _sic(citation: str) -> str:
+    """Cohere's published Terms of Use genuinely contain the typo 'OFFERINfGS'
+    (verified in the raw HTML capture, not a normalization artifact). Flag it with
+    [sic] at the display layer only; the stored quote stays verbatim (Issue 13)."""
+    return (citation or "").replace("OFFERINfGS", "OFFERINfGS [sic]")
+
+
 def _mark_state(caption: str, link_href: str = "", link_text: str = "") -> str:
     """A character-free empty/404 state: the muted O. glyph + one serif-italic line."""
     link = (f'<p class="ms-link"><a href="{esc(link_href)}">{esc(link_text)}</a></p>'
@@ -216,7 +223,7 @@ def _cell(provider: str, dim_key: str, field: dict) -> str:
     prog = field.get("commitment_program")
 
     src_line = _source_line(source)
-    cite_line = f'<div class="cite">“{esc(citation)}”</div>' if citation else ""
+    cite_line = f'<div class="cite">“{esc(_sic(citation))}”</div>' if citation else ""
     _dc, _t, badge_cls, badge_text = _status_meta(field)
     badge = f'<span class="badge {badge_cls}">{esc(badge_text)}</span>'
     prog_line = ""
@@ -244,12 +251,12 @@ def _matrix_table(dims: list, subset: list, matrix: dict, table_id: str) -> str:
     if not subset:
         return '<p class="empty">No entries yet — these populate as their documents are classified.</p>'
     head = "".join(
-        f'<th class="prov-col" data-provider="{esc(p["provider"])}">'
+        f'<th scope="col" class="prov-col" data-provider="{esc(p["provider"])}">'
         f'<a href="provider-{esc(p["provider"])}.html">{esc(p["provider_name"])}</a>'
         f'<span class="col-sub">{esc(p.get("parent_company") or SEG_LABEL.get(p.get("segment",""), ""))}</span>'
         + ('<span class="col-stale" title="Some documents are archived via the Internet Archive; the latest capture is over 7 days old">&#9888; archive stale</span>'
            if p.get("has_stale_capture") else "")
-        + f'<span class="col-updated">upd {esc((p.get("last_updated") or "")[:10])}</span></th>'
+        + (lambda d: f'<span class="col-updated" title="Terms last updated {esc(d)}">updated {esc(d)}</span></th>')((p.get("last_updated") or "")[:10])
         for p in subset
     )
     ncols = len(subset) + 1
@@ -265,9 +272,9 @@ def _matrix_table(dims: list, subset: list, matrix: dict, table_id: str) -> str:
              else _cell(p["provider"], d["key"], matrix[p["provider"]][d["key"]]))
             for p in subset
         )
-        rows.append(f'<tr data-dim="{esc(d["key"])}" data-group="{esc(g)}"><th class="dim-col" title="{esc(d["guidance"])}">{esc(d["label"])}</th>{cells}</tr>')
+        rows.append(f'<tr data-dim="{esc(d["key"])}" data-group="{esc(g)}"><th scope="row" class="dim-col" title="{esc(d["guidance"])}">{esc(d["label"])}</th>{cells}</tr>')
     return (f'<div class="table-scroll"><table class="matrix" id="{table_id}">'
-            f'<thead><tr><th class="corner">Term dimension</th>{head}</tr></thead>'
+            f'<thead><tr><th scope="col" class="corner">Term dimension</th>{head}</tr></thead>'
             f'<tbody>{"".join(rows)}</tbody></table></div>')
 
 
@@ -562,13 +569,15 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
     docs = "".join(_doc_li(d) for d in pmeta.get("documents", []))
 
     rows = []
+    toc = []
     for dim in dims:
         f = fields.get(dim["key"])
         if not f:
             continue
+        toc.append(f'<a href="#dim-{esc(dim["key"])}">{esc(dim["label"])}</a>')
         source = f.get("source")
         prog = f.get("commitment_program")
-        cite = f'<div class="cite">“{esc(f.get("citation",""))}”</div>' if f.get("citation") else ""
+        cite = f'<div class="cite">“{esc(_sic(f.get("citation","")))}”</div>' if f.get("citation") else ""
         src = _source_line(source)
         progline = ""
         if prog:
@@ -577,7 +586,7 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
         _dc, _t, badge_cls, badge_text = _status_meta(f)
         badge = f'<span class="badge {badge_cls}">{esc(badge_text)}</span>'
         rows.append(f"""
-<section class="pdim">
+<section class="pdim" id="dim-{esc(dim["key"])}">
   <h3>{_status_dot(f)} {esc(dim["label"])} {badge}</h3>
   <p class="pval">{esc(f.get("display_value", f.get("value","")))}</p>
   {cite}{progline}{src}
@@ -603,6 +612,7 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
 <h2>Documents archived</h2>
 <ul class="coverage">{docs}</ul>
 <h2>Extracted terms</h2>
+<nav class="pdim-toc" aria-label="Jump to a term">{"".join(toc)}</nav>
 {"".join(rows)}
 <h2>Change history</h2>
 {change_html}
@@ -951,7 +961,11 @@ padding:1px 7px;font-size:10.5px;color:var(--muted);text-transform:uppercase;let
 code{background:var(--panel-2);border:1px solid var(--line-2);border-radius:5px;padding:0 5px;font-size:12px;font-family:var(--mono)}
 
 /* Provider pages */
-.pdim{border:1px solid var(--line-2);border-radius:12px;padding:16px 18px;margin:12px 0;background:var(--bg);box-shadow:var(--shadow)}
+.pdim-toc{display:flex;flex-wrap:wrap;gap:6px 8px;margin:0 0 22px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.pdim-toc a{font-family:var(--display);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;
+color:var(--muted);padding:4px 10px;border:1px solid var(--line-2);border-radius:var(--radius-pill)}
+.pdim-toc a:hover{color:var(--ink);border-color:var(--ink);text-decoration:none}
+.pdim{border:1px solid var(--line-2);border-radius:12px;padding:16px 18px;margin:12px 0;background:var(--bg);box-shadow:var(--shadow);scroll-margin-top:20px}
 .pdim h3{margin:0 0 9px;font-size:16px;color:var(--ink);text-transform:none;letter-spacing:0;font-weight:700;
 font-family:var(--sans);display:flex;align-items:center;gap:9px}
 .pval{margin:0 0 8px;max-width:none}
