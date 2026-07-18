@@ -38,6 +38,15 @@ DISCLAIMER_SHORT = (
     "wrong or out of date. Verify each against its linked source before relying on it."
 )
 
+# Readable labels for the derived four-state status (Issue 2). Everything is
+# AI-reviewed; there is no human-verified tier.
+_STATUS_LABEL = {
+    "quote_verified": "quote verified",
+    "quote_unverified": "unverified (no quote matched)",
+    "no_clause_found": "silent",
+    "not_applicable": "not applicable",
+}
+
 
 def _date(s: str) -> str:
     return (s or "")[:10]
@@ -93,8 +102,8 @@ def _detail_sheet(ws, dataset: dict) -> None:
 
     ws.title = "Detail"
     headers = [
-        "Provider", "Section", "Term dimension", "Value", "Confidence",
-        "Human-verified", "Citation", "Source document", "Source URL",
+        "Provider", "Section", "Term dimension", "Value", "Status", "Confidence",
+        "Citation", "Source document", "Source URL",
         "Fetched", "Version hash",
     ]
     for c, text in enumerate(headers, start=1):
@@ -115,7 +124,8 @@ def _detail_sheet(ws, dataset: dict) -> None:
                 value = f"{value}\n[{prog['program']}: {prog['value']}]"
             row = [
                 p["provider_name"], d.get("group", ""), d["label"], value,
-                f.get("confidence", ""), "yes" if f.get("human_verified") else "",
+                _STATUS_LABEL.get(f.get("status", ""), f.get("status", "")),
+                f.get("confidence", ""),
                 f.get("citation", ""), src.get("name", ""),
                 prog.get("citation_url") if prog and not src else src.get("url", ""),
                 _date(src.get("fetched_at", "")), (src.get("text_sha256", "") or "")[:12],
@@ -127,7 +137,7 @@ def _detail_sheet(ws, dataset: dict) -> None:
             r += 1
 
     ws.freeze_panes = "A2"
-    widths = [20, 20, 22, 60, 11, 13, 34, 30, 40, 12, 14]
+    widths = [20, 20, 22, 60, 26, 11, 34, 30, 40, 12, 14]
     for c, w in enumerate(widths, start=1):
         ws.column_dimensions[get_column_letter(c)].width = w
 

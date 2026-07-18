@@ -114,16 +114,32 @@ def _source_line(source: dict) -> str:
             f'{esc((source.get("fetched_at", "") or "")[:10])}</div>')
 
 
+# The four honest display states (Issue 2). Everything is AI-reviewed; there is no
+# human/counsel-verified tier. Warning styling is reserved for quote_unverified;
+# absence states (silent / not applicable) get neutral, muted treatment so they
+# read as "nothing to see", not "something went wrong".
+_STATUS_META = {
+    "quote_verified":   ("ok",     "supporting quote verified against the source document", "ok",    "✓ quote verified"),
+    "quote_unverified": ("warn",   "no supporting quote could be matched to the source",     "warn",  "unverified — supporting quote not matched"),
+    "no_clause_found":  ("absent", "the provider's terms are silent on this point",          "muted", "silent — no clause found"),
+    "not_applicable":   ("na",     "this dimension does not apply to this offering",         "muted", "not applicable"),
+}
+_DEFAULT_STATUS = "quote_unverified"
+
+
+def _status_meta(field: dict):
+    return _STATUS_META.get(field.get("status", _DEFAULT_STATUS), _STATUS_META[_DEFAULT_STATUS])
+
+
 def _status_dot(field: dict) -> str:
-    """Confidence/verification indicator. Human overrides and mechanically-verified
-    quotes get a colored dot; anything unverified gets a distinct hollow dot."""
-    if field.get("human_verified"):
-        return '<span class="dot verified" title="human-verified"></span>'
-    if field.get("status") == "verified":
+    """Four-state status indicator (never color-alone: carries a descriptive title)."""
+    status = field.get("status", _DEFAULT_STATUS)
+    dot_cls, title, _bc, _bt = _status_meta(field)
+    if status == "quote_verified":
         c = field.get("confidence", "low")
         c = c if c in ("high", "medium", "low") else "low"
-        return f'<span class="dot {c}" title="verified supporting quote; confidence {c}"></span>'
-    return '<span class="dot unverified" title="unverified: supporting quote not mechanically matched"></span>'
+        title = f"{title}; confidence {c}"
+    return f'<span class="dot {dot_cls}" title="{esc(title)}"></span>'
 
 
 def _cell(provider: str, dim_key: str, field: dict) -> str:
@@ -131,18 +147,15 @@ def _cell(provider: str, dim_key: str, field: dict) -> str:
     citation = field.get("citation", "")
     source = field.get("source")
     conf = field.get("confidence", "low")
-    status = field.get("status", "unverified")
-    unverified = status != "verified"
+    status = field.get("status", _DEFAULT_STATUS)
+    absent = status in ("no_clause_found", "not_applicable")
+    unverified = status == "quote_unverified"
     prog = field.get("commitment_program")
 
     src_line = _source_line(source)
     cite_line = f'<div class="cite">“{esc(citation)}”</div>' if citation else ""
-    if field.get("human_verified"):
-        badge = '<span class="badge verified">✓ human-verified</span>'
-    elif status == "verified":
-        badge = '<span class="badge ok">✓ quote verified</span>'
-    else:
-        badge = '<span class="badge warn">unverified — supporting quote not matched</span>'
+    _dc, _t, badge_cls, badge_text = _status_meta(field)
+    badge = f'<span class="badge {badge_cls}">{esc(badge_text)}</span>'
     prog_line = ""
     if prog:
         prog_line = (
@@ -151,7 +164,7 @@ def _cell(provider: str, dim_key: str, field: dict) -> str:
         )
 
     short = value if len(value) <= 160 else value[:157] + "…"
-    cls = "cell unverified" if unverified else "cell"
+    cls = "cell unverified" if unverified else ("cell absent" if absent else "cell")
     return f"""<td class="{cls}" data-provider="{esc(provider)}" data-dim="{esc(dim_key)}" data-status="{esc(status)}">
   <div class="cell-head">{_status_dot(field)} <button class="toggle" aria-expanded="false">{esc(short)}</button></div>
   <div class="detail" hidden>
@@ -254,10 +267,10 @@ def render_matrix(dataset: dict) -> str:
 
     legend = (
         '<div class="legend"><span class="legend-lbl">Status</span>'
-        '<span class="lg"><span class="dot high"></span>verified (high)</span>'
-        '<span class="lg"><span class="dot medium"></span>verified (medium)</span>'
-        '<span class="lg"><span class="dot unverified"></span>unverified / low</span>'
-        '<span class="lg"><span class="dot verified"></span>human-verified</span></div>'
+        '<span class="lg"><span class="dot ok"></span>quote verified</span>'
+        '<span class="lg"><span class="dot warn"></span>unverified — quote not matched</span>'
+        '<span class="lg"><span class="dot absent"></span>silent — no clause found</span>'
+        '<span class="lg"><span class="dot na"></span>not applicable</span></div>'
     )
 
     grouped = (
@@ -327,7 +340,7 @@ advise, recommend, or rate.</p>
 <ul>
 <li><strong>Archival.</strong> Every fetched document version is preserved with a timestamp and content hash; nothing is overwritten.</li>
 <li><strong>Extraction.</strong> A structured pass with Claude (Opus) reads each provider's documents against a fixed 10-term schema, returning a value, a confidence level, and a citation for every field. Values it cannot support are recorded as “not specified” or “unclear”, never guessed.</li>
-<li><strong>Human verification.</strong> Extractions can be corrected; corrected fields are marked human-verified and survive re-extraction.</li>
+<li><strong>Status.</strong> Everything here is AI-reviewed — there is no human-verified tier. Each value is labeled by how well it is supported: <em>quote verified</em>, <em>unverified</em> (no supporting quote matched), <em>silent</em> (the terms are silent, with no governing clause), or <em>not applicable</em> (the dimension does not apply to that offering).</li>
 <li><strong>Provenance.</strong> Every value links to its source document, with the fetch date and version hash behind it.</li>
 </ul>
 
@@ -388,8 +401,10 @@ and no attorney-client relationship is created by reading it. Read the underlyin
 which are linked from every datapoint, and consult your own counsel.</p>
 
 <h2>Corrections</h2>
-<p>Every datapoint links to its source. A human-verified correction always overrides the
-automated classification and is marked as human-verified. If you spot an error, open an issue
+<p>Every datapoint links to its source. Everything here is AI-reviewed — there is no
+human-verified tier. A correction can adjust a value or its citation, but the corrected
+quote is then re-checked against the archived source exactly like any other value, and
+carries no special badge. If you spot an error, open an issue
 in the <a href="https://github.com/erinecrum/compute-terms-observatory">source repository</a>.</p>
 
 <h2>Coverage &amp; data</h2>
@@ -423,9 +438,6 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
         f = fields.get(dim["key"])
         if not f:
             continue
-        verified = f.get("human_verified", False)
-        status = f.get("status", "unverified")
-        conf = f.get("confidence", "low")
         source = f.get("source")
         prog = f.get("commitment_program")
         cite = f'<div class="cite">“{esc(f.get("citation",""))}”</div>' if f.get("citation") else ""
@@ -434,18 +446,13 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
         if prog:
             progline = (f'<div class="prog"><strong>{esc(prog["program"])}:</strong> {esc(prog["value"])} '
                         f'(<a href="{esc(prog["citation_url"])}" target="_blank" rel="noopener">program page</a>). {esc(prog.get("note",""))}</div>')
-        if verified:
-            badge = '<span class="badge verified">✓ human-verified</span>'
-        elif status == "verified":
-            badge = '<span class="badge ok">✓ quote verified</span>'
-        else:
-            badge = '<span class="badge warn">unverified</span>'
-        note = f'<div class="ovnote">{esc(f.get("override_note",""))}</div>' if f.get("override_note") else ''
+        _dc, _t, badge_cls, badge_text = _status_meta(f)
+        badge = f'<span class="badge {badge_cls}">{esc(badge_text)}</span>'
         rows.append(f"""
 <section class="pdim">
   <h3>{_status_dot(f)} {esc(dim["label"])} {badge}</h3>
   <p class="pval">{esc(f.get("value",""))}</p>
-  {cite}{progline}{note}{src}
+  {cite}{progline}{src}
 </section>""")
 
     # This provider's change history.
@@ -798,10 +805,17 @@ background:var(--bg);border-bottom:1px solid var(--line-2);padding:10px 0;margin
 .col-sub{display:block;margin-top:2px;font-weight:400;font-size:11px;color:var(--muted);letter-spacing:0;text-transform:none}
 
 /* Unverified / status distinction */
-.dot.unverified{background:transparent;border:1.5px solid var(--low)}
+/* Four honest status states (Issue 2). Warning reserved for quote_unverified;
+   absence states get neutral, muted treatment. */
+.dot.warn,.dot.unverified{background:transparent;border:1.5px solid var(--medium)}
+.dot.ok{background:var(--high)}
+.dot.absent{background:var(--line-2)}
+.dot.na{background:transparent;border:1.5px dotted var(--faint)}
 .cell.unverified .toggle{color:var(--muted);font-style:italic}
+.cell.absent .toggle{color:var(--faint)}
 .badge.ok{background:var(--high);color:#fff;border-radius:5px;padding:1px 7px;font-size:11px;font-weight:600}
-.badge.warn{background:var(--panel-2);color:var(--muted);border:1px solid var(--line-2);border-radius:5px;padding:1px 7px;font-size:11px;font-weight:600}
+.badge.warn{background:var(--panel-2);color:var(--medium);border:1px solid var(--medium);border-radius:5px;padding:1px 7px;font-size:11px;font-weight:600}
+.badge.muted{background:var(--panel-2);color:var(--faint);border:1px solid var(--line-2);border-radius:5px;padding:1px 7px;font-size:11px;font-weight:600}
 .badge.stale{background:var(--medium);color:#fff;border-radius:5px;padding:1px 7px;font-size:11px;font-weight:600}
 .src.wayback{color:var(--muted)}
 .wb-note{font-size:11.5px;font-style:italic;color:var(--faint);margin:3px 0}

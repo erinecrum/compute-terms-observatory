@@ -1,8 +1,12 @@
-# Human-verified overrides
+# Value/citation overrides
 
-Corrections a human (you) has verified against the source documents. These layer
+Corrections to the extracted value or citation for a dimension. These layer
 on top of the raw model extraction when the dataset is built, and **survive
 re-extraction** because they live here, not in the regenerated extraction JSON.
+
+They are **not** a verification tier: everything on the site is presented as
+AI-reviewed, and the build re-checks a corrected quote against the source exactly
+like any other field.
 
 One file per provider: `overrides/<provider>.yaml`. Only include the dimensions
 you have actually reviewed — everything else falls through to the model output.
@@ -14,7 +18,7 @@ overrides:
     citation: "a section heading or a short quoted anchor"   # optional
     citation_document: customer_agreement                    # optional: slug of the cited doc
     confidence: high                                          # optional; defaults to high
-    note: "Verified by <name> on <YYYY-MM-DD>: <what/why>."
+    note: "Corrected by <name> on <YYYY-MM-DD>: <what/why>."  # internal; not displayed
 ```
 
 Dimension keys: `availability_definition`, `credit_regime`, `claim_mechanics`,
@@ -22,5 +26,5 @@ Dimension keys: `availability_definition`, `credit_regime`, `claim_mechanics`,
 `suspension_rights`, `termination`, `unilateral_modification`,
 `governing_law_disputes`.
 
-Fields carrying an override are marked `human_verified: true` in the dataset and
-the site can badge them as attorney-reviewed.
+Overridden dimensions are listed under `override_dimensions` in the dataset for
+traceability; they receive no special badge on the site.

@@ -1,4 +1,4 @@
-"""Human-verified override layer.
+"""Override layer: value/citation corrections that survive re-extraction.
 
 The extraction JSON is the raw model output — it is regenerated wholesale every
 time we re-extract. Corrections must therefore live somewhere the re-run cannot
@@ -6,9 +6,10 @@ clobber. They live in `overrides/<provider>.yaml`, keyed by dimension, and are
 layered on top of the raw extraction when the dataset is built. Because they sit
 in their own files, they survive re-extraction by construction.
 
-An override marks the field `human_verified: true` and records who/why via a
-note, so the site can show that a value was checked by a human rather than only
-produced by the model.
+An override corrects the value/citation/source for a dimension. It does NOT assert
+a human-verified tier — everything on the site is presented as AI-reviewed, and the
+build-time status derivation re-checks a corrected quote exactly like any other
+field. The optional `note` is an internal provenance record and is not displayed.
 
 Override file shape:
 
@@ -78,10 +79,10 @@ def apply_overrides(record: dict, overrides: Dict[str, dict]) -> dict:
             src = _source_for_slug(record, cited_slug)
             if src:
                 field["source"] = src
-        field["human_verified"] = True
-        field["status"] = "verified"  # a human override is authoritative
-        field["override_note"] = ov.get("note", "")
+        # Overrides are value/citation corrections only. There is no human-verified
+        # tier: the build-time status derivation re-checks the corrected quote like
+        # any other field, so an override does not assert authority on its own.
         applied.append(dim)
 
-    merged["human_verified_dimensions"] = applied
+    merged["override_dimensions"] = applied
     return merged

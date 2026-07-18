@@ -105,6 +105,61 @@ def _license_bucket(value: str) -> str:
     return "bespoke/community license"
 
 
+# ---------------------------------------------------------------------------
+# Status derivation (Issue 2)
+#
+# The extractor records only a binary quote-match status ("verified" /
+# "unverified"), which conflates two very different things: a value whose quote
+# could not be matched, and a value that is simply ABSENT because the provider's
+# terms are silent (or the dimension does not apply at all). We derive, at build
+# time, one of four honest display statuses from the field. The legacy
+# human_verified flag is ignored entirely — everything on the site is presented as
+# AI-reviewed, with no human/counsel-verified tier. Raw extraction files are never
+# rewritten; this derivation is deterministic and reversible.
+# ---------------------------------------------------------------------------
+
+STATUSES = ("quote_verified", "quote_unverified", "no_clause_found", "not_applicable")
+
+# Values the model returns when it found no governing clause (an ABSENCE, not a
+# term). Matched case-insensitively on the whole value with a trailing period
+# stripped, so substantive values that merely contain "none" are not caught.
+_ABSENCE_VALUES = {
+    "", "not specified", "unspecified", "not stated", "not addressed",
+    "not mentioned", "unclear", "unknown", "none", "no", "n/a", "na",
+    "not applicable", "silent",
+}
+
+# Dimensions that are structurally inapplicable to an OPEN-WEIGHT MODEL FAMILY —
+# a published license, not a hosted service: the four SLA dimensions plus the
+# capacity/hardware provisioning dimensions. For every other provider (including
+# closed-API model providers that run real services), an absence is a genuine
+# silence, never "not applicable". Applicability rule reviewed 2026-07-17.
+_OPEN_WEIGHT_NA_DIMS = _SLA_DIMS | {
+    "capacity_reservation", "hardware_substitution", "capacity_remedies",
+}
+
+
+def _is_absence(value: str) -> bool:
+    return (value or "").strip().lower().rstrip(".") in _ABSENCE_VALUES
+
+
+def _derive_status(field: dict, dim_key: str, openness: str):
+    """Return (status, ambiguous). `ambiguous` marks an absence that was defaulted
+    to no_clause_found but whose text said "not applicable" on a provider where the
+    applicability rule does not grant not_applicable — worth a human glance."""
+    # A recorded commitment-program fact ("negotiated, not published") is a real
+    # value, never an absence.
+    substantive = bool(field.get("commitment_program")) or not _is_absence(field.get("value", ""))
+    if substantive:
+        verified = field.get("status") == "verified"
+        return ("quote_verified" if verified else "quote_unverified"), False
+
+    if openness == "open_weight" and dim_key in _OPEN_WEIGHT_NA_DIMS:
+        return "not_applicable", False
+    said_na = (field.get("value", "") or "").strip().lower().rstrip(".") == "not applicable"
+    return "no_clause_found", said_na
+
+
 def _enrich_capacity(field: dict, program: Optional[dict]) -> dict:
     """Attach the negotiated-commitment fact to the capacity dimension without
     disturbing the published-capacity terms the model extracted."""
@@ -128,6 +183,7 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
     provider_names = registry.provider_names()
     providers_meta: List[dict] = []
     matrix: Dict[str, Dict[str, dict]] = {}
+    status_report: List[tuple] = []  # (provider, dim, old_status, new_status, value, ambiguous)
 
     for provider in registry.providers():
         record = load_extraction(provider)
@@ -173,6 +229,21 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
         # Grouping/filter metadata comes from the registry (carried on every doc).
         pdocs = registry.for_provider(provider)
         pd = pdocs[0] if pdocs else None
+        openness_val = pd.openness if pd else ""
+
+        # Derive the honest four-state display status for every field (Issue 2),
+        # overwriting the extractor's binary verified/unverified. Recorded for the
+        # migration report; raw extraction files on disk are untouched.
+        for dim_key, f in fields.items():
+            old_status = f.get("status", "")
+            new_status, ambiguous = _derive_status(f, dim_key, openness_val)
+            if new_status != old_status or ambiguous:
+                status_report.append(
+                    (provider, dim_key, old_status, new_status,
+                     (f.get("value", "") or "")[:48], ambiguous)
+                )
+            f["status"] = new_status
+
         lic_field = fields.get("model_license") or {}
         providers_meta.append(
             {
@@ -187,9 +258,11 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
                 "has_stale_capture": has_stale,
                 "model": record.get("model", ""),
                 "documents": docs_used,
-                "human_verified_dimensions": record.get("human_verified_dimensions", []),
+                "override_dimensions": record.get("override_dimensions", []),
             }
         )
+
+    _write_status_report(status_report)
 
     data_current_as_of = max(
         (p.get("last_updated", "") for p in providers_meta), default=""
@@ -214,6 +287,40 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
         "matrix": matrix,
         "change_log": _build_change_log(registry, store),
     }
+
+
+STATUS_REPORT_PATH = Path("data/status_migration_report.txt")
+
+
+def _write_status_report(rows: List[tuple]) -> None:
+    """Write a human-readable record of the status derivation (Issue 2): every field
+    whose derived status differs from the extractor's, and every ambiguous default
+    flagged for review. Regenerated on each build; lives in the private data dir."""
+    from collections import Counter
+
+    counts = Counter(r[3] for r in rows)
+    ambiguous = [r for r in rows if r[5]]
+    lines = [
+        "Status migration report (Issue 2) — build-time derivation, no on-disk change.",
+        f"Generated: {datetime.now(timezone.utc).isoformat()}",
+        "",
+        "Derived status counts (only fields that changed or were flagged):",
+    ]
+    lines += [f"  {status:16s} {n}" for status, n in sorted(counts.items())]
+    lines += [
+        "",
+        f"AMBIGUOUS (value said 'not applicable' but rule -> no_clause_found): {len(ambiguous)}",
+        "  Review these — they may warrant an explicit not_applicable applicability rule.",
+    ]
+    for provider, dim, _old, new, value, _amb in ambiguous:
+        lines.append(f"    {provider:16s} {dim:28s} -> {new}  ({value!r})")
+    lines += ["", "All derivations:"]
+    for provider, dim, old, new, value, amb in sorted(rows):
+        flag = "  [AMBIGUOUS]" if amb else ""
+        lines.append(f"  {provider:16s} {dim:28s} {old or '(none)':12s} -> {new:16s} {value!r}{flag}")
+
+    STATUS_REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    STATUS_REPORT_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:

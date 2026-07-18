@@ -1,5 +1,5 @@
-# Human-verified overrides for AWS.
-# This is a real, editable example — replace/extend with your own reviewed values,
+# Value/citation corrections for AWS (not a verification tier).
+# This is a real, editable example — replace/extend with your own corrected values,
 # or delete this file if you have no AWS corrections. See overrides/README.md.
 overrides:
   governing_law_disputes:
@@ -11,4 +11,4 @@ overrides:
     citation: "any dispute resolution proceedings will be conducted only on an individual basis"
     citation_document: customer_agreement
     confidence: high
-    note: "Verified by counsel 2026-07-14 against the AWS Customer Agreement, Section 12."
+    note: "Corrected 2026-07-14 against the AWS Customer Agreement, Section 12."
