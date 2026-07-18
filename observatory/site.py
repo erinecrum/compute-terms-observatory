@@ -39,9 +39,8 @@ CLOUD_COLUMN_ORDER = [
     "coreweave", "lambda", "crusoe", "together", "baseten", "runpod", "vast",  # neoclouds
 ]
 
-# Phase C gate: the new dimension groups are captured and extracted into the data,
-# but are NOT rendered until the Phase D progressive-disclosure UI lands. Flip to
-# True in Phase D to reveal them (with the view switcher).
+# Phase C gate, released in Phase D: the data-protection and accountability groups
+# are now rendered behind the progressive-disclosure view switcher below.
 RENDER_NEW_GROUPS = False
 _HIDDEN_GROUPS = (set() if RENDER_NEW_GROUPS
                   else {"Data protection & privacy", "Accountability & transparency"})
@@ -50,6 +49,78 @@ _HIDDEN_GROUPS = (set() if RENDER_NEW_GROUPS
 def _visible_dims(dims):
     """Dimensions rendered on the site (drops the gated new groups until Phase D)."""
     return [d for d in dims if d.get("group") not in _HIDDEN_GROUPS]
+
+
+# ---------------------------------------------------------------------------
+# Progressive disclosure (Phase D).
+#
+# The matrix carries 29 dimensions, which is too many to scan cold. The default
+# view therefore shows a curated subset of each group ("key terms"), with a
+# per-group expander to reveal the rest. The view pills always show their whole
+# group, so nothing is reachable only through the expander.
+#
+# DEFAULT_VIEW_DIMS is the editable curation: add or remove keys here and the
+# default view, its expander counts, and the view-scoped exports all follow.
+# Reviewed and approved 2026-07-18.
+# ---------------------------------------------------------------------------
+
+DEFAULT_VIEW_DIMS = [
+    # General contract terms (5 of 15)
+    "data_use_ai_training",
+    "liability",
+    "output_indemnity",
+    "termination",
+    "unilateral_modification",
+    # Service level (SLA) terms (3 of 4)
+    "availability_definition",
+    "credit_regime",
+    "claim_mechanics",
+    # Data protection & privacy (3 of 5)
+    "data_residency",
+    "data_transfer_mechanism",
+    "content_retention_review",
+    # Accountability & transparency (3 of 5)
+    "prohibited_high_risk_uses",
+    "appeal_redress",
+    "eu_ai_act_role",
+]
+
+# The view switcher. Each view names the dimension groups it renders in full;
+# the default "key" view renders DEFAULT_VIEW_DIMS across every group instead.
+from .schema import (  # noqa: E402  (grouped with the view config it feeds)
+    GROUP_ACCOUNTABILITY,
+    GROUP_GENERAL,
+    GROUP_PRIVACY,
+    GROUP_SLA,
+)
+
+VIEWS = [
+    ("key", "Key terms", None),
+    ("all", "All terms", (GROUP_GENERAL, GROUP_SLA, GROUP_PRIVACY, GROUP_ACCOUNTABILITY)),
+    ("core", "Core contract", (GROUP_GENERAL, GROUP_SLA)),
+    ("privacy", "Privacy & data protection", (GROUP_PRIVACY,)),
+    ("accountability", "Accountability & transparency", (GROUP_ACCOUNTABILITY,)),
+]
+VIEW_GROUPS = {key: groups for key, _label, groups in VIEWS}
+DEFAULT_VIEW = "key"
+
+
+def view_dims(dims, view: str):
+    """The dimensions a given view renders, in schema order."""
+    if view == "key":
+        keys = set(DEFAULT_VIEW_DIMS)
+        return [d for d in dims if d["key"] in keys]
+    groups = VIEW_GROUPS.get(view) or ()
+    return [d for d in dims if d.get("group") in groups]
+
+
+def seg_xlsx_name(group: str, view: str) -> str:
+    """Per-section workbook filename, scoped to the active view. The 'all' view
+    keeps the original name so existing links stay good."""
+    base = EXPORT_XLSX_SEG[group]
+    if view == "all":
+        return base
+    return base[: -len(".xlsx")] + f"-{view}.xlsx"
 # Custom domain for GitHub Pages. Written into the build as a CNAME file so that
 # Actions deploys keep the custom domain (a deploy without it would clear the
 # Pages custom-domain setting).
@@ -299,10 +370,31 @@ def _matrix_table(dims: list, subset: list, matrix: dict, table_id: str) -> str:
         for p in subset
     )
     ncols = len(subset) + 1
+    key_set = set(DEFAULT_VIEW_DIMS)
+
+    # Per-group totals drive the "Show all N dimensions" expander: a group only
+    # gets one when the default view actually withholds something.
+    group_total, group_key = {}, {}
+    for d in dims:
+        g = d.get("group", "")
+        group_total[g] = group_total.get(g, 0) + 1
+        if d["key"] in key_set:
+            group_key[g] = group_key.get(g, 0) + 1
+
+    def expander(g):
+        total, shown = group_total.get(g, 0), group_key.get(g, 0)
+        if total <= shown:
+            return ""
+        return (f'<tr class="exprow" data-group="{esc(g)}"><td class="expcell" colspan="{ncols}">'
+                f'<button type="button" class="expbtn" data-expand="{esc(g)}" aria-expanded="false">'
+                f'Show all {total} dimensions</button></td></tr>')
+
     rows, cur = [], None
     for d in dims:
         g = d.get("group", "")
         if g and g != cur:
+            if cur is not None:
+                rows.append(expander(cur))
             cur = g
             rows.append(f'<tr class="grouprow" data-group="{esc(g)}"><th scope="colgroup" class="groupcell" colspan="{ncols}">{esc(g)}</th></tr>')
         cells = "".join(
@@ -311,7 +403,10 @@ def _matrix_table(dims: list, subset: list, matrix: dict, table_id: str) -> str:
              else _cell(p["provider"], d["key"], matrix[p["provider"]][d["key"]]))
             for p in subset
         )
-        rows.append(f'<tr data-dim="{esc(d["key"])}" data-group="{esc(g)}"><th scope="row" class="dim-col" title="{esc(d["guidance"])}">{esc(d["label"])}</th>{cells}</tr>')
+        keyattr = ' data-key="1"' if d["key"] in key_set else ""
+        rows.append(f'<tr data-dim="{esc(d["key"])}" data-group="{esc(g)}"{keyattr}><th scope="row" class="dim-col" title="{esc(d["guidance"])}">{esc(d["label"])}</th>{cells}</tr>')
+    if cur is not None:
+        rows.append(expander(cur))
     return (f'<div class="table-scroll"><table class="matrix" id="{table_id}">'
             f'<thead><tr><th scope="col" class="corner">Term dimension</th>{head}</tr></thead>'
             f'<tbody>{"".join(rows)}</tbody></table></div>')
@@ -376,6 +471,18 @@ def render_matrix(dataset: dict) -> str:
         '<button type="button" class="spill" data-sub="open">Open weight</button>'
         '</div></div>'
     )
+    # The view switcher: which terms are shown, independent of which providers.
+    # "Key terms" (the default) shows the curated subset of every group; the other
+    # pills show their group(s) in full.
+    viewbar = (
+        '<div class="viewbar" id="viewbar" role="group" aria-label="Which terms to show">'
+        + "".join(
+            f'<button type="button" class="vpill{" selected" if key == DEFAULT_VIEW else ""}" '
+            f'data-view="{esc(key)}">{esc(label)}</button>'
+            for key, label, _groups in VIEWS
+        )
+        + '</div>'
+    )
     # Slim secondary toolbar: the remaining filters + compare + export, subordinate
     # to the chooser (segment/openness live in the chooser now).
     toolbar = (
@@ -396,7 +503,11 @@ def render_matrix(dataset: dict) -> str:
                 '<option value="updated">Recently updated</option></select></label>')
 
     def sec_exports(group, sec_id):
-        return (f'<a class="sec-x" href="{esc(EXPORT_XLSX_SEG[group])}" download title="Download this section as .xlsx">.xlsx</a>'
+        # The .xlsx link is rewritten client-side to the workbook for the active
+        # view, so a download matches what the reader is looking at.
+        names = json.dumps({v: seg_xlsx_name(group, v) for v, _l, _g in VIEWS})
+        return (f'<a class="sec-x" href="{esc(seg_xlsx_name(group, DEFAULT_VIEW))}" download '
+                f"data-xlsx='{esc(names)}' title=\"Download this section as .xlsx\">.xlsx</a>"
                 f'<button class="sec-x" type="button" data-print-sec="{sec_id}" title="Print this section">PDF</button>')
 
     def section(name, group, subset, table_id, sec_id):
@@ -437,10 +548,12 @@ def render_matrix(dataset: dict) -> str:
     gen = dataset.get("generated_at", "")[:16].replace("T", " ")
     return f"""
 {chooser}
+{viewbar}
 {toolbar}
 {grouped}
 {compare_view}
 <script>window.CTO_PROVIDERS={json.dumps(pmap)};
+window.CTO_VIEW_GROUPS={json.dumps({k: (list(g) if g else None) for k, g in VIEW_GROUPS.items()})};
 window.CTO_DIMS={json.dumps([{"key": d["key"], "label": d["label"], "group": d.get("group","")} for d in dims])};</script>
 <p class="genline">Generated {esc(gen)} UTC</p>
 """
@@ -619,10 +732,18 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
 
     rows = []
     toc = []
+    cur_group = None
     for dim in dims:
         f = fields.get(dim["key"])
         if not f:
             continue
+        # Group headings (and a grouped TOC) so 29 dimensions stay navigable.
+        g = dim.get("group", "")
+        if g and g != cur_group:
+            cur_group = g
+            gid = "grp-" + g.lower().replace(" & ", "-").replace(" ", "-")
+            rows.append(f'<h3 class="pgrp" id="{esc(gid)}">{esc(g)}</h3>')
+            toc.append(f'<span class="pdim-toc-h">{esc(g)}</span>')
         toc.append(f'<a href="#dim-{esc(dim["key"])}">{esc(dim["label"])}</a>')
         source = f.get("source")
         prog = f.get("commitment_program")
@@ -636,7 +757,7 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
         badge = f'<span class="badge {badge_cls}">{esc(badge_text)}</span>'
         rows.append(f"""
 <section class="pdim" id="dim-{esc(dim["key"])}">
-  <h3>{_status_dot(f)} {esc(dim["label"])} {badge}</h3>
+  <h4>{_status_dot(f)} {esc(dim["label"])} {badge}</h4>
   <p class="pval">{esc(f.get("display_value", f.get("value","")))}</p>
   {cite}{progline}{src}
 </section>""")
@@ -817,9 +938,13 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
     from .export import write_segment_workbook, write_workbook
 
     written.append(write_workbook(dataset, out_dir / EXPORT_XLSX))
-    for group, fname in EXPORT_XLSX_SEG.items():
-        written.append(write_segment_workbook(
-            dataset, group, EXPORT_XLSX_SEG_TITLE[group], out_dir / fname))
+    # One per-section workbook per view, so the .xlsx a reader downloads matches
+    # the rows they are looking at.
+    for group in EXPORT_XLSX_SEG:
+        for view, _label, _groups in VIEWS:
+            written.append(write_segment_workbook(
+                dataset, group, EXPORT_XLSX_SEG_TITLE[group],
+                out_dir / seg_xlsx_name(group, view), view))
     return written
 
 
@@ -916,6 +1041,24 @@ padding:8px 16px;border-radius:var(--radius-pill);border:1px solid var(--line-2)
 color:var(--muted);cursor:pointer}
 .spill:hover{background:var(--panel);color:var(--ink)}
 .spill.selected{background:var(--tomato);border-color:var(--tomato);color:var(--ink)}
+
+/* The view switcher (which TERMS to show). Deliberately a different selected
+   treatment from the chooser's tomato (which PROVIDERS to show), so the two
+   stacked control rows never read as the same axis. */
+.viewbar{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 0 18px;
+padding-bottom:16px;border-bottom:1px solid var(--line)}
+.vpill{font-family:var(--display);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;
+padding:9px 18px;border-radius:var(--radius-pill);border:1px solid var(--line-2);background:transparent;
+color:var(--muted);cursor:pointer;transition:background .12s,color .12s}
+.vpill:hover{background:var(--panel);color:var(--ink)}
+.vpill.selected{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+
+/* Per-group "show all N" expander row inside the matrix. */
+.matrix tr.exprow td.expcell{position:sticky;left:0;background:var(--bg);border:0;
+border-bottom:1px solid var(--line);padding:7px 12px}
+.expbtn{font-family:var(--display);font-size:10.5px;font-weight:600;text-transform:uppercase;
+letter-spacing:.08em;color:var(--muted);background:transparent;border:0;cursor:pointer;padding:3px 0}
+.expbtn:hover{color:var(--ink);text-decoration:underline}
 .pill>summary:hover{background:var(--panel)}
 .pill-active{background:var(--tomato)!important;border-color:var(--tomato)!important;color:var(--ink)!important}
 
@@ -1038,8 +1181,14 @@ code{background:var(--panel-2);border:1px solid var(--line-2);border-radius:5px;
 color:var(--muted);padding:4px 10px;border:1px solid var(--line-2);border-radius:var(--radius-pill)}
 .pdim-toc a:hover{color:var(--ink);border-color:var(--ink);text-decoration:none}
 .pdim{border:1px solid var(--line-2);border-radius:12px;padding:16px 18px;margin:12px 0;background:var(--bg);box-shadow:var(--shadow);scroll-margin-top:20px}
-.pdim h3{margin:0 0 9px;font-size:16px;color:var(--ink);text-transform:none;letter-spacing:0;font-weight:700;
+.pdim h4{margin:0 0 9px;font-size:16px;color:var(--ink);text-transform:none;letter-spacing:0;font-weight:700;
 font-family:var(--sans);display:flex;align-items:center;gap:9px}
+/* Dimension-group heading on a provider page, and its TOC separator. */
+.pgrp{margin:26px 0 10px;font-family:var(--display);font-size:11px;font-weight:600;
+text-transform:uppercase;letter-spacing:.12em;color:var(--faint);scroll-margin-top:20px}
+.pdim-toc-h{font-family:var(--display);font-size:10px;font-weight:600;text-transform:uppercase;
+letter-spacing:.1em;color:var(--faint);align-self:center;padding:4px 2px 4px 8px}
+.pdim-toc-h:first-child{padding-left:0}
 .pval{margin:0 0 8px;max-width:none}
 .cite{color:var(--muted);font-style:italic}
 .ovnote{margin-top:7px;font-size:12.5px;color:var(--accent-2)}
@@ -1194,6 +1343,8 @@ border-radius:9px;padding:10px 13px;font-size:13.5px;margin:0 0 16px}
 @media print{
 @page{size:landscape;margin:12mm}
 .site-head,.filters,.actions,.toolbar,.deck,.site-foot,.genline,.sec-ctl{display:none!important}
+/* Controls, not content: the printed page keeps whichever rows the view is showing. */
+.viewbar,.chooser,.matrix tr.exprow{display:none!important}
 body[data-print-sec] .msec:not(.print-me){display:none!important}
 .disclaimer{background:#fff!important;border:0;color:#000}
 .disclaimer .wrap{padding:0 0 8px}.disc-icon{display:none}
@@ -1327,6 +1478,59 @@ document.addEventListener('click',function(e){
         applyChooser(choose, sub);
       }
     });
+  }
+
+  // The view switcher owns which dimension ROWS render (the chooser owns which
+  // provider sections render). "key" shows the curated subset of every group with
+  // a per-group expander; every other view shows its group(s) in full.
+  var viewbar=document.getElementById('viewbar');
+  if(viewbar){
+    var VIEW_GROUPS=window.CTO_VIEW_GROUPS||{}, view='key', expanded={};
+    function applyView(){
+      var groups=VIEW_GROUPS[view]||null;  // null => "key": every group, curated rows
+      ['tbl-cloud','tbl-closed','tbl-open'].forEach(function(id){
+        var t=document.getElementById(id); if(!t) return;
+        t.querySelectorAll('tbody tr').forEach(function(tr){
+          var g=tr.dataset.group||'', inView=groups ? groups.indexOf(g)>=0 : true, show;
+          if(tr.classList.contains('exprow')){
+            show = inView && !groups && !expanded[id+'||'+g];
+          } else if(tr.classList.contains('grouprow')){
+            show = inView;
+          } else {
+            show = inView && (groups || tr.dataset.key==='1' || expanded[id+'||'+g]);
+          }
+          tr.style.display = show ? '' : 'none';
+        });
+      });
+      viewbar.querySelectorAll('.vpill').forEach(function(b){ b.classList.toggle('selected', b.dataset.view===view); });
+      // Per-section .xlsx downloads follow the active view.
+      document.querySelectorAll('a.sec-x[data-xlsx]').forEach(function(a){
+        var map; try{ map=JSON.parse(a.dataset.xlsx); }catch(err){ return; }
+        if(map[view]) a.setAttribute('href', map[view]);
+      });
+      // Reflect the view in the URL so a view is linkable and survives reload.
+      try{
+        var u=new URL(window.location.href);
+        if(view==='key') u.searchParams.delete('view'); else u.searchParams.set('view', view);
+        history.replaceState(null,'',u);
+      }catch(err){}
+    }
+    viewbar.addEventListener('click',function(e){
+      var b=e.target.closest('[data-view]'); if(!b) return;
+      view=b.dataset.view; expanded={};   // a fresh view starts collapsed
+      applyView();
+    });
+    document.addEventListener('click',function(e){
+      var x=e.target.closest('[data-expand]'); if(!x) return;
+      var t=x.closest('table'); if(!t) return;
+      expanded[t.id+'||'+x.dataset.expand]=true;
+      applyView();
+    });
+    try{
+      var want=new URL(window.location.href).searchParams.get('view');
+      if(want && (want==='key' || VIEW_GROUPS[want])) view=want;
+    }catch(err){}
+    applyView();
   }
 
   // Compare mode: pick 2-3 providers; dimensions render as stacked cards, reusing

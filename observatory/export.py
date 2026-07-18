@@ -41,6 +41,17 @@ DISCLAIMER_SHORT = (
     "wrong or out of date. Verify each against its linked source before relying on it."
 )
 
+# Shown whenever a sheet carries rows from the data-protection or accountability
+# groups. These dimensions describe the mechanism a provider has published; they
+# are not, and must not be read as, an assessment of compliance with any law.
+NEW_GROUP_NOTE = (
+    "Note on the 'Data protection & privacy' and 'Accountability & transparency' "
+    "rows: these are descriptive extractions of the mechanisms a provider has "
+    "published, not compliance assessments. Nothing here states or implies that a "
+    "provider does or does not comply with the GDPR, the EU AI Act, or any other law."
+)
+_NEW_GROUPS = {"Data protection & privacy", "Accountability & transparency"}
+
 # Readable labels for the derived four-state status (Issue 2). Everything is
 # AI-reviewed; there is no human-verified tier.
 _STATUS_LABEL = {
@@ -55,11 +66,13 @@ def _date(s: str) -> str:
     return (s or "")[:10]
 
 
-def _comparison_sheet(ws, dataset: dict, group: str, title: str) -> None:
+def _comparison_sheet(ws, dataset: dict, group: str, title: str, view: str = "all") -> None:
     from .schema import is_applicable
+    from .site import view_dims
 
     providers = [p for p in dataset["providers"] if p.get("group") == group]
     dims = [d for d in _visible_dims(dataset["dimensions"]) if is_applicable(group, d["key"])]
+    dims = view_dims(dims, view)
     matrix = dataset["matrix"]
 
     ws.title = title
@@ -72,7 +85,12 @@ def _comparison_sheet(ws, dataset: dict, group: str, title: str) -> None:
 
     if not providers:
         return
+    # The compliance-assessment note, only on sheets that actually carry those rows.
     header_row = 5
+    if any(d.get("group") in _NEW_GROUPS for d in dims):
+        ws["A4"] = NEW_GROUP_NOTE
+        ws["A4"].font = Font(italic=True, size=9, color="586377")
+        header_row = 6
     headers = ["Section", "Term dimension"] + [p["provider_name"] for p in providers]
     for c, text in enumerate(headers, start=1):
         cell = ws.cell(row=header_row, column=c, value=text)
@@ -108,19 +126,25 @@ def _detail_sheet(ws, dataset: dict) -> None:
     matrix = dataset["matrix"]
 
     ws.title = "Detail"
+    note_rows = 0
+    if any(d.get("group") in _NEW_GROUPS for d in dims):
+        ws["A1"] = NEW_GROUP_NOTE
+        ws["A1"].font = Font(italic=True, size=9, color="586377")
+        note_rows = 2  # the note, then a blank spacer row
     headers = [
         "Provider", "Section", "Term dimension", "Value", "Status", "Confidence",
         "Citation", "Source document", "Source URL",
         "Fetched", "Version hash",
     ]
+    header_row = 1 + note_rows
     for c, text in enumerate(headers, start=1):
-        cell = ws.cell(row=1, column=c, value=text)
+        cell = ws.cell(row=header_row, column=c, value=text)
         cell.fill = _HEADER_FILL
         cell.font = _HEADER_FONT
         cell.alignment = _WRAP_TOP
         cell.border = _BORDER
 
-    r = 2
+    r = header_row + 1
     for p in providers:
         for d in dims:
             if not is_applicable(p.get("group", "cloud"), d["key"]):
@@ -145,17 +169,18 @@ def _detail_sheet(ws, dataset: dict) -> None:
                 cell.border = _BORDER
             r += 1
 
-    ws.freeze_panes = "A2"
+    ws.freeze_panes = ws.cell(row=header_row + 1, column=1)
     widths = [20, 20, 22, 60, 26, 11, 34, 30, 40, 12, 14]
     for c, w in enumerate(widths, start=1):
         ws.column_dimensions[get_column_letter(c)].width = w
 
 
-def write_segment_workbook(dataset: dict, group: str, title: str, path: str | Path) -> Path:
+def write_segment_workbook(dataset: dict, group: str, title: str, path: str | Path,
+                           view: str = "all") -> Path:
     """One-segment workbook (a single Comparison sheet) mirroring that section's
-    on-site table and its per-segment dimension set."""
+    on-site table, its per-segment dimension set, and the reader's active view."""
     wb = Workbook()
-    _comparison_sheet(wb.active, dataset, group, title)
+    _comparison_sheet(wb.active, dataset, group, title, view)
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
     wb.save(p)
