@@ -18,6 +18,7 @@ providers:
   # ─────────────────────────── Hyperscalers ───────────────────────────
   - provider: aws
     provider_name: Amazon Web Services
+    segment: hyperscaler
     documents:
       - doc_type: service_terms
         name: AWS Customer Agreement
@@ -48,6 +49,7 @@ providers:
 
   - provider: azure
     provider_name: Microsoft Azure
+    segment: hyperscaler
     documents:
       - doc_type: service_terms
         name: Microsoft Customer Agreement (published)
@@ -77,6 +79,7 @@ providers:
 
   - provider: gcp
     provider_name: Google Cloud
+    segment: hyperscaler
     documents:
       - doc_type: service_terms
         name: Google Cloud Platform Terms of Service
@@ -102,6 +105,7 @@ providers:
   # ────────────────────────── GPU-focused ──────────────────────────
   - provider: coreweave
     provider_name: CoreWeave
+    segment: neocloud
     documents:
       - doc_type: service_terms
         name: CoreWeave Terms of Use
@@ -127,6 +131,7 @@ providers:
 
   - provider: lambda
     provider_name: Lambda
+    segment: neocloud
     documents:
       - doc_type: service_terms
         name: Lambda Terms of Service
@@ -148,6 +153,7 @@ providers:
 
   - provider: crusoe
     provider_name: Crusoe
+    segment: neocloud
     documents:
       - doc_type: service_terms
         name: Crusoe Legal Center (Cloud Platform Terms of Service)
@@ -171,6 +177,7 @@ providers:
 
   - provider: runpod
     provider_name: Runpod
+    segment: neocloud
     documents:
       - doc_type: service_terms
         name: Runpod Terms of Service
@@ -192,6 +199,7 @@ providers:
 
   - provider: vast
     provider_name: Vast.ai
+    segment: neocloud
     documents:
       - doc_type: service_terms
         name: Vast.ai Terms of Service
@@ -210,3 +218,292 @@ providers:
         name: Vast.ai AI-specific terms
         status: not_published
         notes: No dedicated AI terms document; data terms within the Terms / DPA.
+
+  # ─────────────────── Neoclouds (inference platforms) ───────────────────
+  - provider: together
+    provider_name: Together AI
+    segment: neocloud
+    documents:
+      - doc_type: service_terms
+        name: Together AI Terms of Service
+        status: verified
+        url: https://www.together.ai/terms-of-service
+        notes: Verified (direct fetch).
+      - doc_type: aup
+        name: Together AI acceptable-use terms
+        status: within_service_terms
+        notes: Acceptable-use language within the Terms; no confirmed standalone AUP.
+
+  - provider: baseten
+    provider_name: Baseten
+    segment: neocloud
+    documents:
+      - doc_type: service_terms
+        name: Baseten Terms and Conditions
+        status: verified
+        url: https://www.baseten.co/terms-and-conditions/
+        notes: Verified (direct fetch).
+      - doc_type: sla
+        name: Baseten Service Level Agreement
+        status: unverified
+        url: https://www.baseten.co/service-level-agreement/
+        notes: Candidate SLA URL; confirm in the re-fetch pass.
+
+  # ═══════════════════ AI Model Providers (family entries) ═══════════════════
+  # Display unit = model family. openness = closed_api | open_weight. License
+  # values attach to the specific license doc + generation, never family-wide.
+
+  - provider: claude
+    provider_name: Claude
+    segment: model_provider
+    parent_company: Anthropic
+    openness: closed_api
+    documents:
+      - doc_type: service_terms
+        name: Anthropic Commercial Terms of Service
+        status: verified
+        url: https://www.anthropic.com/legal/commercial-terms
+      - doc_type: aup
+        name: Anthropic Usage Policy
+        status: verified
+        url: https://www.anthropic.com/legal/aup
+      - doc_type: deprecation
+        name: Anthropic model deprecations
+        status: verified
+        url: https://docs.anthropic.com/en/docs/about-claude/model-deprecations
+        fetch_method: browser
+      - doc_type: sla
+        name: Anthropic API SLA
+        status: not_published
+        notes: No public API SLA; enterprise/negotiated.
+
+  - provider: openai
+    provider_name: OpenAI API / GPT
+    segment: model_provider
+    parent_company: OpenAI
+    openness: closed_api
+    documents:
+      - doc_type: service_terms
+        name: OpenAI Service Terms
+        status: unverified
+        fetch_method: browser
+        url: https://openai.com/policies/service-terms/
+        notes: 403 to direct archival bot; use browser tier.
+      - doc_type: service_terms
+        name: OpenAI Business Terms
+        slug: business_terms
+        status: unverified
+        fetch_method: browser
+        url: https://openai.com/policies/business-terms/
+        notes: 403 to direct archival bot; use browser tier.
+      - doc_type: aup
+        name: OpenAI Usage Policies
+        status: unverified
+        fetch_method: browser
+        url: https://openai.com/policies/usage-policies/
+        notes: 403 to direct archival bot; use browser tier.
+      - doc_type: deprecation
+        name: OpenAI deprecations
+        status: verified
+        url: https://developers.openai.com/api/docs/deprecations
+
+  - provider: gpt-oss
+    provider_name: gpt-oss
+    segment: model_provider
+    parent_company: OpenAI
+    openness: open_weight
+    documents:
+      - doc_type: model_license
+        name: gpt-oss model license (Apache 2.0)
+        status: verified
+        generation: gpt-oss
+        url: https://raw.githubusercontent.com/openai/gpt-oss/main/LICENSE
+
+  - provider: gemini
+    provider_name: Gemini
+    segment: model_provider
+    parent_company: Google
+    openness: closed_api
+    documents:
+      - doc_type: service_terms
+        name: Gemini API Additional Terms of Service
+        status: verified
+        url: https://ai.google.dev/gemini-api/terms
+      - doc_type: aup
+        name: Google Generative AI Prohibited Use Policy
+        status: verified
+        url: https://policies.google.com/terms/generative-ai/use-policy
+      - doc_type: deprecation
+        name: Gemini API model versions / deprecation
+        status: not_published
+        notes: No standalone deprecation policy URL confirmed; model lifecycle noted in the models docs. TODO.
+
+  - provider: gemma
+    provider_name: Gemma
+    segment: model_provider
+    parent_company: Google
+    openness: open_weight
+    documents:
+      - doc_type: model_license
+        name: Gemma Terms of Use (Gemma license)
+        status: verified
+        generation: Gemma
+        url: https://ai.google.dev/gemma/terms
+
+  - provider: grok
+    provider_name: Grok
+    segment: model_provider
+    parent_company: xAI
+    openness: closed_api
+    documents:
+      - doc_type: service_terms
+        name: xAI Terms of Service
+        status: unverified
+        fetch_method: browser
+        url: https://x.ai/legal/terms-of-service
+        notes: 403 to direct archival bot; use browser tier.
+      - doc_type: aup
+        name: xAI Acceptable Use Policy
+        status: unverified
+        fetch_method: browser
+        url: https://x.ai/legal/acceptable-use-policy
+        notes: 403 to direct archival bot; use browser tier.
+
+  - provider: llama
+    provider_name: Llama
+    segment: model_provider
+    parent_company: Meta
+    openness: open_weight
+    documents:
+      - doc_type: model_license
+        name: Llama 4 Community License
+        status: verified
+        generation: Llama 4
+        url: https://www.llama.com/llama4/license/
+        fetch_method: browser
+        notes: Per-generation; earlier Llama versions carry different community licenses.
+      - doc_type: aup
+        name: Llama Acceptable Use Policy
+        status: verified
+        url: https://www.llama.com/use-policy/
+        fetch_method: browser
+
+  - provider: deepseek
+    provider_name: DeepSeek
+    segment: model_provider
+    parent_company: DeepSeek
+    openness: open_weight
+    documents:
+      - doc_type: model_license
+        name: DeepSeek-R1 model license (MIT)
+        status: verified
+        generation: DeepSeek-R1
+        url: https://huggingface.co/deepseek-ai/DeepSeek-R1/raw/main/LICENSE
+      - doc_type: service_terms
+        name: DeepSeek Open Platform Terms of Service
+        status: unverified
+        fetch_method: browser
+        url: https://platform.deepseek.com/downloads/DeepSeek_Open_Platform_Terms_of_Service.html
+        notes: 403 to direct archival bot; use browser tier (confirm URL in re-fetch).
+
+  - provider: qwen
+    provider_name: Qwen
+    segment: model_provider
+    parent_company: Alibaba
+    openness: open_weight
+    documents:
+      - doc_type: model_license
+        name: Qwen2.5-72B model license
+        status: verified
+        generation: Qwen2.5-72B
+        url: https://huggingface.co/Qwen/Qwen2.5-72B-Instruct/raw/main/LICENSE
+        notes: Per-generation; Qwen mixes Apache-2.0 and the Qwen license across releases.
+
+  - provider: kimi
+    provider_name: Kimi
+    segment: model_provider
+    parent_company: Moonshot AI
+    openness: open_weight
+    documents:
+      - doc_type: service_terms
+        name: Moonshot (Kimi) Platform model-use agreement
+        status: verified
+        url: https://platform.moonshot.ai/docs/agreement/modeluse
+      - doc_type: model_license
+        name: Kimi K2 model license (Modified MIT)
+        status: verified
+        generation: Kimi K2
+        url: https://huggingface.co/moonshotai/Kimi-K2-Instruct/raw/main/LICENSE
+
+  - provider: glm
+    provider_name: GLM
+    segment: model_provider
+    parent_company: Z.ai
+    openness: open_weight
+    documents:
+      - doc_type: model_license
+        name: GLM-5.2 model license (MIT)
+        status: verified
+        generation: GLM-5.2
+        url: https://huggingface.co/zai-org/GLM-5.2/raw/main/LICENSE
+
+  - provider: minimax
+    provider_name: MiniMax
+    segment: model_provider
+    parent_company: MiniMax
+    openness: open_weight
+    documents:
+      - doc_type: model_license
+        name: MiniMax-M3 model license (MiniMax Community License)
+        status: verified
+        generation: MiniMax-M3
+        url: https://huggingface.co/MiniMaxAI/MiniMax-M3/raw/main/LICENSE
+
+  - provider: mistral-platform
+    provider_name: Mistral platform
+    segment: model_provider
+    parent_company: Mistral
+    openness: closed_api
+    documents:
+      - doc_type: service_terms
+        name: Mistral AI Terms of Service
+        status: verified
+        url: https://mistral.ai/terms
+        notes: Redirects to legal.mistral.ai/terms.
+
+  - provider: mistral-open
+    provider_name: Mistral open models
+    segment: model_provider
+    parent_company: Mistral
+    openness: open_weight
+    documents:
+      - doc_type: model_license
+        name: Mistral open-model license
+        status: not_published
+        notes: TODO — confirm canonical license URL (Apache-2.0 models vs Mistral Research/Non-Production License) per generation.
+
+  - provider: inkling
+    provider_name: Inkling
+    segment: model_provider
+    parent_company: Thinking Machines Lab
+    openness: open_weight
+    documents:
+      - doc_type: model_license
+        name: Inkling model license
+        status: not_published
+        notes: TODO — no public terms or model license located; site minimal.
+
+  - provider: command
+    provider_name: Command
+    segment: model_provider
+    parent_company: Cohere
+    openness: closed_api
+    documents:
+      - doc_type: service_terms
+        name: Cohere Terms of Use
+        status: verified
+        url: https://cohere.com/terms-of-use
+      - doc_type: aup
+        name: Cohere usage / acceptable-use policy
+        status: not_published
+        notes: TODO — confirm standalone usage policy URL.

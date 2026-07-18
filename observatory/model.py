@@ -23,24 +23,42 @@ from typing import Any, Dict, Optional
 # registry can introduce a new type without a code change; these are the
 # canonical spellings used for snapshot paths and the comparison schema.
 DOC_TYPES = (
-    "service_terms",   # general service terms / customer agreement
+    "service_terms",   # general service / API / customer agreement terms
     "sla",             # service level agreement (compute/GPU prioritized)
-    "aup",             # acceptable use policy
+    "aup",             # acceptable use / usage policy
     "ai_terms",        # AI-specific or GPU-specific service terms
+    "model_license",   # open-weight model license (per generation)
+    "deprecation",     # model deprecation / version-pinning policy
 )
+
+# Provider segments (the two top-level site sections + their subgroups).
+SEGMENTS = ("hyperscaler", "neocloud", "model_provider")
+# Openness applies to model_provider family entries only.
+OPENNESS = ("closed_api", "open_weight")
+# Fetch tiers, tried in order of preference per source.
+FETCH_METHODS = ("direct", "browser", "wayback")
 
 
 @dataclass
 class Document:
     """One registry entry: a single public document to archive and compare."""
 
-    provider: str          # stable slug, e.g. "aws" (used in snapshot paths)
-    provider_name: str     # human-readable, e.g. "Amazon Web Services"
+    provider: str          # stable slug; for model families this is the family
+                           # slug, e.g. "aws", "claude", "gpt-oss" (snapshot path)
+    provider_name: str     # human-readable, e.g. "Amazon Web Services", "Claude"
     doc_type: str          # one of DOC_TYPES — the schema/comparison category
     name: str              # human-readable document name for citations
     url: str = ""          # public URL (empty when the document has no standalone URL)
     slug: str = ""         # storage key, unique per provider; defaults to doc_type
     notes: str = ""        # e.g. "compute SLA; GPU instances covered here"
+    # Site grouping / entry metadata (carried on every doc of a provider):
+    segment: str = "hyperscaler"   # one of SEGMENTS
+    parent_company: str = ""       # for model families, e.g. "Anthropic", "Google"
+    openness: str = ""             # for model families: closed_api | open_weight
+    generation: str = ""           # model generation a license/doc pins to, e.g. "GLM-5.2"
+    # Fetch tier for THIS source: direct (default), browser (Playwright), or
+    # wayback (Internet Archive fallback). See observatory/fetcher.py.
+    fetch_method: str = "direct"
     # Honest coverage status. Only 'verified' documents are fetched; the rest
     # record a gap so we never guess a URL:
     #   verified            — confirmed to resolve to the right document (has url)
@@ -85,6 +103,11 @@ class FetchResult:
     http_status: Optional[int] = None
     ok: bool = True
     error: str = ""
+    # Which fetch tier actually produced this snapshot, and for the wayback tier
+    # the Internet Archive capture time (so the version is dated by CAPTURE, not
+    # by our fetch time).
+    fetch_method: str = "direct"
+    capture_timestamp: str = ""  # wayback capture time (UTC ISO), else ""
 
     # The archival payload: the raw document exactly as served (the corpus asset)
     # plus a normalized, line-oriented text rendering used for diffing/extraction.

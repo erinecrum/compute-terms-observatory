@@ -25,7 +25,7 @@ from typing import Dict, List
 
 import yaml
 
-from .model import DOC_TYPES, Document
+from .model import DOC_TYPES, FETCH_METHODS, OPENNESS, SEGMENTS, Document
 
 
 class Registry:
@@ -65,12 +65,27 @@ def load_registry(path: str | Path = "registry.yaml") -> Registry:
     for p in raw["providers"]:
         provider = p["provider"]
         provider_name = p["provider_name"]
+        segment = p.get("segment", "hyperscaler")
+        if segment not in SEGMENTS:
+            raise ValueError(f"{provider}: unknown segment {segment!r}. Valid: {', '.join(SEGMENTS)}")
+        parent_company = p.get("parent_company", "")
+        openness = p.get("openness", "")
+        if openness and openness not in OPENNESS:
+            raise ValueError(f"{provider}: unknown openness {openness!r}. Valid: {', '.join(OPENNESS)}")
+        if segment == "model_provider" and openness not in OPENNESS:
+            raise ValueError(f"{provider}: model_provider entries need openness (closed_api|open_weight).")
         for d in p.get("documents", []):
             doc_type = d["doc_type"]
             if doc_type not in DOC_TYPES:
                 raise ValueError(
                     f"{provider}: unknown doc_type {doc_type!r}. "
                     f"Known types: {', '.join(DOC_TYPES)}"
+                )
+            fetch_method = d.get("fetch_method", "direct")
+            if fetch_method not in FETCH_METHODS:
+                raise ValueError(
+                    f"{provider}/{doc_type}: unknown fetch_method {fetch_method!r}. "
+                    f"Valid: {', '.join(FETCH_METHODS)}"
                 )
             status = d.get("status", "verified")
             valid_status = ("verified", "unverified", "not_published", "within_service_terms")
@@ -98,6 +113,11 @@ def load_registry(path: str | Path = "registry.yaml") -> Registry:
                 slug=d.get("slug", ""),
                 notes=d.get("notes", ""),
                 status=status,
+                segment=segment,
+                parent_company=parent_company,
+                openness=openness,
+                generation=d.get("generation", ""),
+                fetch_method=fetch_method,
             )
             key = (provider, doc.slug)
             if key in seen_slugs:

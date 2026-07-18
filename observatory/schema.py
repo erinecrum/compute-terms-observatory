@@ -1,4 +1,4 @@
-"""The v1 term schema — the 10 legally significant dimensions we extract.
+"""The term schema — the legally significant dimensions we extract.
 
 This is the single source of truth for extraction criteria AND for the site's
 matrix rows, so the two can never drift. Each dimension carries a stable key, a
@@ -42,8 +42,10 @@ DIMENSIONS: List[Dimension] = [
             "What the terms say about the provider's rights to use customer data, "
             "and specifically any language about training or improving the "
             "provider's AI/ML models on customer content. State the default "
-            "position (e.g. 'does not train on customer data' vs. 'may use to "
-            "improve services') and any opt-in/opt-out."
+            "position (trains by default / opt-out / opt-in / never), whether it "
+            "varies by tier, any default retention period for inputs/outputs, and "
+            "whether zero-data-retention (ZDR) is available (no / enterprise-only / "
+            "yes)."
         ),
     ),
     Dimension(
@@ -80,6 +82,94 @@ DIMENSIONS: List[Dimension] = [
             "Governing law, the forum/venue, whether disputes go to binding "
             "arbitration (yes/no), and whether there is a class-action waiver "
             "(yes/no). Keep each element short."
+        ),
+    ),
+    Dimension(
+        key="liability",
+        label="Liability caps & carveouts",
+        guidance=(
+            "The general limitation-of-liability cap (e.g. 12 months' fees, fees "
+            "paid, a fixed amount), notable carveouts excluded from the cap "
+            "(indemnity, confidentiality, data breach, IP), and whether "
+            "consequential/indirect damages are waived."
+        ),
+    ),
+    Dimension(
+        key="output_indemnity",
+        label="Output IP indemnification",
+        guidance=(
+            "Whether the provider offers IP indemnification for model outputs "
+            "(no / paid-tiers-only / enterprise-only / yes), any cap on it "
+            "(excluded / general cap / supercap / uncapped / unknown), and the "
+            "conditions attached (e.g. safety features on, no fine-tuning, no known "
+            "infringement)."
+        ),
+    ),
+    Dimension(
+        key="deprecation",
+        label="Model deprecation & version pinning",
+        guidance=(
+            "Model deprecation and version pinning: whether there is a public "
+            "commitment (none / informal / documented policy / contractual), the "
+            "minimum notice before a model is retired (days), and whether version "
+            "pinning is available (no / enterprise-only / yes)."
+        ),
+    ),
+    Dimension(
+        key="benchmarking_restrictions",
+        label="Benchmarking & eval restrictions",
+        guidance=(
+            "Whether publishing benchmarks or evaluations of the service or model "
+            "is unrestricted, consent-required, prohibited, or silent."
+        ),
+    ),
+    Dimension(
+        key="competitive_training",
+        label="No-compete-training clauses",
+        guidance=(
+            "Whether the terms restrict using the provider's outputs to train other "
+            "models: none / competing-models-only / any-model-training / silent."
+        ),
+    ),
+    Dimension(
+        key="model_license",
+        label="Model license",
+        guidance=(
+            "For a model-weights license document, the license as NAMED in the "
+            "document: e.g. MIT, Apache 2.0, a bespoke/community license (give its "
+            "name), or a modified permissive license. This value attaches to the "
+            "specific license document and model generation it came from; never "
+            "assert it family-wide. Value = 'not applicable' for closed/API-only "
+            "offerings with no weights license."
+        ),
+    ),
+    Dimension(
+        key="capacity_remedies",
+        label="Capacity delivery remedies",
+        guidance=(
+            "For committed or reserved capacity, the delivery commitment (firm / "
+            "best-efforts / silent) and the remedy if capacity is not delivered "
+            "(credits / termination right / refund / none / negotiated). Mainly "
+            "relevant to neocloud/GPU providers."
+        ),
+    ),
+    Dimension(
+        key="hardware_substitution",
+        label="Hardware substitution rights",
+        guidance=(
+            "Whether the provider may substitute the hardware/GPU model delivered: "
+            "unilateral / equivalent-or-better / consent-required / silent. Mainly "
+            "relevant to neocloud/GPU providers."
+        ),
+    ),
+    Dimension(
+        key="assignment_financing",
+        label="Assignment & financing clauses",
+        guidance=(
+            "The provider's assignment rights (unrestricted / affiliates-and-"
+            "financing / consent-required / silent) and whether there is lender "
+            "step-in / financing language (yes/no). Mainly relevant to neocloud/GPU "
+            "providers."
         ),
     ),
     # SLA-specific dimensions are grouped at the bottom of the matrix.

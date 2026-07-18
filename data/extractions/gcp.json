@@ -1,7 +1,7 @@
 {
   "provider": "gcp",
   "provider_name": "Google Cloud",
-  "extracted_at": "2026-07-15T00:57:24.866276+00:00",
+  "extracted_at": "2026-07-18T01:58:21.540701+00:00",
   "model": "claude-opus-4-8",
   "documents_used": [
     {
@@ -29,9 +29,9 @@
       "doc_type": "ai_terms",
       "name": "Google Cloud Service Specific Terms (AI/ML data use)",
       "url": "https://cloud.google.com/terms/service-terms",
-      "fetched_at": "2026-07-14T22:34:30.333005+00:00",
-      "text_sha256": "02842c721259cc88e9613fccac7e87e272c4bf9c410ab4f57fc69e06d66cc55f",
-      "included_chars": 141115,
+      "fetched_at": "2026-07-17T16:49:28.081931+00:00",
+      "text_sha256": "88ec296b080b707f8d50c2e51cf9eda78023e1cfc487aa30eb2ac59947e525da",
+      "included_chars": 141788,
       "truncated": false
     },
     {
@@ -46,71 +46,12 @@
     }
   ],
   "fields": {
-    "availability_definition": {
-      "value": "Instance-level and multi-zone availability, measured as Monthly Uptime Percentage (minutes-based). Commitments: Instances in Multiple Zones >=99.99% (Premium), Load balancing >=99.99%, Single Instance Memory Optimized >=99.95%, Single Instance other families >=99.9%; Standard Tier >=99.9%; lower tiers (99.95%) for Mexico/Stockholm regions.",
-      "confidence": "high",
-      "citation": "Monthly Uptime Percentage ... Instances in Multiple Zones >= 99.99%",
-      "citation_document": "sla",
-      "source": {
-        "slug": "sla",
-        "doc_type": "sla",
-        "name": "Compute Engine Service Level Agreement",
-        "url": "https://cloud.google.com/compute/sla",
-        "fetched_at": "2026-07-14T22:34:29.088326+00:00",
-        "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9"
-      },
-      "human_verified": false
-    },
-    "credit_regime": {
-      "value": "Tiered credit of % of monthly bill for the non-compliant Covered Service. Multi-Zone/LB (Premium): 99.00%-<99.99% =10%, 95.00%-<99.00% =25%, <95.00% =100%. Single Instance: 95.00%-<99.9x% =10%, 90.00%-<95.00% =25%, <90.00% =100%. Sole and exclusive remedy stated.",
-      "confidence": "high",
-      "citation": "This SLA states Customer's sole and exclusive remedy",
-      "citation_document": "sla",
-      "source": {
-        "slug": "sla",
-        "doc_type": "sla",
-        "name": "Compute Engine Service Level Agreement",
-        "url": "https://cloud.google.com/compute/sla",
-        "fetched_at": "2026-07-14T22:34:29.088326+00:00",
-        "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9"
-      },
-      "human_verified": false
-    },
-    "claim_mechanics": {
-      "value": "Customer must file a claim: notify Google technical support within 60 days from becoming eligible, and provide log files showing Downtime Periods and dates/times. Failure to comply forfeits credit.",
-      "confidence": "high",
-      "citation": "must notify Google technical support within 60 days",
-      "citation_document": "sla",
-      "source": {
-        "slug": "sla",
-        "doc_type": "sla",
-        "name": "Compute Engine Service Level Agreement",
-        "url": "https://cloud.google.com/compute/sla",
-        "fetched_at": "2026-07-14T22:34:29.088326+00:00",
-        "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9"
-      },
-      "human_verified": false
-    },
-    "sla_exclusions": {
-      "value": "Present: pre-GA/beta features; features excluded in Documentation; force majeure (factors outside Google's reasonable control); customer or third-party software/hardware; abuse/Agreement violations; quota-based errors. Also Access Approval disruptions; Pre-GA offerings not covered.",
-      "confidence": "high",
-      "citation": "SLA Exclusions ... caused by factors outside of Google's reasonable control",
-      "citation_document": "sla",
-      "source": {
-        "slug": "sla",
-        "doc_type": "sla",
-        "name": "Compute Engine Service Level Agreement",
-        "url": "https://cloud.google.com/compute/sla",
-        "fetched_at": "2026-07-14T22:34:29.088326+00:00",
-        "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9"
-      },
-      "human_verified": false
-    },
     "capacity_reservation": {
-      "value": "Public terms include Committed Units (non-cancellable, take-or-pay: pay whether or not used) with auto-renewal, no resell/transfer; Compute Engine future reservations (Google approves in its discretion). Refund of unused prepaid Fees only if Google non-renews/terminates or discontinues. Specific commitment amounts negotiated, not published.",
-      "confidence": "high",
-      "citation": "Customer will pay the Fees for those Committed Units ... whether or not they are used",
+      "value": "Committed Units: non-cancellable, take-or-pay, pay whether used or not; auto-renews; Compute Engine future reservations at Google's discretion. Enterprise/negotiated commitments in Order Forms/addenda not published.",
+      "confidence": "low",
+      "citation": "Customer will pay the Fees for those Committed Units during the Committed Unit Term…",
       "citation_document": "service_terms",
+      "status": "unverified",
       "source": {
         "slug": "service_terms",
         "doc_type": "service_terms",
@@ -122,25 +63,27 @@
       "human_verified": false
     },
     "data_use_ai_training": {
-      "value": "Default: does not train on customer data. 'Google will not use Customer Data to train or fine-tune any AI/ML models without Customer's prior permission or instruction.' Generally Google only processes Customer Data per the Cloud Data Processing Addendum. Opt-in via customer permission/instruction.",
+      "value": "Never trains on customer data without permission by default; applies across tiers. Prompts/output for generative AI not stored beyond reasonably necessary to create output. ZDR-like default. Abuse-detection logging exception exists.",
       "confidence": "high",
-      "citation": "Google will not use Customer Data to train or fine-tune any AI/ML models",
+      "citation": "Google will not use Customer Data to train or fine-tune any AI/ML models without…",
       "citation_document": "ai_terms",
+      "status": "verified",
       "source": {
         "slug": "ai_terms",
         "doc_type": "ai_terms",
         "name": "Google Cloud Service Specific Terms (AI/ML data use)",
         "url": "https://cloud.google.com/terms/service-terms",
-        "fetched_at": "2026-07-14T22:34:30.333005+00:00",
-        "text_sha256": "02842c721259cc88e9613fccac7e87e272c4bf9c410ab4f57fc69e06d66cc55f"
+        "fetched_at": "2026-07-17T16:49:28.081931+00:00",
+        "text_sha256": "88ec296b080b707f8d50c2e51cf9eda78023e1cfc487aa30eb2ac59947e525da"
       },
       "human_verified": false
     },
     "suspension_rights": {
-      "value": "Grounds: AUP violation (notice + 24 hrs to cure before suspension); non-payment/late payment; protecting Services/infrastructure/other customers; suspected unauthorized access; legal compliance; breach of Restrictions/Service Specific Terms. Immediate suspension allowed for the 'Other Suspension' grounds; AUP violations get notice and 24-hour cure.",
+      "value": "Grounds: AUP breach (24h cure), non-payment, security risk, unauthorized third-party access, legal compliance, Restrictions breach. AUP violations get notice; other grounds allow immediate suspension.",
       "confidence": "high",
-      "citation": "Google may immediately Suspend all or part of Customer's use",
+      "citation": "Google may immediately Suspend all or part of Customer's use of the Services if",
       "citation_document": "service_terms",
+      "status": "verified",
       "source": {
         "slug": "service_terms",
         "doc_type": "service_terms",
@@ -152,10 +95,11 @@
       "human_verified": false
     },
     "termination": {
-      "value": "Customer may terminate for convenience anytime on prior written notice (subject to financial commitments). Google may terminate GCP Services for convenience on 30 days' prior written notice. On termination, access to Services and Customer Data terminates unless otherwise stated; no general post-termination data retrieval window (EU Data Act adds a Data Recovery Period of >=30 days where applicable).",
+      "value": "Customer may terminate for convenience anytime on prior written notice (subject to commitments); Google may terminate GCP for convenience on 30 days' notice. On termination, access to Customer Data terminates unless otherwise described; EU Data Act adds 30-day Data Recovery Period.",
       "confidence": "high",
-      "citation": "Google may terminate this Agreement ... with 30 days' prior written notice",
+      "citation": "Google may terminate this Agreement or any applicable Order Form for its convenience at…",
       "citation_document": "service_terms",
+      "status": "verified",
       "source": {
         "slug": "service_terms",
         "doc_type": "service_terms",
@@ -167,10 +111,11 @@
       "human_verified": false
     },
     "unilateral_modification": {
-      "value": "Google may update the Agreement; material updates to GCP terms become effective 30 days after posting (immediately if for new functionality or required by law). Service discontinuation: at least 12 months' notice (with exceptions). URL Terms/SLA updates: material updates effective 30 days after posting.",
+      "value": "Google may update the Agreement; material updates to GCP terms effective 30 days after posting; new-functionality or law-required updates effective immediately.",
       "confidence": "high",
       "citation": "material updates to this Agreement will become effective 30 days after they are posted",
       "citation_document": "service_terms",
+      "status": "verified",
       "source": {
         "slug": "service_terms",
         "doc_type": "service_terms",
@@ -182,10 +127,11 @@
       "human_verified": false
     },
     "governing_law_disputes": {
-      "value": "Governing law: California (excluding conflict rules); venue: state/federal courts of Santa Clara County, California. Binding arbitration: no (litigation in courts). Class-action waiver: not specified. (Different rules for US government entities.)",
-      "confidence": "high",
-      "citation": "GOVERNED BY CALIFORNIA LAW ... LITIGATED EXCLUSIVELY IN ... SANTA CLARA COUNTY",
+      "value": "California law (excluding conflict rules); exclusive venue Santa Clara County, California courts; no arbitration; no class-action waiver stated.",
+      "confidence": "low",
+      "citation": "GOVERNED BY CALIFORNIA LAW ... LITIGATED EXCLUSIVELY IN THE FEDERAL OR STATE COURTS OF…",
       "citation_document": "service_terms",
+      "status": "unverified",
       "source": {
         "slug": "service_terms",
         "doc_type": "service_terms",
@@ -193,6 +139,214 @@
         "url": "https://cloud.google.com/terms",
         "fetched_at": "2026-07-14T22:34:28.288467+00:00",
         "text_sha256": "cbb13687e8591a4610e5716dc649c689aa45919af6c50b441328630b23ad85de"
+      },
+      "human_verified": false
+    },
+    "liability": {
+      "value": "Cap: fees paid in 12 months before event (free services $5,000). Consequential/indirect damages waived. Uncapped carveouts: fraud, indemnification, IP infringement, payment obligations, non-excludable liability.",
+      "confidence": "high",
+      "citation": "limited to the Fees Customer paid for such Services during the 12 month period…",
+      "citation_document": "service_terms",
+      "status": "verified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Google Cloud Platform Terms of Service",
+        "url": "https://cloud.google.com/terms",
+        "fetched_at": "2026-07-14T22:34:28.288467+00:00",
+        "text_sha256": "cbb13687e8591a4610e5716dc649c689aa45919af6c50b441328630b23ad85de"
+      },
+      "human_verified": false
+    },
+    "output_indemnity": {
+      "value": "Yes, paid-tiers-only (Generative AI Indemnified Services not free of charge); general cap applies. Conditions: safety filters/citations not disabled, no known infringement, necessary rights to data, no trademark use in trade.",
+      "confidence": "low",
+      "citation": "Google's indemnification obligations ... also apply to allegations that an unmodified Generated Output",
+      "citation_document": "ai_terms",
+      "status": "unverified",
+      "source": {
+        "slug": "ai_terms",
+        "doc_type": "ai_terms",
+        "name": "Google Cloud Service Specific Terms (AI/ML data use)",
+        "url": "https://cloud.google.com/terms/service-terms",
+        "fetched_at": "2026-07-17T16:49:28.081931+00:00",
+        "text_sha256": "88ec296b080b707f8d50c2e51cf9eda78023e1cfc487aa30eb2ac59947e525da"
+      },
+      "human_verified": false
+    },
+    "deprecation": {
+      "value": "Documented/contractual: 12 months' notice before discontinuing a Service unless replaced by materially similar. Provisioned Throughput models: 6 months' notice. Version pinning not specified.",
+      "confidence": "low",
+      "citation": "Google will notify Customer at least 12 months before ... discontinuing any Service",
+      "citation_document": "service_terms",
+      "status": "unverified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Google Cloud Platform Terms of Service",
+        "url": "https://cloud.google.com/terms",
+        "fetched_at": "2026-07-14T22:34:28.288467+00:00",
+        "text_sha256": "cbb13687e8591a4610e5716dc649c689aa45919af6c50b441328630b23ad85de"
+      },
+      "human_verified": false
+    },
+    "benchmarking_restrictions": {
+      "value": "Consent-required/conditional: customer may test and publicly disclose only if results replicable and Google may reciprocally test; may not test for hyperscale cloud provider without consent. Cloud NGFW Enterprise/Cloud IDS benchmarks prohibited.",
+      "confidence": "high",
+      "citation": "publicly disclose the results of such Tests only if (i) the public disclosure includes…",
+      "citation_document": "ai_terms",
+      "status": "verified",
+      "source": {
+        "slug": "ai_terms",
+        "doc_type": "ai_terms",
+        "name": "Google Cloud Service Specific Terms (AI/ML data use)",
+        "url": "https://cloud.google.com/terms/service-terms",
+        "fetched_at": "2026-07-17T16:49:28.081931+00:00",
+        "text_sha256": "88ec296b080b707f8d50c2e51cf9eda78023e1cfc487aa30eb2ac59947e525da"
+      },
+      "human_verified": false
+    },
+    "competitive_training": {
+      "value": "any-model-training: output may not be used to create or improve models similar to a Google Model, nor to develop competing products.",
+      "confidence": "low",
+      "citation": "use output from an AI/ML Service ... to: ... (ii) create or improve models…",
+      "citation_document": "ai_terms",
+      "status": "unverified",
+      "source": {
+        "slug": "ai_terms",
+        "doc_type": "ai_terms",
+        "name": "Google Cloud Service Specific Terms (AI/ML data use)",
+        "url": "https://cloud.google.com/terms/service-terms",
+        "fetched_at": "2026-07-17T16:49:28.081931+00:00",
+        "text_sha256": "88ec296b080b707f8d50c2e51cf9eda78023e1cfc487aa30eb2ac59947e525da"
+      },
+      "human_verified": false
+    },
+    "model_license": {
+      "value": "not applicable",
+      "confidence": "high",
+      "citation": "Google owns all Intellectual Property Rights in Google Models.",
+      "citation_document": "ai_terms",
+      "status": "verified",
+      "source": {
+        "slug": "ai_terms",
+        "doc_type": "ai_terms",
+        "name": "Google Cloud Service Specific Terms (AI/ML data use)",
+        "url": "https://cloud.google.com/terms/service-terms",
+        "fetched_at": "2026-07-17T16:49:28.081931+00:00",
+        "text_sha256": "88ec296b080b707f8d50c2e51cf9eda78023e1cfc487aa30eb2ac59947e525da"
+      },
+      "human_verified": false
+    },
+    "capacity_remedies": {
+      "value": "For committed units, if Google non-renews/terminates (not for breach) or discontinues services, refund of unused prepaid fees. Future reservation delivery at Google's sole discretion. Otherwise silent.",
+      "confidence": "low",
+      "citation": "Google will refund Customer any unused prepaid Fees following the expiration or termination",
+      "citation_document": "service_terms",
+      "status": "unverified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Google Cloud Platform Terms of Service",
+        "url": "https://cloud.google.com/terms",
+        "fetched_at": "2026-07-14T22:34:28.288467+00:00",
+        "text_sha256": "cbb13687e8591a4610e5716dc649c689aa45919af6c50b441328630b23ad85de"
+      },
+      "human_verified": false
+    },
+    "hardware_substitution": {
+      "value": "Google may transfer/deploy Compute Engine capacity across regions provided no delay or adverse impact on cost, functionality, performance, security, or availability.",
+      "confidence": "low",
+      "citation": "transfer all or a portion of that capacity from one Region to another Region,…",
+      "citation_document": "ai_terms",
+      "status": "unverified",
+      "source": {
+        "slug": "ai_terms",
+        "doc_type": "ai_terms",
+        "name": "Google Cloud Service Specific Terms (AI/ML data use)",
+        "url": "https://cloud.google.com/terms/service-terms",
+        "fetched_at": "2026-07-17T16:49:28.081931+00:00",
+        "text_sha256": "88ec296b080b707f8d50c2e51cf9eda78023e1cfc487aa30eb2ac59947e525da"
+      },
+      "human_verified": false
+    },
+    "assignment_financing": {
+      "value": "affiliates-only: neither party may assign without consent except to an Affiliate meeting conditions. No lender step-in / financing language.",
+      "confidence": "high",
+      "citation": "Neither party may assign any part of this Agreement without the written consent of…",
+      "citation_document": "service_terms",
+      "status": "verified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Google Cloud Platform Terms of Service",
+        "url": "https://cloud.google.com/terms",
+        "fetched_at": "2026-07-14T22:34:28.288467+00:00",
+        "text_sha256": "cbb13687e8591a4610e5716dc649c689aa45919af6c50b441328630b23ad85de"
+      },
+      "human_verified": false
+    },
+    "availability_definition": {
+      "value": "instance-level and multi-zone: Monthly Uptime Percentage based on Downtime minutes (external connectivity/disk loss). Commitments: 99.99% multi-zone, 99.95% memory-optimized single instance, 99.9% other single instance (Premium Tier).",
+      "confidence": "low",
+      "citation": "Instances in Multiple Zones >= 99.99% ... A Single Instance of all other families…",
+      "citation_document": "sla",
+      "status": "unverified",
+      "source": {
+        "slug": "sla",
+        "doc_type": "sla",
+        "name": "Compute Engine Service Level Agreement",
+        "url": "https://cloud.google.com/compute/sla",
+        "fetched_at": "2026-07-14T22:34:29.088326+00:00",
+        "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9"
+      },
+      "human_verified": false
+    },
+    "credit_regime": {
+      "value": "Tiers (multi-zone Premium): 99.0-<99.99%=10%; 95.0-<99.0%=25%; <95.0%=100%. Single instance tiers 10/25/100% at lower thresholds. Max credit = amount due for affected covered services. Sole and exclusive remedy.",
+      "confidence": "high",
+      "citation": "This SLA states Customer's sole and exclusive remedy for any failure by Google to…",
+      "citation_document": "sla",
+      "status": "verified",
+      "source": {
+        "slug": "sla",
+        "doc_type": "sla",
+        "name": "Compute Engine Service Level Agreement",
+        "url": "https://cloud.google.com/compute/sla",
+        "fetched_at": "2026-07-14T22:34:29.088326+00:00",
+        "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9"
+      },
+      "human_verified": false
+    },
+    "claim_mechanics": {
+      "value": "Customer must request credit by notifying Google technical support within 60 days of becoming eligible; must provide log files showing Downtime Periods and dates/times; failure forfeits credit.",
+      "confidence": "low",
+      "citation": "notify Google technical support within 60 days ... must also provide Google with log…",
+      "citation_document": "sla",
+      "status": "unverified",
+      "source": {
+        "slug": "sla",
+        "doc_type": "sla",
+        "name": "Compute Engine Service Level Agreement",
+        "url": "https://cloud.google.com/compute/sla",
+        "fetched_at": "2026-07-14T22:34:29.088326+00:00",
+        "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9"
+      },
+      "human_verified": false
+    },
+    "sla_exclusions": {
+      "value": "Present: pre-GA/beta features, excluded features, factors outside Google's reasonable control (force majeure-type), customer/third-party software or hardware, AUP/agreement violations, quotas. Also Access Approval-caused disruptions.",
+      "confidence": "high",
+      "citation": "caused by factors outside of Google's reasonable control; (ii) that resulted from Customer's software…",
+      "citation_document": "sla",
+      "status": "verified",
+      "source": {
+        "slug": "sla",
+        "doc_type": "sla",
+        "name": "Compute Engine Service Level Agreement",
+        "url": "https://cloud.google.com/compute/sla",
+        "fetched_at": "2026-07-14T22:34:29.088326+00:00",
+        "text_sha256": "d2e9544e42a24820e0fc61826e2c070b1398e0dba44600956f5658ae0d9d76d9"
       },
       "human_verified": false
     }

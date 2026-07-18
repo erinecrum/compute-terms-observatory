@@ -1,7 +1,7 @@
 {
   "provider": "crusoe",
   "provider_name": "Crusoe",
-  "extracted_at": "2026-07-15T01:03:54.593207+00:00",
+  "extracted_at": "2026-07-18T01:59:22.384929+00:00",
   "model": "claude-opus-4-8",
   "documents_used": [
     {
@@ -16,71 +16,12 @@
     }
   ],
   "fields": {
-    "availability_definition": {
-      "value": "instance-level (per single GPU-enabled VM) and per-volume/per-resource. Commitments: 99.5% GPU VM, 99.5% Persistent Disks, 99.5% Shared Disks, 99.9% Container Registry, 99.9% Managed Kubernetes control plane. Measured as Monthly Uptime Percentage.",
-      "confidence": "high",
-      "citation": "A single GPU-enabled virtual machine ≥ 99.5%",
-      "citation_document": "service_terms",
-      "source": {
-        "slug": "service_terms",
-        "doc_type": "service_terms",
-        "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
-        "url": "https://legal.crusoe.ai/",
-        "fetched_at": "2026-07-14T22:50:12.195937+00:00",
-        "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
-      },
-      "human_verified": false
-    },
-    "credit_regime": {
-      "value": "Tiered credit of monthly bill for the affected Covered Service. GPU VM/Persistent/Shared Disks: 95-99.5%=10%, 90-95%=25%, <90%=100%. Container Registry/Kubernetes: 99-99.9%=10%, 95-99%=25%, <95%=100%. Max credit capped at amount due for affected Covered Service that month. Stated as sole and exclusive remedy.",
-      "confidence": "high",
-      "citation": "This SLA states Customer's sole and exclusive remedy",
-      "citation_document": "service_terms",
-      "source": {
-        "slug": "service_terms",
-        "doc_type": "service_terms",
-        "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
-        "url": "https://legal.crusoe.ai/",
-        "fetched_at": "2026-07-14T22:50:12.195937+00:00",
-        "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
-      },
-      "human_verified": false
-    },
-    "claim_mechanics": {
-      "value": "Customer must request. Must notify Crusoe within 30 days from becoming eligible, and provide log files or monitoring data showing loss of connectivity with date and time of errors. Failure to comply forfeits the credit.",
-      "confidence": "high",
-      "citation": "Customer must notify Crusoe within 30 days",
-      "citation_document": "service_terms",
-      "source": {
-        "slug": "service_terms",
-        "doc_type": "service_terms",
-        "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
-        "url": "https://legal.crusoe.ai/",
-        "fetched_at": "2026-07-14T22:50:12.195937+00:00",
-        "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
-      },
-      "human_verified": false
-    },
-    "sla_exclusions": {
-      "value": "Present: force majeure (factors outside Crusoe's reasonable control); customer fault/third-party hardware/software; scheduled or emergency maintenance; beta/preview (pre-general availability features); AUP/agreement violations; quotas/throttling (quotas applied by system). Not addressed: single-AZ, external ISP.",
-      "confidence": "high",
-      "citation": "SLA Exclusions",
-      "citation_document": "service_terms",
-      "source": {
-        "slug": "service_terms",
-        "doc_type": "service_terms",
-        "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
-        "url": "https://legal.crusoe.ai/",
-        "fetched_at": "2026-07-14T22:50:12.195937+00:00",
-        "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
-      },
-      "human_verified": false
-    },
     "capacity_reservation": {
-      "value": "Not specified in public documents; no reserved instances, committed-use, savings plans, take-or-pay or cancellation terms appear. Pricing incorporated by reference to external URL. Enterprise commitment terms appear negotiated, not published.",
-      "confidence": "medium",
-      "citation": "The Fees for each Service are stated at https://crusoe.ai/cloud",
+      "value": "not specified in published terms; usage is non-cancellable but no reserved/committed-capacity terms published (likely negotiated privately)",
+      "confidence": "low",
+      "citation": "Customer's obligation to pay all Fees is non-cancellable.",
       "citation_document": "service_terms",
+      "status": "unverified",
       "source": {
         "slug": "service_terms",
         "doc_type": "service_terms",
@@ -92,10 +33,11 @@
       "human_verified": false
     },
     "data_use_ai_training": {
-      "value": "Does not use customer data for other purposes. Crusoe accesses/uses Customer Data only to provide the Services and TSS or as instructed, and will not use it for any other Crusoe products, services, or advertising. No AI/ML training language; no opt-in/opt-out stated.",
+      "value": "never trains on customer data; Crusoe uses Customer Data only to provide Services, not for other products",
       "confidence": "high",
       "citation": "will not use it for any other Crusoe products, services, or advertising",
       "citation_document": "service_terms",
+      "status": "verified",
       "source": {
         "slug": "service_terms",
         "doc_type": "service_terms",
@@ -107,10 +49,11 @@
       "human_verified": false
     },
     "suspension_rights": {
-      "value": "AUP violations: notice + 24-hour cure before suspension. Other grounds (adverse impact on Services/network, suspected unauthorized access, legal compliance, breach of Restrictions/Service Specific Terms): immediate suspension. Non-payment: may suspend if overdue. Notice of basis given at Customer's request as soon as reasonably possible.",
-      "confidence": "high",
-      "citation": "Crusoe may immediately Suspend all or part of Customer's use",
+      "value": "AUP breach (24hr cure then suspend); immediate suspension for security risk, unauthorized access, legal compliance, or Restrictions breach; non-payment",
+      "confidence": "low",
+      "citation": "Crusoe may immediately Suspend all or part of Customer's use of the Services",
       "citation_document": "service_terms",
+      "status": "unverified",
       "source": {
         "slug": "service_terms",
         "doc_type": "service_terms",
@@ -122,10 +65,11 @@
       "human_verified": false
     },
     "termination": {
-      "value": "Termination for convenience: Customer any time on prior written notice; Crusoe any time with 30 days' prior written notice. On termination all rights and access to Services terminate including access to Customer Data; no defined post-termination data-retrieval window (data export must occur during the Term).",
-      "confidence": "high",
-      "citation": "Crusoe may terminate this Agreement for its convenience... with 30 days' prior written notice",
+      "value": "Either party may terminate for convenience; Crusoe with 30 days' notice. On termination all access to Customer Data terminates; no post-termination retrieval window specified",
+      "confidence": "low",
+      "citation": "Crusoe may terminate this Agreement for its convenience at any time with 30 days'…",
       "citation_document": "service_terms",
+      "status": "unverified",
       "source": {
         "slug": "service_terms",
         "doc_type": "service_terms",
@@ -137,10 +81,11 @@
       "human_verified": false
     },
     "unilateral_modification": {
-      "value": "Crusoe may change the Agreement/URL Terms and pricing. Material changes effective 30 days after posting; changes for new functionality, DPST, or legally required are effective immediately. At least 90 days' advance notice for materially adverse SLA changes. Continued use = consent.",
+      "value": "Crusoe may change terms; material changes effective 30 days after posting; new functionality/DPST/legal changes immediate; 90 days for materially adverse SLA changes",
       "confidence": "high",
       "citation": "material changes to the Agreement will become effective 30 days after they are posted",
       "citation_document": "service_terms",
+      "status": "verified",
       "source": {
         "slug": "service_terms",
         "doc_type": "service_terms",
@@ -152,10 +97,184 @@
       "human_verified": false
     },
     "governing_law_disputes": {
-      "value": "Governing law: New York law (excluding conflict rules). Forum: exclusive federal/state courts of Denver County, Colorado. Arbitration: no (litigation). Class-action waiver: not specified.",
-      "confidence": "high",
-      "citation": "GOVERNED BY NEW YORK LAW... LITIGATED EXCLUSIVELY IN THE... COURTS OF DENVER COUNTY, COLORADO",
+      "value": "New York law; venue federal/state courts of Denver County, Colorado; no arbitration; no class-action waiver",
+      "confidence": "low",
+      "citation": "GOVERNED BY NEW YORK LAW... LITIGATED EXCLUSIVELY IN THE FEDERAL OR STATE COURTS OF…",
       "citation_document": "service_terms",
+      "status": "unverified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+        "url": "https://legal.crusoe.ai/",
+        "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+        "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
+      },
+      "human_verified": false
+    },
+    "liability": {
+      "value": "Cap: fees paid in 12 months prior (free services $1,000); carveouts (uncapped): fraud, indemnification, IP infringement, payment obligations; indirect/consequential damages waived",
+      "confidence": "high",
+      "citation": "limited to the Fees Customer paid during the 12 month period before the event…",
+      "citation_document": "service_terms",
+      "status": "verified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+        "url": "https://legal.crusoe.ai/",
+        "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+        "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
+      },
+      "human_verified": false
+    },
+    "output_indemnity": {
+      "value": "no output-specific IP indemnity; general Service IP indemnity only (no model-output indemnity)",
+      "confidence": "low",
+      "citation": "arising from an allegation that any Service or any Crusoe Brand Feature... infringes the…",
+      "citation_document": "service_terms",
+      "status": "unverified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+        "url": "https://legal.crusoe.ai/",
+        "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+        "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
+      },
+      "human_verified": false
+    },
+    "deprecation": {
+      "value": "documented policy: at least 90 days' notice before discontinuing a Service or backwards-incompatible API change; version pinning not specified",
+      "confidence": "high",
+      "citation": "Crusoe will notify Customer at least 90 days before discontinuing any Service",
+      "citation_document": "service_terms",
+      "status": "verified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+        "url": "https://legal.crusoe.ai/",
+        "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+        "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
+      },
+      "human_verified": false
+    },
+    "benchmarking_restrictions": {
+      "value": "silent",
+      "confidence": "low",
+      "citation": "",
+      "citation_document": "none",
+      "status": "unverified",
+      "source": null,
+      "human_verified": false
+    },
+    "competitive_training": {
+      "value": "silent (no restriction on using outputs to train other models)",
+      "confidence": "low",
+      "citation": "",
+      "citation_document": "none",
+      "status": "unverified",
+      "source": null,
+      "human_verified": false
+    },
+    "model_license": {
+      "value": "not applicable (GPU cloud/API infrastructure; no model-weights license)",
+      "confidence": "low",
+      "citation": "",
+      "citation_document": "none",
+      "status": "unverified",
+      "source": null,
+      "human_verified": false
+    },
+    "capacity_remedies": {
+      "value": "silent on committed-capacity delivery; SLA provides service credits for uptime failures on a single VM",
+      "confidence": "low",
+      "citation": "",
+      "citation_document": "none",
+      "status": "unverified",
+      "source": null,
+      "human_verified": false
+    },
+    "hardware_substitution": {
+      "value": "silent",
+      "confidence": "low",
+      "citation": "",
+      "citation_document": "none",
+      "status": "unverified",
+      "source": null,
+      "human_verified": false
+    },
+    "assignment_financing": {
+      "value": "Crusoe may freely assign (v1.8); Customer needs consent except merger/change of control; no lender step-in/financing language",
+      "confidence": "high",
+      "citation": "Crusoe may freely assign this Agreement and any order or part of this Agreement.",
+      "citation_document": "service_terms",
+      "status": "verified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+        "url": "https://legal.crusoe.ai/",
+        "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+        "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
+      },
+      "human_verified": false
+    },
+    "availability_definition": {
+      "value": "instance-level: single GPU-enabled VM ≥99.5%; Persistent Disks ≥99.5%; Shared Disks ≥99.5%; Container Registry ≥99.9%; Managed Kubernetes control plane ≥99.9%",
+      "confidence": "high",
+      "citation": "A single GPU-enabled virtual machine ≥ 99.5%",
+      "citation_document": "service_terms",
+      "status": "verified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+        "url": "https://legal.crusoe.ai/",
+        "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+        "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
+      },
+      "human_verified": false
+    },
+    "credit_regime": {
+      "value": "VM/disks: 95-99.5%=10%, 90-95%=25%, <90%=100%; registry/k8s: 99-99.9%=10%, 95-99%=25%, <95%=100%; max = monthly bill for the Covered Service; sole/exclusive remedy",
+      "confidence": "high",
+      "citation": "This SLA states Customer's sole and exclusive remedy for any failure by Crusoe to…",
+      "citation_document": "service_terms",
+      "status": "verified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+        "url": "https://legal.crusoe.ai/",
+        "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+        "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
+      },
+      "human_verified": false
+    },
+    "claim_mechanics": {
+      "value": "Customer must notify Crusoe within 30 days of becoming eligible; must supply log files or monitoring data showing loss of connectivity with date/time; else forfeits credit",
+      "confidence": "high",
+      "citation": "Customer must notify Crusoe within 30 days from the time Customer becomes eligible",
+      "citation_document": "service_terms",
+      "status": "verified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+        "url": "https://legal.crusoe.ai/",
+        "fetched_at": "2026-07-14T22:50:12.195937+00:00",
+        "text_sha256": "c7ea12433794f7dbd21be3bf95558cec57ae1d74bd51ab193d88562c179fc76f"
+      },
+      "human_verified": false
+    },
+    "sla_exclusions": {
+      "value": "Present: factors outside Crusoe's control; customer/third-party software or hardware; abuses violating Agreement; system quotas; maintenance (planned/unplanned); pre-GA features",
+      "confidence": "high",
+      "citation": "caused by factors outside of Crusoe's reasonable control",
+      "citation_document": "service_terms",
+      "status": "verified",
       "source": {
         "slug": "service_terms",
         "doc_type": "service_terms",

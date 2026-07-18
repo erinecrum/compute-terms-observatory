@@ -1,7 +1,7 @@
 {
   "provider": "aws",
   "provider_name": "Amazon Web Services",
-  "extracted_at": "2026-07-15T00:56:40.900629+00:00",
+  "extracted_at": "2026-07-18T01:57:23.777460+00:00",
   "model": "claude-opus-4-8",
   "documents_used": [
     {
@@ -29,9 +29,9 @@
       "doc_type": "service_terms",
       "name": "AWS Service Terms",
       "url": "https://aws.amazon.com/service-terms/",
-      "fetched_at": "2026-07-14T22:34:27.276670+00:00",
-      "text_sha256": "02d594b7f20e0f8aa0c54d08695750805f475dd2c71b5f41fb2e0440405d4096",
-      "included_chars": 294102,
+      "fetched_at": "2026-07-17T16:49:20.503565+00:00",
+      "text_sha256": "8274fd62ad3ace2857767c0e6782f1b409d4d5c40a1706b699397f91e6230fc7",
+      "included_chars": 294186,
       "truncated": false
     },
     {
@@ -56,101 +56,44 @@
     }
   ],
   "fields": {
-    "availability_definition": {
-      "value": "instance-level and region-level; 99.99% region (multi-AZ), 99.5% single instance; 'Unavailable' = no external connectivity",
-      "confidence": "high",
-      "citation": "AWS makes two SLA commitments for Amazon EC2",
-      "citation_document": "sla",
-      "source": {
-        "slug": "sla",
-        "doc_type": "sla",
-        "name": "Amazon Compute Service Level Agreement (EC2/ECS/Fargate)",
-        "url": "https://aws.amazon.com/compute/sla/",
-        "fetched_at": "2026-07-14T22:34:27.686721+00:00",
-        "text_sha256": "e9aa2507e0b36766ef2ff0927769cef2050847251a0c04c42cd0d6d0a71ca3c6"
-      },
-      "human_verified": false
-    },
-    "credit_regime": {
-      "value": "Region: <99.99%->10%, <99.0%->30%, <95.0%->100%. Instance: <99.5%->10%, <99.0%->30%, <95.0%->100%. Max 100%. Sole and exclusive remedy.",
-      "confidence": "high",
-      "citation": "this SLA sets forth your sole and exclusive remedies",
-      "citation_document": "sla",
-      "source": {
-        "slug": "sla",
-        "doc_type": "sla",
-        "name": "Amazon Compute Service Level Agreement (EC2/ECS/Fargate)",
-        "url": "https://aws.amazon.com/compute/sla/",
-        "fetched_at": "2026-07-14T22:34:27.686721+00:00",
-        "text_sha256": "e9aa2507e0b36766ef2ff0927769cef2050847251a0c04c42cd0d6d0a71ca3c6"
-      },
-      "human_verified": false
-    },
-    "claim_mechanics": {
-      "value": "Must file claim via AWS Support Center; by end of second billing cycle after incident; must include dates/times, resource IDs, request logs corroborating outage",
-      "confidence": "high",
-      "citation": "Credit Request and Payment Procedures",
-      "citation_document": "sla",
-      "source": {
-        "slug": "sla",
-        "doc_type": "sla",
-        "name": "Amazon Compute Service Level Agreement (EC2/ECS/Fargate)",
-        "url": "https://aws.amazon.com/compute/sla/",
-        "fetched_at": "2026-07-14T22:34:27.686721+00:00",
-        "text_sha256": "e9aa2507e0b36766ef2ff0927769cef2050847251a0c04c42cd0d6d0a71ca3c6"
-      },
-      "human_verified": false
-    },
-    "sla_exclusions": {
-      "value": "force majeure/beyond demarcation point; customer actions/inactions; customer equipment/software; suspension/termination per Agreement; beta services excluded (Service Terms 2.2)",
-      "confidence": "high",
-      "citation": "Amazon Compute SLA Exclusions",
-      "citation_document": "sla",
-      "source": {
-        "slug": "sla",
-        "doc_type": "sla",
-        "name": "Amazon Compute Service Level Agreement (EC2/ECS/Fargate)",
-        "url": "https://aws.amazon.com/compute/sla/",
-        "fetched_at": "2026-07-14T22:34:27.686721+00:00",
-        "text_sha256": "e9aa2507e0b36766ef2ff0927769cef2050847251a0c04c42cd0d6d0a71ca3c6"
-      },
-      "human_verified": false
-    },
     "capacity_reservation": {
-      "value": "Reserved Instances, Savings Plans, Dedicated Host Reservations, Capacity Blocks for ML: noncancellable, nonrefundable, nontransferable; pro rata refund only if AWS terminates without cause",
+      "value": "Published reserved/committed-use vehicles: Reserved Instances, Savings Plans, Dedicated Host Reservations, Capacity Blocks for ML, On-Demand Capacity Reservations; noncancellable, nonrefundable, use-it-or-lose-it (enterprise commitments negotiated, not published)",
       "confidence": "high",
-      "citation": "Savings Plans, EC2 Reserved Instances...are noncancellable",
+      "citation": "Savings Plans, EC2 Reserved Instances and EC2 Dedicated Host Reservations are noncancellable",
       "citation_document": "service_terms",
+      "status": "verified",
       "source": {
         "slug": "service_terms",
         "doc_type": "service_terms",
         "name": "AWS Service Terms",
         "url": "https://aws.amazon.com/service-terms/",
-        "fetched_at": "2026-07-14T22:34:27.276670+00:00",
-        "text_sha256": "02d594b7f20e0f8aa0c54d08695750805f475dd2c71b5f41fb2e0440405d4096"
+        "fetched_at": "2026-07-17T16:49:20.503565+00:00",
+        "text_sha256": "8274fd62ad3ace2857767c0e6782f1b409d4d5c40a1706b699397f91e6230fc7"
       },
       "human_verified": false
     },
     "data_use_ai_training": {
-      "value": "Default: will not access/use Your Content except to provide Services or comply with law; may use interaction info to improve Services; AI Services may use AI Content to improve models with AWS Organizations opt-out",
+      "value": "Core: no training on customer content (never); some AI services use AI Content to improve models by default with AWS Organizations opt-out; varies by service/tier",
       "confidence": "high",
-      "citation": "We will not access or use Your Content except as necessary",
-      "citation_document": "customer_agreement",
+      "citation": "We will not use Individualized Usage Data or Your Content to compete with your…",
+      "citation_document": "service_terms",
+      "status": "verified",
       "source": {
-        "slug": "customer_agreement",
+        "slug": "service_terms",
         "doc_type": "service_terms",
-        "name": "AWS Customer Agreement",
-        "url": "https://aws.amazon.com/agreement/",
-        "fetched_at": "2026-07-14T23:30:54.569782+00:00",
-        "text_sha256": "11afedaae0cc0d4d806c8b154e6e2c6cbd14eb4a97871fe746da9c5b80ec9398"
+        "name": "AWS Service Terms",
+        "url": "https://aws.amazon.com/service-terms/",
+        "fetched_at": "2026-07-17T16:49:20.503565+00:00",
+        "text_sha256": "8274fd62ad3ace2857767c0e6782f1b409d4d5c40a1706b699397f91e6230fc7"
       },
       "human_verified": false
     },
     "suspension_rights": {
-      "value": "Grounds: security risk, adverse system impact, liability, fraud, material breach, non-payment, insolvency; suspension immediate upon notice",
-      "confidence": "high",
-      "citation": "We may suspend...immediately upon notice to you",
+      "value": "May suspend immediately upon notice for security risk, adverse impact, liability, fraud, material breach, non-payment, or insolvency",
+      "confidence": "low",
+      "citation": "We may suspend your or any End User's right to access or use... immediately…",
       "citation_document": "customer_agreement",
+      "status": "unverified",
       "source": {
         "slug": "customer_agreement",
         "doc_type": "service_terms",
@@ -162,10 +105,11 @@
       "human_verified": false
     },
     "termination": {
-      "value": "Customer terminates for convenience anytime by closing account; AWS for convenience on 30 days' notice; 30-day post-termination data retrieval window (if fees paid)",
-      "confidence": "high",
-      "citation": "Termination for Convenience; during the 30 days following the Termination Date",
+      "value": "Customer may terminate for convenience anytime; AWS may terminate for convenience on 30 days' notice; 30-day post-termination data retrieval window if fees paid",
+      "confidence": "low",
+      "citation": "We may terminate this Agreement for any reason by providing you at least 30…",
       "citation_document": "customer_agreement",
+      "status": "unverified",
       "source": {
         "slug": "customer_agreement",
         "doc_type": "service_terms",
@@ -177,10 +121,11 @@
       "human_verified": false
     },
     "unilateral_modification": {
-      "value": "AWS may modify Agreement anytime by posting revised version; effective upon posting or as stated in email; 90 days' notice for adverse SLA changes",
+      "value": "AWS may modify at any time by posting; effective upon posting or as stated in email; 12 months' notice to discontinue material functionality, 90 days for adverse SLA changes",
       "confidence": "high",
-      "citation": "Modifications to the Agreement",
+      "citation": "modified terms will become effective upon posting or, if we notify you by email",
       "citation_document": "customer_agreement",
+      "status": "verified",
       "source": {
         "slug": "customer_agreement",
         "doc_type": "service_terms",
@@ -192,10 +137,11 @@
       "human_verified": false
     },
     "governing_law_disputes": {
-      "value": "Default (AWS Inc.): Washington law, King County courts; binding arbitration yes (AAA); class-action waiver yes; varies by contracting party",
+      "value": "Varies by contracting party; US default Washington law, King County courts; binding arbitration (AAA) for US/several parties; class-action waiver yes",
       "confidence": "high",
-      "citation": "individual basis and not in a class, consolidated or representative action",
+      "citation": "any dispute resolution proceedings will be conducted only on an individual basis and not…",
       "citation_document": "customer_agreement",
+      "status": "verified",
       "source": {
         "slug": "customer_agreement",
         "doc_type": "service_terms",
@@ -203,6 +149,207 @@
         "url": "https://aws.amazon.com/agreement/",
         "fetched_at": "2026-07-14T23:30:54.569782+00:00",
         "text_sha256": "11afedaae0cc0d4d806c8b154e6e2c6cbd14eb4a97871fe746da9c5b80ec9398"
+      },
+      "human_verified": false
+    },
+    "liability": {
+      "value": "Cap = amounts paid in 12 months before liability arose; carveout for Section 7 indemnity payment obligations; consequential/indirect damages waived",
+      "confidence": "low",
+      "citation": "WILL NOT EXCEED THE AMOUNTS PAID BY YOU TO AWS... DURING THE 12 MONTHS…",
+      "citation_document": "customer_agreement",
+      "status": "unverified",
+      "source": {
+        "slug": "customer_agreement",
+        "doc_type": "service_terms",
+        "name": "AWS Customer Agreement",
+        "url": "https://aws.amazon.com/agreement/",
+        "fetched_at": "2026-07-14T23:30:54.569782+00:00",
+        "text_sha256": "11afedaae0cc0d4d806c8b154e6e2c6cbd14eb4a97871fe746da9c5b80ec9398"
+      },
+      "human_verified": false
+    },
+    "output_indemnity": {
+      "value": "Yes for Indemnified Generative AI Services (Nova, Titan, Q, etc.); uncapped (not subject to damages cap); conditions: enable filters, no fine-tuning-caused infringement, stop on notice",
+      "confidence": "low",
+      "citation": "AWS's defense and payment obligations under this Section 50.10 will not be subject to…",
+      "citation_document": "service_terms",
+      "status": "unverified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "AWS Service Terms",
+        "url": "https://aws.amazon.com/service-terms/",
+        "fetched_at": "2026-07-17T16:49:20.503565+00:00",
+        "text_sha256": "8274fd62ad3ace2857767c0e6782f1b409d4d5c40a1706b699397f91e6230fc7"
+      },
+      "human_verified": false
+    },
+    "deprecation": {
+      "value": "Documented/contractual commitment: at least 12 months' prior notice before discontinuing material functionality of a generally available Service",
+      "confidence": "low",
+      "citation": "at least 12 months' prior notice before discontinuing a material functionality of a Service",
+      "citation_document": "customer_agreement",
+      "status": "unverified",
+      "source": {
+        "slug": "customer_agreement",
+        "doc_type": "service_terms",
+        "name": "AWS Customer Agreement",
+        "url": "https://aws.amazon.com/agreement/",
+        "fetched_at": "2026-07-14T23:30:54.569782+00:00",
+        "text_sha256": "11afedaae0cc0d4d806c8b154e6e2c6cbd14eb4a97871fe746da9c5b80ec9398"
+      },
+      "human_verified": false
+    },
+    "benchmarking_restrictions": {
+      "value": "Permitted but consent/disclosure-conditioned: must disclose all info to replicate and allow AWS reciprocal benchmarking",
+      "confidence": "low",
+      "citation": "you... will include in any disclosure, and will disclose to us, all information necessary…",
+      "citation_document": "service_terms",
+      "status": "unverified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "AWS Service Terms",
+        "url": "https://aws.amazon.com/service-terms/",
+        "fetched_at": "2026-07-17T16:49:20.503565+00:00",
+        "text_sha256": "8274fd62ad3ace2857767c0e6782f1b409d4d5c40a1706b699397f91e6230fc7"
+      },
+      "human_verified": false
+    },
+    "competitive_training": {
+      "value": "any-model-training restricted for AI Services: may not generate content to train an AI model or develop a substantially similar model",
+      "confidence": "high",
+      "citation": "you may not use an AI Service to generate Content for the express purpose…",
+      "citation_document": "service_terms",
+      "status": "verified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "AWS Service Terms",
+        "url": "https://aws.amazon.com/service-terms/",
+        "fetched_at": "2026-07-17T16:49:20.503565+00:00",
+        "text_sha256": "8274fd62ad3ace2857767c0e6782f1b409d4d5c40a1706b699397f91e6230fc7"
+      },
+      "human_verified": false
+    },
+    "model_license": {
+      "value": "not applicable",
+      "confidence": "low",
+      "citation": "",
+      "citation_document": "none",
+      "status": "unverified",
+      "source": null,
+      "human_verified": false
+    },
+    "capacity_remedies": {
+      "value": "Capacity Blocks/Reservations: noncancellable and nonrefundable; if AWS terminates program/agreement other than for cause, pro rata refund of up-front fee; no delivery-failure credits stated",
+      "confidence": "medium",
+      "citation": "the full price of a Capacity Block is nonrefundable",
+      "citation_document": "service_terms",
+      "status": "verified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "AWS Service Terms",
+        "url": "https://aws.amazon.com/service-terms/",
+        "fetched_at": "2026-07-17T16:49:20.503565+00:00",
+        "text_sha256": "8274fd62ad3ace2857767c0e6782f1b409d4d5c40a1706b699397f91e6230fc7"
+      },
+      "human_verified": false
+    },
+    "hardware_substitution": {
+      "value": "Unilateral: EC2 resources may be terminated or replaced due to failure, retirement or other AWS requirements",
+      "confidence": "high",
+      "citation": "your Amazon EC2 resources may be terminated or replaced due to failure, retirement or…",
+      "citation_document": "service_terms",
+      "status": "verified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "AWS Service Terms",
+        "url": "https://aws.amazon.com/service-terms/",
+        "fetched_at": "2026-07-17T16:49:20.503565+00:00",
+        "text_sha256": "8274fd62ad3ace2857767c0e6782f1b409d4d5c40a1706b699397f91e6230fc7"
+      },
+      "human_verified": false
+    },
+    "assignment_financing": {
+      "value": "Customer may not assign without consent; AWS may assign without consent (merger, sale, affiliate, reorganization); no lender step-in/financing language",
+      "confidence": "high",
+      "citation": "We may assign this Agreement without your consent",
+      "citation_document": "customer_agreement",
+      "status": "verified",
+      "source": {
+        "slug": "customer_agreement",
+        "doc_type": "service_terms",
+        "name": "AWS Customer Agreement",
+        "url": "https://aws.amazon.com/agreement/",
+        "fetched_at": "2026-07-14T23:30:54.569782+00:00",
+        "text_sha256": "11afedaae0cc0d4d806c8b154e6e2c6cbd14eb4a97871fe746da9c5b80ec9398"
+      },
+      "human_verified": false
+    },
+    "availability_definition": {
+      "value": "instance-level and region-level: Region-Level 99.99% (multi-AZ), Instance-Level 99.5%; based on no external connectivity",
+      "confidence": "low",
+      "citation": "Monthly Uptime Percentage of at least 99.99%... Instance-Level Uptime Percentage of at least 99.5%",
+      "citation_document": "sla",
+      "status": "unverified",
+      "source": {
+        "slug": "sla",
+        "doc_type": "sla",
+        "name": "Amazon Compute Service Level Agreement (EC2/ECS/Fargate)",
+        "url": "https://aws.amazon.com/compute/sla/",
+        "fetched_at": "2026-07-14T22:34:27.686721+00:00",
+        "text_sha256": "e9aa2507e0b36766ef2ff0927769cef2050847251a0c04c42cd0d6d0a71ca3c6"
+      },
+      "human_verified": false
+    },
+    "credit_regime": {
+      "value": "Region: <99.99%=10%, <99.0%=30%, <95.0%=100%. Instance: <99.5%=10%, <99.0%=30%, <95.0%=100%. Credits sole and exclusive remedy",
+      "confidence": "high",
+      "citation": "this SLA sets forth your sole and exclusive remedies",
+      "citation_document": "sla",
+      "status": "verified",
+      "source": {
+        "slug": "sla",
+        "doc_type": "sla",
+        "name": "Amazon Compute Service Level Agreement (EC2/ECS/Fargate)",
+        "url": "https://aws.amazon.com/compute/sla/",
+        "fetched_at": "2026-07-14T22:34:27.686721+00:00",
+        "text_sha256": "e9aa2507e0b36766ef2ff0927769cef2050847251a0c04c42cd0d6d0a71ca3c6"
+      },
+      "human_verified": false
+    },
+    "claim_mechanics": {
+      "value": "Must file claim via AWS Support Center by end of second billing cycle after incident; must include dates/times, resource IDs, and request logs",
+      "confidence": "high",
+      "citation": "credit request must be received by us by the end of the second billing…",
+      "citation_document": "sla",
+      "status": "verified",
+      "source": {
+        "slug": "sla",
+        "doc_type": "sla",
+        "name": "Amazon Compute Service Level Agreement (EC2/ECS/Fargate)",
+        "url": "https://aws.amazon.com/compute/sla/",
+        "fetched_at": "2026-07-14T22:34:27.686721+00:00",
+        "text_sha256": "e9aa2507e0b36766ef2ff0927769cef2050847251a0c04c42cd0d6d0a71ca3c6"
+      },
+      "human_verified": false
+    },
+    "sla_exclusions": {
+      "value": "Present: force majeure/outside control, external network/ISP beyond demarcation, customer fault/actions, customer equipment/software, suspension/termination; beta/preview and Outposts excluded elsewhere",
+      "confidence": "high",
+      "citation": "caused by factors outside of our reasonable control, including any force majeure event",
+      "citation_document": "sla",
+      "status": "verified",
+      "source": {
+        "slug": "sla",
+        "doc_type": "sla",
+        "name": "Amazon Compute Service Level Agreement (EC2/ECS/Fargate)",
+        "url": "https://aws.amazon.com/compute/sla/",
+        "fetched_at": "2026-07-14T22:34:27.686721+00:00",
+        "text_sha256": "e9aa2507e0b36766ef2ff0927769cef2050847251a0c04c42cd0d6d0a71ca3c6"
       },
       "human_verified": false
     }

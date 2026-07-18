@@ -1,7 +1,7 @@
 {
   "provider": "azure",
   "provider_name": "Microsoft Azure",
-  "extracted_at": "2026-07-15T03:41:37.571278+00:00",
+  "extracted_at": "2026-07-18T01:57:48.542713+00:00",
   "model": "claude-opus-4-8",
   "documents_used": [
     {
@@ -46,71 +46,12 @@
     }
   ],
   "fields": {
-    "availability_definition": {
-      "value": "instance-level and cluster/throughput-based (varies by service); VM in Availability Zones 99.99%, Availability Set/Dedicated Host Group 99.95%, Single-Instance VM 99.9% (Premium SSD); AKS API server 99.95% (AZ) / 99.9% (non-AZ); Capacity Blocks capacity-availability based",
-      "confidence": "high",
-      "citation": "Uptime Calculation and Service Levels for Virtual Machines in Availability Zones",
-      "citation_document": "sla",
-      "source": {
-        "slug": "sla",
-        "doc_type": "sla",
-        "name": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
-        "url": "https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx",
-        "fetched_at": "2026-07-15T03:35:20.778700+00:00",
-        "text_sha256": "eccd116476753f05885ac10a6bff38dcb35d95008a82c07cea170335799ff773"
-      },
-      "human_verified": false
-    },
-    "credit_regime": {
-      "value": "Tiered by service; e.g. VM Availability Zones: <99.99%=10%, <99%=25%, <95%=100%. Standard tier VMs <99.9%=10%, <99%=25%, <95%=100%. Max credit 100% of monthly fees for affected resource. Service Credits are sole and exclusive remedy.",
-      "confidence": "high",
-      "citation": "Service Credits are your sole and exclusive remedy",
-      "citation_document": "sla",
-      "source": {
-        "slug": "sla",
-        "doc_type": "sla",
-        "name": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
-        "url": "https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx",
-        "fetched_at": "2026-07-15T03:35:20.778700+00:00",
-        "text_sha256": "eccd116476753f05885ac10a6bff38dcb35d95008a82c07cea170335799ff773"
-      },
-      "human_verified": false
-    },
-    "claim_mechanics": {
-      "value": "Customer must submit a claim to Microsoft customer support with detailed description, time/duration of downtime, affected resource names, number/location of affected users, and error description. For Azure, claim must be received within 60 days of the Incident.",
-      "confidence": "high",
-      "citation": "we must receive the claim within 60 days of the Incident",
-      "citation_document": "sla",
-      "source": {
-        "slug": "sla",
-        "doc_type": "sla",
-        "name": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
-        "url": "https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx",
-        "fetched_at": "2026-07-15T03:35:20.778700+00:00",
-        "text_sha256": "eccd116476753f05885ac10a6bff38dcb35d95008a82c07cea170335799ff773"
-      },
-      "human_verified": false
-    },
-    "sla_exclusions": {
-      "value": "Present: force majeure/outside reasonable control; external network/ISP/third-party; single-datacenter non-geo-resilient; customer fault/misuse; beta/preview/trial; throttling/abuse; exceeding quotas; scheduled/maintenance windows; customer-initiated operations (restart, scale). Performance degradation without unavailability excluded.",
-      "confidence": "high",
-      "citation": "This SLA and any applicable Service Levels do not apply to any performance or…",
-      "citation_document": "sla",
-      "source": {
-        "slug": "sla",
-        "doc_type": "sla",
-        "name": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
-        "url": "https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx",
-        "fetched_at": "2026-07-15T03:35:20.778700+00:00",
-        "text_sha256": "eccd116476753f05885ac10a6bff38dcb35d95008a82c07cea170335799ff773"
-      },
-      "human_verified": false
-    },
     "capacity_reservation": {
-      "value": "Public docs describe On Demand Capacity Reservations for VMs and Capacity Blocks (reservation of compute capacity for a specified duration), each with their own SLA. Broader enterprise commitment vehicles (e.g. Enterprise Agreement pricing/commitments) negotiated, not published. Cancellation may incur fee per Product Terms.",
-      "confidence": "high",
-      "citation": "Capacity Block means a reservation of compute capacity for a specified duration",
+      "value": "Reserved capacity vehicles exist (On Demand Capacity Reservations, Capacity Blocks); commercial commitment/cancellation terms negotiated, not published",
+      "confidence": "low",
+      "citation": "On Demand Capacity Reservation is an object created in an Azure subscription to express…",
       "citation_document": "sla",
+      "status": "unverified",
       "source": {
         "slug": "sla",
         "doc_type": "sla",
@@ -122,10 +63,11 @@
       "human_verified": false
     },
     "data_use_ai_training": {
-      "value": "Does not train on customer data by default: Microsoft Generative AI Services will not use Customer Data to train any generative AI foundation model except per Customer's documented instructions. Output Content is Customer Data; Microsoft does not own it.",
+      "value": "Never trains on customer data except per documented instructions; ZDR not specified",
       "confidence": "high",
-      "citation": "will not use Customer Data to train any generative AI foundation model",
+      "citation": "Microsoft Generative AI Services will not use Customer Data to train any generative AI…",
       "citation_document": "ai_terms",
+      "status": "verified",
       "source": {
         "slug": "ai_terms",
         "doc_type": "ai_terms",
@@ -137,10 +79,11 @@
       "human_verified": false
     },
     "suspension_rights": {
-      "value": "Grounds: material breach (non-payment), AUP/Code of Conduct violation, security risk, trade-law risk. 30 days' notice before suspension normally, but immediate suspension if payment declined or to prevent unauthorized access / protect systems. AUP violations suspended only to extent reasonably necessary with reasonable notice unless immediate needed.",
+      "value": "AUP breach, material breach/non-payment, security risk, trade-law risk; notice generally given but immediate suspension permitted",
       "confidence": "high",
-      "citation": "Microsoft will give Customer 30 days' notice before such suspension unless",
+      "citation": "Microsoft reasonably believes immediate suspension is required to prevent unauthorized access",
       "citation_document": "service_terms",
+      "status": "verified",
       "source": {
         "slug": "service_terms",
         "doc_type": "service_terms",
@@ -152,10 +95,11 @@
       "human_verified": false
     },
     "termination": {
-      "value": "Termination for convenience: either party on 60 days' notice. Post-termination data retrieval: for non-renewed Online Services, access continues 30 days after expiration; disabled account gives Customer 90 days to extract Customer Data.",
-      "confidence": "high",
+      "value": "Either party may terminate for convenience on 60 days' notice; 90-day post-termination data extraction window (for non-renewed services)",
+      "confidence": "low",
       "citation": "Either party may terminate this Agreement without cause on 60 days' notice",
       "citation_document": "service_terms",
+      "status": "unverified",
       "source": {
         "slug": "service_terms",
         "doc_type": "service_terms",
@@ -167,10 +111,132 @@
       "human_verified": false
     },
     "unilateral_modification": {
-      "value": "Microsoft may update the Agreement. General Terms/other terms: at least 60 days' notice, effective on renewal. SLA: at least 90 days' notice for adverse material changes. Product Terms: Material Adverse Changes apply at renewal; other changes effective on posting. No changes during initial subscription term for SLA.",
+      "value": "Microsoft may update Agreement; 60 days' notice for General Terms changes; SLA adverse material changes 90 days' notice",
       "confidence": "high",
-      "citation": "We will provide at least 90 days' notice for adverse material changes to this…",
+      "citation": "Customer will be notified at least 60 days before changes take effect to these…",
+      "citation_document": "service_terms",
+      "status": "verified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Microsoft Customer Agreement (published)",
+        "url": "https://www.microsoft.com/licensing/docs/documents/download/Microsoft%20Customer%20Agreement.pdf",
+        "fetched_at": "2026-07-14T23:07:54.110573+00:00",
+        "text_sha256": "0d4f51d9d52ba28432acadf123f3e24dc067aa3aa1eefbdfafaa703decec09e7"
+      },
+      "human_verified": false
+    },
+    "governing_law_disputes": {
+      "value": "Governing law: Washington State/US federal; venue varies (Customer HQ if Microsoft sues, King County WA or Ireland if Customer sues); no arbitration stated; no class waiver stated",
+      "confidence": "high",
+      "citation": "governed by and construed in accordance with the laws of the State of Washington",
+      "citation_document": "service_terms",
+      "status": "verified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Microsoft Customer Agreement (published)",
+        "url": "https://www.microsoft.com/licensing/docs/documents/download/Microsoft%20Customer%20Agreement.pdf",
+        "fetched_at": "2026-07-14T23:07:54.110573+00:00",
+        "text_sha256": "0d4f51d9d52ba28432acadf123f3e24dc067aa3aa1eefbdfafaa703decec09e7"
+      },
+      "human_verified": false
+    },
+    "liability": {
+      "value": "Cap: subscriptions = 12 months' fees; perpetual = amount paid; carveouts for confidentiality, IP, third-party claim defense; consequential/indirect damages waived",
+      "confidence": "high",
+      "citation": "maximum, aggregate liability is the total amount of subscription fees Customer paid to use…",
+      "citation_document": "service_terms",
+      "status": "verified",
+      "source": {
+        "slug": "service_terms",
+        "doc_type": "service_terms",
+        "name": "Microsoft Customer Agreement (published)",
+        "url": "https://www.microsoft.com/licensing/docs/documents/download/Microsoft%20Customer%20Agreement.pdf",
+        "fetched_at": "2026-07-14T23:07:54.110573+00:00",
+        "text_sha256": "0d4f51d9d52ba28432acadf123f3e24dc067aa3aa1eefbdfafaa703decec09e7"
+      },
+      "human_verified": false
+    },
+    "output_indemnity": {
+      "value": "Yes (Customer Copyright Commitment) for Covered Products, conditioned on safety systems enabled and no known infringement",
+      "confidence": "low",
+      "citation": "Microsoft's obligation to defend Customer against third-party intellectual property claims",
+      "citation_document": "ai_terms",
+      "status": "unverified",
+      "source": {
+        "slug": "ai_terms",
+        "doc_type": "ai_terms",
+        "name": "Microsoft Product Terms for Online Services",
+        "url": "https://www.microsoft.com/licensing/terms/product/ForOnlineServices/all",
+        "fetched_at": "2026-07-14T22:50:09.052258+00:00",
+        "text_sha256": "0853193df49254fe5976349bbf1722328d2a4b94c9b4aea84f3d4c7c85afe828"
+      },
+      "human_verified": false
+    },
+    "deprecation": {
+      "value": "Documented policy for service changes; Microsoft may modify/discontinue Online Services; specific model retirement notice days not specified; version pinning not specified",
+      "confidence": "medium",
+      "citation": "Microsoft may make commercially reasonable changes to each Online Service from time to time",
+      "citation_document": "ai_terms",
+      "status": "verified",
+      "source": {
+        "slug": "ai_terms",
+        "doc_type": "ai_terms",
+        "name": "Microsoft Product Terms for Online Services",
+        "url": "https://www.microsoft.com/licensing/terms/product/ForOnlineServices/all",
+        "fetched_at": "2026-07-14T22:50:09.052258+00:00",
+        "text_sha256": "0853193df49254fe5976349bbf1722328d2a4b94c9b4aea84f3d4c7c85afe828"
+      },
+      "human_verified": false
+    },
+    "benchmarking_restrictions": {
+      "value": "Consent-required/conditional: competitive benchmarks require providing replication info and access on request",
+      "confidence": "high",
+      "citation": "Customer will, upon request from Microsoft, provide: (a) all information necessary to replicate such…",
+      "citation_document": "ai_terms",
+      "status": "verified",
+      "source": {
+        "slug": "ai_terms",
+        "doc_type": "ai_terms",
+        "name": "Microsoft Product Terms for Online Services",
+        "url": "https://www.microsoft.com/licensing/terms/product/ForOnlineServices/all",
+        "fetched_at": "2026-07-14T22:50:09.052258+00:00",
+        "text_sha256": "0853193df49254fe5976349bbf1722328d2a4b94c9b4aea84f3d4c7c85afe828"
+      },
+      "human_verified": false
+    },
+    "competitive_training": {
+      "value": "competing-models-only: outputs may not be used to create synthetic training data for substantially similar models",
+      "confidence": "high",
+      "citation": "creating synthetic training data to develop or train AI models or systems that have…",
+      "citation_document": "ai_terms",
+      "status": "verified",
+      "source": {
+        "slug": "ai_terms",
+        "doc_type": "ai_terms",
+        "name": "Microsoft Product Terms for Online Services",
+        "url": "https://www.microsoft.com/licensing/terms/product/ForOnlineServices/all",
+        "fetched_at": "2026-07-14T22:50:09.052258+00:00",
+        "text_sha256": "0853193df49254fe5976349bbf1722328d2a4b94c9b4aea84f3d4c7c85afe828"
+      },
+      "human_verified": false
+    },
+    "model_license": {
+      "value": "not applicable",
+      "confidence": "low",
+      "citation": "",
+      "citation_document": "none",
+      "status": "unverified",
+      "source": null,
+      "human_verified": false
+    },
+    "capacity_remedies": {
+      "value": "Capacity Blocks / On Demand Capacity Reservation delivery backed by service credits as sole remedy",
+      "confidence": "low",
+      "citation": "Service Credits are Customer's sole and exclusive remedy for any failure to meet the…",
       "citation_document": "sla",
+      "status": "unverified",
       "source": {
         "slug": "sla",
         "doc_type": "sla",
@@ -181,11 +247,21 @@
       },
       "human_verified": false
     },
-    "governing_law_disputes": {
-      "value": "Governing law: State of Washington and US federal law. Venue: if Customer sues (non-Europe Affiliate) King County, WA; if Microsoft sues, Customer's HQ; Europe = Ireland. Binding arbitration: no (court venues specified). Class-action waiver: not specified.",
+    "hardware_substitution": {
+      "value": "not specified",
+      "confidence": "low",
+      "citation": "",
+      "citation_document": "none",
+      "status": "unverified",
+      "source": null,
+      "human_verified": false
+    },
+    "assignment_financing": {
+      "value": "Assignment to Affiliate with notice; payment rights assignable to Affiliate/third party without notice; no lender step-in language",
       "confidence": "high",
-      "citation": "governed by and construed in accordance with the laws of the State of Washington",
+      "citation": "consents to the assignment to an Affiliate or third party, without prior notice, of…",
       "citation_document": "service_terms",
+      "status": "verified",
       "source": {
         "slug": "service_terms",
         "doc_type": "service_terms",
@@ -193,6 +269,70 @@
         "url": "https://www.microsoft.com/licensing/docs/documents/download/Microsoft%20Customer%20Agreement.pdf",
         "fetched_at": "2026-07-14T23:07:54.110573+00:00",
         "text_sha256": "0d4f51d9d52ba28432acadf123f3e24dc067aa3aa1eefbdfafaa703decec09e7"
+      },
+      "human_verified": false
+    },
+    "availability_definition": {
+      "value": "Per-service; VM instance-level, region/AZ-level, and API-error-rate based; commitments e.g. 99.99% multi-AZ VMs, 99.9% single-instance Premium SSD",
+      "confidence": "low",
+      "citation": "Uptime Percentage for Virtual Machines in Availability Zones is calculated",
+      "citation_document": "sla",
+      "status": "unverified",
+      "source": {
+        "slug": "sla",
+        "doc_type": "sla",
+        "name": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
+        "url": "https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx",
+        "fetched_at": "2026-07-15T03:35:20.778700+00:00",
+        "text_sha256": "eccd116476753f05885ac10a6bff38dcb35d95008a82c07cea170335799ff773"
+      },
+      "human_verified": false
+    },
+    "credit_regime": {
+      "value": "Tiered, typically <99.9%=10%, <99%=25%, <95%=100% (varies by service); credits capped at monthly service fees; sole and exclusive remedy",
+      "confidence": "high",
+      "citation": "Service Credits are your sole and exclusive remedy for any performance or availability issues",
+      "citation_document": "sla",
+      "status": "verified",
+      "source": {
+        "slug": "sla",
+        "doc_type": "sla",
+        "name": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
+        "url": "https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx",
+        "fetched_at": "2026-07-15T03:35:20.778700+00:00",
+        "text_sha256": "eccd116476753f05885ac10a6bff38dcb35d95008a82c07cea170335799ff773"
+      },
+      "human_verified": false
+    },
+    "claim_mechanics": {
+      "value": "Customer must submit claim; Azure within 60 days of Incident; must supply incident description, time/duration, affected resources, users, errors",
+      "confidence": "high",
+      "citation": "For a claim related to Microsoft Azure, we must receive the claim within 60…",
+      "citation_document": "sla",
+      "status": "verified",
+      "source": {
+        "slug": "sla",
+        "doc_type": "sla",
+        "name": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
+        "url": "https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx",
+        "fetched_at": "2026-07-15T03:35:20.778700+00:00",
+        "text_sha256": "eccd116476753f05885ac10a6bff38dcb35d95008a82c07cea170335799ff773"
+      },
+      "human_verified": false
+    },
+    "sla_exclusions": {
+      "value": "Present: force majeure, third-party/external network, customer fault/misuse, preview/beta, single-datacenter non-geo-resilient, throttling, scheduled maintenance",
+      "confidence": "high",
+      "citation": "Due to factors outside our reasonable control (for example, natural disaster, war",
+      "citation_document": "sla",
+      "status": "verified",
+      "source": {
+        "slug": "sla",
+        "doc_type": "sla",
+        "name": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
+        "url": "https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx",
+        "fetched_at": "2026-07-15T03:35:20.778700+00:00",
+        "text_sha256": "eccd116476753f05885ac10a6bff38dcb35d95008a82c07cea170335799ff773"
       },
       "human_verified": false
     }
