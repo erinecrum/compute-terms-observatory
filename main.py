@@ -1,4 +1,4 @@
-"""Compute Contract Terms Observatory — command-line runner.
+"""Compute Terms Observatory — command-line runner.
 
 Subcommands (more added as the build progresses):
 

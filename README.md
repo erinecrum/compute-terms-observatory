@@ -1,4 +1,4 @@
-# Compute Contract Terms Observatory
+# Compute Terms Observatory
 
 A public observatory of the **published** legal terms of cloud and GPU compute
 providers. It fetches and permanently archives each provider's public terms of

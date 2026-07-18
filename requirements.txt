@@ -1,4 +1,4 @@
-# Compute Contract Terms Observatory — runtime dependencies (kept deliberately minimal,
+# Compute Terms Observatory — runtime dependencies (kept deliberately minimal,
 # matching the radar project's low-dependency posture).
 requests>=2.31        # HTTP fetching of public terms/SLA/AUP pages
 beautifulsoup4>=4.12  # HTML parsing / content extraction for page snapshots

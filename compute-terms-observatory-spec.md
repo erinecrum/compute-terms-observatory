@@ -1,4 +1,4 @@
-# Project Spec: Compute Contract Terms Observatory (v1)
+# Project Spec: Compute Terms Observatory (v1)
 
 ## What you are building
 

@@ -17,6 +17,7 @@ from typing import List
 from .schema import is_applicable
 
 SITE_DIR = Path("site")
+BRAND = "Compute Terms Observatory"
 EXPORT_XLSX = "compute-terms-observatory.xlsx"
 # Custom domain for GitHub Pages. Written into the build as a CNAME file so that
 # Actions deploys keep the custom domain (a deploy without it would clear the
@@ -64,14 +65,14 @@ def _shell(title: str, body: str, active: str, subtitle: str = "") -> str:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{esc(title)}</title>
+<title>{esc(title)} | {BRAND}</title>
 <link rel="icon" href="{_FAVICON}">
 <style>{_CSS}</style>
 </head>
 <body>
 <header class="site-head">
   <div class="wrap">
-    <a class="brand" href="index.html">{_EMBLEM}<span class="wordmark">Compute Contract Terms<br><span class="wordmark-2">Observatory</span></span></a>
+    <a class="brand" href="index.html">{_EMBLEM}<span class="wordmark">Compute Terms<br><span class="wordmark-2">Observatory</span></span></a>
     <nav class="nav">{nav}</nav>
   </div>
 </header>
@@ -403,7 +404,7 @@ def render_methodology(dataset: dict) -> str:
     accurately. Reports what the system does; contains no advisory language."""
     return ("""
 <h2>How this works</h2>
-<p>The Compute Contract Terms Observatory is an automated research tracker of the
+<p>The Compute Terms Observatory is an automated research tracker of the
 <em>published</em> terms of cloud infrastructure providers and AI model families. It works in three stages.</p>
 <ol>
 <li><strong>Archive.</strong> Twice daily, an automated workflow fetches each tracked
@@ -639,7 +640,7 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
     written = []
     n = len(dataset["providers"])
     pages = {
-        "index.html": ("Compute provider terms: comparison matrix", render_matrix(dataset), "index",
+        "index.html": ("Comparison matrix", render_matrix(dataset), "index",
                         f"An AI's side-by-side reading of the public terms of cloud infrastructure providers and AI model families ({n} entries). Every value carries a verbatim quote and a source link so you can verify it."),
         "changes.html": ("Change feed", render_changes(dataset), "changes",
                           "Detected changes to tracked documents, newest first."),
@@ -722,7 +723,8 @@ font-style:italic;font-weight:700;font-family:var(--serif);font-size:12px;line-h
 
 /* Headings */
 main.wrap{padding-top:30px;padding-bottom:72px}
-h1{font-family:var(--serif);font-weight:600;font-size:29px;letter-spacing:-.01em;margin:0 0 6px}
+/* Page title sits subordinate to the masthead brand wordmark (B1). */
+h1{font-family:var(--serif);font-weight:600;font-size:21px;letter-spacing:-.005em;margin:0 0 6px}
 .subtitle{color:var(--muted);margin:0 0 26px;font-size:16px;max-width:70ch}
 h2{font-family:var(--serif);font-weight:600;font-size:21px;margin:34px 0 12px}
 h3{font-size:12px;margin:22px 0 8px;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
@@ -920,7 +922,7 @@ tr,.change,.pdim{page-break-inside:avoid}
 
 @media(max-width:680px){
 .wrap{padding:0 16px}.nav{gap:15px}.wordmark-2{font-size:17px}
-h1{font-size:24px}.matrix td.cell{min-width:210px}.table-scroll{max-height:74vh}
+h1{font-size:20px}.matrix td.cell{min-width:210px}.table-scroll{max-height:74vh}
 .updated{margin-left:0}
 }
 """
