@@ -213,9 +213,128 @@ DIMENSIONS: List[Dimension] = [
             "throttling, external network/ISP issues. List the ones present."
         ),
     ),
+    # ── Data protection & privacy (Phase C). Describe the stated MECHANISM only;
+    #    never assert or imply compliance/non-compliance with GDPR, the AI Act, or
+    #    any law. Presence or absence of stated commitments only. ──
+    Dimension(
+        key="data_transfer_mechanism",
+        label="International data transfer mechanism",
+        guidance=(
+            "Stated reliance on specific cross-border transfer mechanisms: Standard "
+            "Contractual Clauses (SCCs), the EU-US Data Privacy Framework, adequacy "
+            "decisions, or other named mechanisms, plus any transfer-impact-assessment "
+            "references. Describe which mechanisms the document names; do NOT assess "
+            "adequacy or legality."
+        ),
+    ),
+    Dimension(
+        key="data_residency",
+        label="Data residency commitments",
+        guidance=(
+            "Whether the terms make a contractual regional-processing or storage "
+            "commitment (e.g. data stays in a chosen region) versus reserving global "
+            "processing. State the stated commitment; do not infer."
+        ),
+    ),
+    Dimension(
+        key="subprocessor_transparency",
+        label="Sub-processor transparency",
+        guidance=(
+            "Whether a sub-processor list is published, whether advance notice of "
+            "changes is promised (and the notice window), and whether customers get an "
+            "objection right. Describe the stated mechanism only."
+        ),
+    ),
+    Dimension(
+        key="government_access",
+        label="Government access commitments",
+        guidance=(
+            "Stated commitments on government/law-enforcement data requests: customer "
+            "notification, a commitment to challenge overbroad or unlawful requests, "
+            "and whether a transparency report is published. Describe stated "
+            "commitments only; never characterize their adequacy."
+        ),
+    ),
+    Dimension(
+        key="content_retention_review",
+        label="Retention & human review of content",
+        guidance=(
+            "Whether humans may review customer content, the stated purposes (e.g. "
+            "abuse monitoring, support), and any stated retention windows. Describe the "
+            "stated practice; presence or absence only."
+        ),
+    ),
+    # ── Accountability & transparency (Phase C). Same rules: mechanism not norm. ──
+    Dimension(
+        key="prohibited_high_risk_uses",
+        label="Prohibited high-risk uses",
+        guidance=(
+            "AUP / usage-policy restrictions on high-risk uses: surveillance-oriented "
+            "facial recognition, predictive policing, biometric categorization, "
+            "weapons. List which are explicitly prohibited; describe the stated "
+            "restriction, not its sufficiency."
+        ),
+    ),
+    Dimension(
+        key="model_documentation",
+        label="Model documentation commitments",
+        guidance=(
+            "Whether model or system cards are published, and whether the terms "
+            "reference them contractually. Describe what is published/referenced; do "
+            "not evaluate quality."
+        ),
+    ),
+    Dimension(
+        key="training_data_provenance",
+        label="Training data provenance statements",
+        guidance=(
+            "Any PUBLIC statements about the sources of training data. Summarize what "
+            "is stated; if nothing is stated, that is silence. Never infer provenance."
+        ),
+    ),
+    Dimension(
+        key="appeal_redress",
+        label="Appeal & redress mechanisms",
+        guidance=(
+            "Whether a stated appeal or redress path exists for account suspensions or "
+            "content flags (how to contest, timelines). Describe the stated path only."
+        ),
+    ),
+    Dimension(
+        key="eu_ai_act_role",
+        label="EU AI Act role allocation",
+        guidance=(
+            "Whether the terms allocate provider/deployer roles and flow down any "
+            "transparency obligations. Describe the stated role allocation only; never "
+            "assert AI Act compliance or non-compliance."
+        ),
+    ),
 ]
 
 DIMENSION_KEYS = [d.key for d in DIMENSIONS]
+
+# Dimension groups (used for the matrix group headers and the progressive-disclosure
+# view switcher). "Core contract" = general + SLA.
+GROUP_GENERAL = "General contract terms"
+GROUP_SLA = "Service level (SLA) terms"
+GROUP_PRIVACY = "Data protection & privacy"
+GROUP_ACCOUNTABILITY = "Accountability & transparency"
+
+_SLA_KEYS = {"availability_definition", "credit_regime", "claim_mechanics", "sla_exclusions"}
+_PRIVACY_KEYS = {"data_transfer_mechanism", "data_residency", "subprocessor_transparency",
+                 "government_access", "content_retention_review"}
+_ACCOUNTABILITY_KEYS = {"prohibited_high_risk_uses", "model_documentation",
+                        "training_data_provenance", "appeal_redress", "eu_ai_act_role"}
+
+
+def dimension_group(key: str) -> str:
+    if key in _SLA_KEYS:
+        return GROUP_SLA
+    if key in _PRIVACY_KEYS:
+        return GROUP_PRIVACY
+    if key in _ACCOUNTABILITY_KEYS:
+        return GROUP_ACCOUNTABILITY
+    return GROUP_GENERAL
 
 
 def dimension(key: str) -> Dimension:
@@ -248,6 +367,10 @@ SEGMENT_REMOVED = {
     "cloud": {
         "model_license": "infrastructure providers distribute no model weights, so "
         "the license under which weights are distributed has no referent",
+        "model_documentation": "infrastructure providers publish no model/system "
+        "cards; the commitment has no referent for a compute service",
+        "training_data_provenance": "infrastructure providers train no models on their "
+        "own account, so training-data provenance has no referent",
     },
     "closed": {
         "hardware_substitution": "a closed API allocates tokens/throughput, not GPUs; "

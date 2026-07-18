@@ -29,7 +29,7 @@ from .differ import diff_text
 from .extractor import load_extraction
 from .overrides import apply_overrides, load_overrides
 from .registry import Registry, load_registry
-from .schema import DIMENSIONS, is_applicable, segment_group
+from .schema import DIMENSIONS, dimension_group, is_applicable, segment_group
 from .snapshot import SnapshotStore
 from .textcheck import NON_TEXT_MESSAGE, looks_like_text
 
@@ -308,9 +308,7 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
                 "key": d.key,
                 "label": d.label,
                 "guidance": d.guidance,
-                "group": "Service level (SLA) terms"
-                if d.key in _SLA_DIMS
-                else "General contract terms",
+                "group": dimension_group(d.key),
             }
             for d in DIMENSIONS
         ],
