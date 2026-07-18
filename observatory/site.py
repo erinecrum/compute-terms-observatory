@@ -76,7 +76,7 @@ def _shell(title: str, body: str, active: str, subtitle: str = "") -> str:
     <nav class="nav">{nav}</nav>
   </div>
 </header>
-<div class="disclaimer"><div class="wrap">
+<div class="disclaimer{'' if active=='index' else ' disc-slim'}"><div class="wrap">
   <span class="disc-icon" aria-hidden="true">i</span>
   <span><strong>AI-generated summaries, not legal advice.</strong>
   Every value here is an AI's reading of a provider's public terms, not the terms themselves. It can be
@@ -313,7 +313,15 @@ def render_matrix(dataset: dict) -> str:
         f'<p class="freshness">Terms last checked: <strong>{lc} UTC</strong>. Directly fetched '
         f'sources are refreshed twice daily; documents archived via the Internet Archive are dated '
         f'individually on each value.</p>' if lc else "")
+    stats = (
+        '<div class="stats">'
+        f'<div class="stat"><span class="stat-num">{len(providers)}</span><span class="stat-lbl">Providers tracked</span></div>'
+        f'<div class="stat"><span class="stat-num">{len(dims)}</span><span class="stat-lbl">Term dimensions</span></div>'
+        '<div class="stat"><span class="stat-num">2&times;</span><span class="stat-lbl">Checked daily</span></div>'
+        '</div>'
+    )
     return f"""
+{stats}
 {freshness}
 <div class="actions">
   <a class="btn" href="{EXPORT_XLSX}" download>Download Excel (.xlsx)</a>
@@ -661,6 +669,18 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
         )
         written.append(out_dir / fname)
 
+    # Self-hosted fonts (same-origin; preserves the zero-third-party-request
+    # property). Copied from assets/fonts into site/fonts, referenced by @font-face.
+    import shutil
+
+    font_src = Path("assets/fonts")
+    if font_src.is_dir():
+        font_out = out_dir / "fonts"
+        font_out.mkdir(parents=True, exist_ok=True)
+        for f in font_src.glob("*.woff2"):
+            shutil.copy2(f, font_out / f.name)
+            written.append(font_out / f.name)
+
     # Custom domain marker for GitHub Pages.
     if CUSTOM_DOMAIN:
         (out_dir / "CNAME").write_text(CUSTOM_DOMAIN + "\n", encoding="utf-8")
@@ -674,25 +694,26 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
 
 
 _CSS = """
+@font-face{font-family:"Space Grotesk";font-style:normal;font-weight:300 700;font-display:swap;
+src:url("fonts/SpaceGrotesk.woff2") format("woff2")}
 :root{
+/* Type */
+--display:"Space Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
 --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
---serif:Georgia,"Iowan Old Style","Times New Roman",serif;
 --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
---bg:#ffffff;--panel:#f5f8fc;--panel-2:#e9eff7;--ink:#16202e;--muted:#586377;--faint:#8892a1;
---line:#e6ebf2;--line-2:#d5dce7;--accent:#1c3f63;--accent-2:#274f78;--accent-soft:#e9f0f8;
---high:#2f8a52;--medium:#bf851a;--low:#9aa3af;
---disc-bg:#fbf6e9;--disc-line:#efe2c2;--disc-fg:#6a5a20;
---old-bg:#fbeaea;--old-fg:#7a1f1f;--new-bg:#e9f6ec;--new-fg:#1f5a2e;
---shadow:0 1px 2px rgba(20,30,45,.04),0 10px 28px rgba(20,30,45,.06);
+/* Warm editorial palette — cream paper, warm ink, hairlines. Accents (tomato /
+   marigold / cobalt) appear only in small doses: badges, pills, links, spot art. */
+--bg:#faf6ef;--panel:#f4eee2;--panel-2:#ece3d3;--ink:#14120f;--muted:#6b6357;--faint:#9a9080;
+--line:#e5dfd2;--line-2:#d8d0bf;
+--tomato:#e8502e;--marigold:#f5b72e;--cobalt:#2e5be8;
+--accent:#2348c0;--accent-2:#2348c0;--accent-soft:#e7ecfc;
+--high:#2e7d46;--medium:#c67d18;--low:#9a9080;
+--disc-bg:#f7eee2;--disc-line:#ead9c0;--disc-fg:#7a4a22;
+--old-bg:#fbe9e3;--old-fg:#9a2f1a;--new-bg:#e9f3ec;--new-fg:#2e7d46;
+--shadow:none;
+/* Structure — hairline borders and flat surfaces, no shadows or gradients. */
+--radius:14px;--radius-sm:9px;--radius-pill:999px;
 }
-@media (prefers-color-scheme: dark){:root{
---bg:#0e131a;--panel:#151c26;--panel-2:#1c2531;--ink:#e8edf4;--muted:#9aa4b2;--faint:#727c8b;
---line:#212b38;--line-2:#2b3644;--accent:#7fb0e6;--accent-2:#a3c8f2;--accent-soft:#182636;
---high:#49b678;--medium:#dca63e;--low:#6a7382;
---disc-bg:#221d10;--disc-line:#3a3016;--disc-fg:#d7c690;
---old-bg:#2e1a1a;--old-fg:#e6a2a2;--new-bg:#16281c;--new-fg:#8fd6a5;
---shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.4);
-}}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;color:var(--ink);background:var(--bg);font-family:var(--sans);
@@ -707,7 +728,7 @@ a:hover{text-decoration:underline}
 .brand{display:flex;align-items:center;gap:11px}
 .brand:hover{text-decoration:none}
 .emblem{color:var(--accent);flex:0 0 auto;box-shadow:var(--shadow);border-radius:7px}
-.wordmark{display:block;font-family:var(--serif);color:var(--faint);font-size:11px;font-weight:600;
+.wordmark{display:block;font-family:var(--display);color:var(--faint);font-size:11px;font-weight:600;
 letter-spacing:.14em;text-transform:uppercase;line-height:1.35}
 .wordmark-2{display:block;color:var(--ink);font-size:19px;letter-spacing:.005em;text-transform:none}
 .nav{display:flex;gap:22px}
@@ -718,15 +739,22 @@ letter-spacing:.14em;text-transform:uppercase;line-height:1.35}
 /* Disclaimer */
 .disclaimer{background:var(--disc-bg);border-bottom:1px solid var(--disc-line);color:var(--disc-fg);font-size:13px}
 .disclaimer .wrap{padding:10px 24px;display:flex;gap:10px;align-items:flex-start}
+.disclaimer.disc-slim{font-size:12px}
+.disclaimer.disc-slim .wrap{padding:6px 24px}
+/* Big-number stat callouts (homepage). Hairline cards, huge figure, tiny label. */
+.stats{display:flex;flex-wrap:wrap;gap:14px;margin:2px 0 22px}
+.stat{flex:1 1 150px;border:1px solid var(--line);border-radius:var(--radius);padding:15px 18px;background:var(--bg)}
+.stat-num{display:block;font-family:var(--display);font-weight:700;font-size:40px;line-height:1;letter-spacing:-.02em;color:var(--ink)}
+.stat-lbl{display:block;margin-top:9px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--faint)}
 .disc-icon{flex:0 0 auto;width:17px;height:17px;border-radius:50%;background:var(--disc-fg);color:var(--disc-bg);
-font-style:italic;font-weight:700;font-family:var(--serif);font-size:12px;line-height:17px;text-align:center;margin-top:1px}
+font-style:italic;font-weight:700;font-family:var(--display);font-size:12px;line-height:17px;text-align:center;margin-top:1px}
 
 /* Headings */
 main.wrap{padding-top:30px;padding-bottom:72px}
 /* Page title sits subordinate to the masthead brand wordmark (B1). */
-h1{font-family:var(--serif);font-weight:600;font-size:21px;letter-spacing:-.005em;margin:0 0 6px}
+h1{font-family:var(--display);font-weight:600;font-size:21px;letter-spacing:-.005em;margin:0 0 6px}
 .subtitle{color:var(--muted);margin:0 0 26px;font-size:16px;max-width:70ch}
-h2{font-family:var(--serif);font-weight:600;font-size:21px;margin:34px 0 12px}
+h2{font-family:var(--display);font-weight:600;font-size:21px;margin:34px 0 12px}
 h3{font-size:12px;margin:22px 0 8px;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
 p{max-width:74ch}
 
@@ -752,14 +780,14 @@ table.matrix{border-collapse:separate;border-spacing:0;width:100%;min-width:940p
 vertical-align:top;text-align:left;padding:12px 14px}
 .matrix thead th{position:sticky;top:0;z-index:3;background:var(--panel-2);font-size:13.5px;font-weight:700;
 color:var(--ink);border-bottom:2px solid var(--line-2)}
-.matrix th.corner{left:0;z-index:5;font-family:var(--serif);font-weight:600}
+.matrix th.corner{left:0;z-index:5;font-family:var(--display);font-weight:600}
 .matrix th.dim-col{position:sticky;left:0;z-index:2;background:var(--panel);min-width:186px;max-width:206px;
 font-size:13.5px;font-weight:600;color:var(--ink)}
 .matrix th.prov-col a{color:var(--accent-2);font-weight:700}
 .matrix tbody tr:hover td.cell{background:var(--accent-soft)}
 .matrix td.cell{min-width:236px;max-width:290px;background:var(--bg);transition:background .12s}
 .matrix tr.grouprow th.groupcell{position:sticky;left:0;background:var(--panel-2);color:var(--accent-2);
-font-family:var(--serif);font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.09em;
+font-family:var(--display);font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.09em;
 padding:8px 14px;border-bottom:1px solid var(--line-2);border-right:0}
 .cell-head{display:flex;gap:8px;align-items:flex-start}
 .toggle{border:0;background:none;text-align:left;font:inherit;color:var(--ink);cursor:pointer;padding:0;line-height:1.5}
@@ -798,7 +826,7 @@ font-family:var(--sans);display:flex;align-items:center;gap:9px}
 /* Change feed */
 .changes{display:flex;flex-direction:column;gap:14px}
 .change{border:1px solid var(--line-2);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
-.chead{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-family:var(--serif)}
+.chead{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-family:var(--display)}
 .cdate{margin-left:auto;color:var(--faint);font-size:13px;font-family:var(--sans)}
 .cmeta{color:var(--muted);font-size:12.5px;margin:5px 0 9px}
 .cblock{margin:6px 0;font-size:13px;font-family:var(--mono)}
@@ -828,12 +856,12 @@ border:1px solid var(--line-2);border-radius:8px;background:var(--bg);color:var(
 
 /* Actions bar, buttons, last-updated */
 .actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 18px}
-.btn{display:inline-flex;align-items:center;gap:7px;background:var(--accent);color:#fff;
-border:1px solid var(--accent);border-radius:9px;padding:8px 14px;font-size:13.5px;font-weight:600;
-cursor:pointer;text-decoration:none;font-family:var(--sans)}
-.btn:hover{background:var(--accent-2);border-color:var(--accent-2);text-decoration:none}
-.btn.ghost{background:transparent;color:var(--accent-2)}
-.btn.ghost:hover{background:var(--accent-soft)}
+.btn{display:inline-flex;align-items:center;gap:7px;background:var(--ink);color:var(--bg);
+border:1px solid var(--ink);border-radius:var(--radius-pill);padding:9px 18px;font-size:13px;font-weight:600;
+letter-spacing:.01em;cursor:pointer;text-decoration:none;font-family:var(--display)}
+.btn:hover{background:#2a2620;border-color:#2a2620;text-decoration:none}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-2)}
+.btn.ghost:hover{background:var(--panel)}
 .updated{margin-left:auto;color:var(--faint);font-size:12.5px}
 .freshness{margin:0 0 14px;font-size:14px;color:var(--muted);background:var(--panel);
 border:1px solid var(--line-2);border-radius:9px;padding:9px 13px;display:inline-block}
@@ -862,7 +890,7 @@ background:var(--bg);border-bottom:1px solid var(--line-2);padding:10px 0;margin
 /* Sections */
 .msec{margin:0 0 34px;scroll-margin-top:64px}
 .msub{margin:16px 0 0;scroll-margin-top:64px}
-.sec-h{font-family:var(--serif);font-weight:600;font-size:22px;margin:0 0 4px;display:flex;align-items:center;gap:9px}
+.sec-h{font-family:var(--display);font-weight:600;font-size:22px;margin:0 0 4px;display:flex;align-items:center;gap:9px}
 .sub-h{font-size:13px;margin:18px 0 8px;color:var(--accent-2);text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:8px}
 .sec-note{color:var(--muted);font-size:13.5px;margin:0 0 12px;max-width:78ch}
 .sec-cnt{background:var(--panel-2);border-radius:20px;padding:0 9px;font-size:12px;color:var(--muted);font-weight:600;font-family:var(--sans);text-transform:none;letter-spacing:0}
@@ -871,18 +899,21 @@ background:var(--bg);border-bottom:1px solid var(--line-2);padding:10px 0;margin
 /* Unverified / status distinction */
 /* Four honest status states (Issue 2). Warning reserved for quote_unverified;
    absence states get neutral, muted treatment. */
-.dot.warn,.dot.unverified{background:transparent;border:1.5px solid var(--medium)}
+.dot.warn,.dot.unverified{background:transparent;border:1.5px solid var(--tomato)}
 .dot.ok{background:var(--high)}
 .dot.absent{background:var(--line-2)}
 .dot.na{background:transparent;border:1.5px dotted var(--faint)}
 .cell.unverified .toggle{color:var(--muted);font-style:italic}
 .cell.absent .toggle{color:var(--faint)}
-.cell.na-cross{background:repeating-linear-gradient(45deg,transparent,transparent 6px,var(--panel-2) 6px,var(--panel-2) 7px)}
+.cell.na-cross{background:repeating-linear-gradient(45deg,transparent,transparent 6px,var(--panel) 6px,var(--panel) 7px)}
 .na-cross-lbl{color:var(--faint);font-size:12px;font-style:italic}
-.badge.ok{background:var(--high);color:#fff;border-radius:5px;padding:1px 7px;font-size:11px;font-weight:600}
-.badge.warn{background:var(--panel-2);color:var(--medium);border:1px solid var(--medium);border-radius:5px;padding:1px 7px;font-size:11px;font-weight:600}
-.badge.muted{background:var(--panel-2);color:var(--faint);border:1px solid var(--line-2);border-radius:5px;padding:1px 7px;font-size:11px;font-weight:600}
-.badge.stale{background:var(--medium);color:#fff;border-radius:5px;padding:1px 7px;font-size:11px;font-weight:600}
+/* Text-first status badges: subtle tint + colored text, pill-shaped. */
+.badge.ok,.badge.warn,.badge.muted,.badge.stale{border-radius:var(--radius-pill);
+padding:1px 9px;font-size:11px;font-weight:600;font-family:var(--display);letter-spacing:.01em;border:1px solid}
+.badge.ok{background:#e9f3ec;color:var(--high);border-color:#c3e0cc}
+.badge.warn{background:#fbe9e3;color:var(--tomato);border-color:#f2c3b6}
+.badge.muted{background:var(--panel);color:var(--muted);border-color:var(--line-2)}
+.badge.stale{background:#fbf0dc;color:var(--medium);border-color:#ecd6a6}
 .src.wayback{color:var(--muted)}
 .wb-note{font-size:11.5px;font-style:italic;color:var(--faint);margin:3px 0}
 .col-stale{display:block;margin-top:2px;font-size:10.5px;font-weight:700;color:var(--medium);letter-spacing:0;text-transform:none}
