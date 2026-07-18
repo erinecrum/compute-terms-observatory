@@ -252,6 +252,9 @@ SEGMENT_REMOVED = {
     "closed": {
         "hardware_substitution": "a closed API allocates tokens/throughput, not GPUs; "
         "there is no hardware to substitute",
+        "model_license": "closed-API providers distribute no model weights, so the "
+        "license under which weights are distributed has no referent (references to "
+        "IP ownership or usage restrictions belong to other dimensions)",
     },
     "open": {
         "availability_definition": "an availability definition describes a service's "
