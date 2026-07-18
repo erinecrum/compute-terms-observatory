@@ -989,8 +989,12 @@ a:hover{text-decoration:underline}
 /* O.bservatory wordmark lockup */
 .brand{display:flex;flex-direction:column;align-items:flex-start;gap:1px}
 .brand:hover{text-decoration:none}
-.wm-eyebrow{font-family:var(--display);color:var(--faint);font-size:10.5px;font-weight:600;
-letter-spacing:.17em;text-transform:uppercase;line-height:1}
+/* The eyebrow is set in the wordmark face (not the grotesque) so the lockup reads
+   as one logo. Baloo 2 ships at 800 only, so match that weight rather than let the
+   browser synthesize a lighter one; the smaller size and --faint keep it
+   subordinate to O.bservatory. Baloo runs wide, so the tracking comes in a little. */
+.wm-eyebrow{font-family:var(--wordmark);color:var(--faint);font-size:11px;font-weight:800;
+letter-spacing:.14em;text-transform:uppercase;line-height:1}
 .wm-word{display:flex;align-items:flex-end;line-height:.85;color:var(--ink);font-size:31px}
 .wm-o{width:1.3em;height:1.3em;flex:0 0 auto;margin-bottom:-.18em;margin-right:-.14em}
 .wm-word .wm-o path{fill:var(--ink)}
@@ -1020,7 +1024,7 @@ color:var(--muted);font-size:13.5px}
 .hero{padding:40px 24px 26px;text-align:center}
 .hero-in{max-width:1040px;margin:0 auto}
 .hero-wm{display:inline-flex;flex-direction:column;align-items:center}
-.hero-wm .wm-eyebrow{font-size:clamp(11px,1.4vw,15px);letter-spacing:.24em;margin-bottom:8px}
+.hero-wm .wm-eyebrow{font-size:clamp(12px,1.6vw,17px);letter-spacing:.2em;margin-bottom:8px}
 .hero-wm .wm-word{font-size:clamp(52px,11vw,116px);justify-content:center;line-height:.9}
 .hero-deck{margin:20px auto 0;max-width:620px;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;
 font-style:italic;color:var(--muted);font-size:clamp(14px,1.5vw,17px)}
