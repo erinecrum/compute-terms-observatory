@@ -37,7 +37,10 @@ _SYSTEM = (
     "provision dimension whose subject matter any changed passage falls within or "
     "concerns (a renamed heading, a new subsection, or a reworded clause all count). "
     "Return an empty dimension list only when every changed passage is purely "
-    "cosmetic page furniture: navigation links, formatting, or a date/version stamp."
+    "cosmetic page furniture: navigation links, formatting, or a date/version stamp. "
+    "Also classify the change overall: substantive=true if any clause, term, number, "
+    "or policy changed; substantive=false only when the edit is purely cosmetic "
+    "(navigation, formatting, or a date/version stamp). When unsure, use true."
 )
 
 _TOOL = {
@@ -55,8 +58,12 @@ _TOOL = {
                 "items": {"type": "string", "enum": DIMENSION_KEYS},
                 "description": "Provision dimensions the change relates to; empty if purely administrative.",
             },
+            "substantive": {
+                "type": "boolean",
+                "description": "true if any clause/term/number/policy changed; false if purely cosmetic.",
+            },
         },
-        "required": ["explanation", "dimensions"],
+        "required": ["explanation", "dimensions", "substantive"],
     },
 }
 
@@ -120,8 +127,8 @@ def _explain(client, provider_name: str, document: str, blocks):
         if getattr(b, "type", None) == "tool_use":
             inp = b.input
             dims = [d for d in inp.get("dimensions", []) if d in DIMENSION_KEYS]
-            return inp.get("explanation", "").strip(), dims
-    return "", []
+            return inp.get("explanation", "").strip(), dims, bool(inp.get("substantive", True))
+    return "", [], True
 
 
 def generate_missing(registry: Registry, store: SnapshotStore) -> int:
@@ -146,8 +153,8 @@ def generate_missing(registry: Registry, store: SnapshotStore) -> int:
             if not (looks_like_text(prev.text or "")[0] and looks_like_text(curr.text or "")[0]):
                 continue
             key = change_key(doc.provider, doc.slug, prev.stamp, curr.stamp)
-            # Regenerate if absent or if it predates the provision-tagging field.
-            if key in notes and "dimensions" in notes[key]:
+            # Regenerate if absent or if it predates the substantive-classification field.
+            if key in notes and "substantive" in notes[key]:
                 continue
             d = diff_text(prev.text, curr.text)
             if not d.has_changes:
@@ -155,11 +162,12 @@ def generate_missing(registry: Registry, store: SnapshotStore) -> int:
             if client is None:
                 client = _client()
             try:
-                text, dims = _explain(client, doc.provider_name, doc.name, d.blocks)
+                text, dims, substantive = _explain(client, doc.provider_name, doc.name, d.blocks)
             except Exception as exc:  # noqa: BLE001 — record nothing rather than fail the run
                 print(f"  change note failed for {key}: {type(exc).__name__}: {exc}")
                 continue
-            notes[key] = {"explanation": text, "dimensions": dims, "model": MODEL}
+            notes[key] = {"explanation": text, "dimensions": dims,
+                          "substantive": substantive, "model": MODEL}
             generated += 1
 
     if generated:

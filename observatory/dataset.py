@@ -377,6 +377,20 @@ def _write_status_report(rows: List[tuple]) -> None:
     STATUS_REPORT_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+_COSMETIC_HINTS = (
+    "no substantive", "only removed navigation", "only navigation", "navigation link",
+    "purely cosmetic", "purely administrative", "only formatting", "formatting change",
+    "version stamp", "date stamp", "language selector", "no legal", "cosmetic",
+)
+
+
+def _backfill_substantive(explanation: str) -> bool:
+    """Conservative fallback for change notes that predate the substantive flag:
+    cosmetic only when the AI summary clearly says so, else substantive."""
+    e = (explanation or "").lower()
+    return not any(h in e for h in _COSMETIC_HINTS)
+
+
 def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
     """Reverse-chronological detected document changes across all documents.
     Each entry: provider, document, date detected, short old/new excerpts, and a
@@ -418,6 +432,7 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
                 "detected_at": curr.fetched_at,
                 "source_changed": source_changed,
                 "non_text": non_text,
+                "substantive": True,
                 "added_lines": 0 if suppressed else d.added_lines,
                 "removed_lines": 0 if suppressed else d.removed_lines,
                 "blocks": []
@@ -439,6 +454,8 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
                         for k in note.get("dimensions", [])
                         if k in dim_label
                     ]
+                    entry["substantive"] = note.get(
+                        "substantive", _backfill_substantive(note.get("explanation", "")))
             entries.append(entry)
     entries.sort(key=lambda e: e["detected_at"], reverse=True)
     return entries

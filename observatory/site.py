@@ -647,11 +647,13 @@ def _change_item(c: dict) -> str:
             f'source document before relying on it.</span></div>'
         )
     dim_keys = " ".join(d["key"] for d in dims)
+    substantive = c.get("substantive", True)
+    cosmetic_tag = "" if substantive else '<span class="badge muted cosmetic-tag">cosmetic</span>'
     return f"""
 <article class="change" data-provider="{esc(c["provider"])}" data-pname="{esc(c["provider_name"])}"
-  data-date="{esc(c["detected_at"][:10])}" data-dims="{esc(dim_keys)}">
+  data-date="{esc(c["detected_at"][:10])}" data-dims="{esc(dim_keys)}" data-substantive="{'1' if substantive else '0'}">
   <div class="chead"><strong>{esc(c["provider_name"])}</strong>: {esc(c["document"])}
-    <span class="tag">{esc(c["doc_type"])}</span>
+    <span class="tag">{esc(c["doc_type"])}</span>{cosmetic_tag}
     <span class="cdate">{esc(c["detected_at"][:10])}</span></div>
   {meta}
   {ai}
@@ -694,6 +696,7 @@ def render_changes(dataset: dict) -> str:
     </label>
     <label>From <input type="date" id="cf-from" min="{esc(dates[0])}" max="{esc(dates[-1])}"></label>
     <label>To <input type="date" id="cf-to" min="{esc(dates[0])}" max="{esc(dates[-1])}"></label>
+    <label class="cf-cosmetic"><input type="checkbox" id="cf-cosmetic"> Show cosmetic changes</label>
     <button type="button" id="cf-clear" class="btn ghost">Clear filters</button>
   </div>
   <div class="cf-facets">
@@ -1310,9 +1313,11 @@ document.addEventListener('click',function(e){
     var provs=checked('.cf-prov'), dims=checked('.cf-dim');
     var from=document.getElementById('cf-from').value, to=document.getElementById('cf-to').value;
     var sort=document.getElementById('cf-sort').value;
+    var showCosmetic=document.getElementById('cf-cosmetic').checked;
     var dimsNarrowed=dims.length<totalDim, visible=0;
     items.forEach(function(a){
       var show=true;
+      if(!showCosmetic && a.dataset.substantive==='0') show=false;
       if(provs.indexOf(a.dataset.provider)<0) show=false;
       if(from && a.dataset.date<from) show=false;
       if(to && a.dataset.date>to) show=false;
@@ -1330,7 +1335,7 @@ document.addEventListener('click',function(e){
     document.getElementById('cf-empty').hidden=visible>0;
   }
   document.addEventListener('change',function(e){
-    if(e.target.matches('.cf-prov,.cf-dim,#cf-sort,#cf-from,#cf-to')) apply();
+    if(e.target.matches('.cf-prov,.cf-dim,#cf-sort,#cf-from,#cf-to,#cf-cosmetic')) apply();
   });
   document.getElementById('cf-clear').addEventListener('click',function(){
     document.querySelectorAll('.cf-prov,.cf-dim').forEach(function(c){c.checked=true;});
