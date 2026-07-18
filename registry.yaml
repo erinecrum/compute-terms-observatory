@@ -98,6 +98,30 @@ providers:
         status: verified
         url: https://www.microsoft.com/licensing/terms/product/ForOnlineServices/all
         notes: Verified; contains generative-AI service terms and data-use language.
+      # ── Data protection & accountability (Phase B) ──
+      - doc_type: dpa
+        name: Microsoft Products and Services Data Protection Addendum (DPA)
+        status: unverified
+        url: https://www.microsoft.com/licensing/docs/view/Microsoft-Products-and-Services-Data-Protection-Addendum-DPA
+        notes: Downloadable DPA (PDF/DOCX); pipeline handles both.
+      - doc_type: subprocessor_list
+        name: Microsoft Online Services Subprocessor List
+        status: unverified
+        url: https://www.microsoft.com/en-us/trust-center/privacy/data-access
+        notes: Microsoft gives 6 months advance notice of new subprocessors.
+      - doc_type: privacy_policy
+        name: Microsoft Privacy Statement
+        status: unverified
+        url: https://privacy.microsoft.com/en-us/privacystatement
+      - doc_type: transparency_report
+        name: Microsoft Law Enforcement Requests Report
+        status: unverified
+        url: https://www.microsoft.com/corporate-responsibility/law-enforcement-requests-report
+      - doc_type: ai_documentation
+        name: Microsoft Responsible AI / Transparency Notes
+        status: unverified
+        url: https://www.microsoft.com/ai/responsible-ai
+        notes: Confirm exact Azure AI Transparency Notes URL during capture.
 
   - provider: gcp
     provider_name: Google Cloud
@@ -123,6 +147,28 @@ providers:
         status: verified
         url: https://cloud.google.com/terms/service-terms
         notes: Verified; contains the AI/ML data-location and no-training commitment sections.
+      # ── Data protection & accountability (Phase B) ──
+      - doc_type: dpa
+        name: Cloud Data Processing Addendum (CDPA)
+        status: unverified
+        url: https://cloud.google.com/terms/data-processing-addendum
+      - doc_type: subprocessor_list
+        name: Google Cloud Third Party Subprocessors
+        status: unverified
+        url: https://cloud.google.com/terms/sccs/3p-subprocessors
+        notes: Includes new-subprocessor notice and objection opportunity.
+      - doc_type: privacy_policy
+        name: Google Cloud Privacy Notice
+        status: unverified
+        url: https://cloud.google.com/terms/cloud-privacy-notice
+      - doc_type: transparency_report
+        name: Google Cloud Transparency & Data Protection
+        status: unverified
+        url: https://cloud.google.com/transparency
+      - doc_type: ai_documentation
+        name: Google Generative AI Prohibited Use Policy
+        status: unverified
+        url: https://policies.google.com/terms/generative-ai
 
   # ────────────────────────── GPU-focused ──────────────────────────
   - provider: coreweave
