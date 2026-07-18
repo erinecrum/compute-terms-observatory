@@ -101,8 +101,14 @@ def _wordmark() -> str:
     )
 
 
-_DECK_TEXT = ("AI-generated summaries of public terms, not legal advice. "
-              "Every value links to its source.")
+# The serif-italic deck line. Only the lead phrase links to the methodology. A short
+# variant is shown on narrow viewports (item 5), the full sentence on desktop.
+_DECK_LINK = '<a href="methodology.html">AI-generated summaries of public terms</a>'
+_DECK_HTML = (
+    f'<span class="deck-full">{_DECK_LINK} of cloud infrastructure providers and AI '
+    'model providers, not legal advice. Every value links to its source.</span>'
+    f'<span class="deck-short">{_DECK_LINK}, not legal advice.</span>'
+)
 
 
 def _sic(citation: str) -> str:
@@ -141,7 +147,7 @@ def _shell(title: str, body: str, active: str, subtitle: str = "",
             f'<div class="home-top"><nav class="nav">{nav}</nav></div>'
             '<section class="hero"><div class="hero-in">'
             f'<div class="hero-wm">{_wordmark()}</div>'
-            f'<p class="hero-deck"><a href="methodology.html">{_DECK_TEXT}</a></p>'
+            f'<p class="hero-deck">{_DECK_HTML}</p>'
             '</div></section>'
         )
     else:
@@ -150,7 +156,7 @@ def _shell(title: str, body: str, active: str, subtitle: str = "",
             '<header class="site-head"><div class="wrap">'
             f'<a class="brand" href="index.html" aria-label="{esc(BRAND)} home">{_wordmark()}</a>'
             f'<nav class="nav">{nav}</nav></div></header>'
-            f'<div class="deck"><div class="wrap"><a href="methodology.html">{_DECK_TEXT}</a></div></div>'
+            f'<div class="deck"><div class="wrap">{_DECK_HTML}</div></div>'
         )
     return f"""<!doctype html>
 <html lang="en">
@@ -272,9 +278,12 @@ def _matrix_table(dims: list, subset: list, matrix: dict, table_id: str) -> str:
         f'<th scope="col" class="prov-col" data-provider="{esc(p["provider"])}">'
         f'<a href="provider-{esc(p["provider"])}.html">{esc(p["provider_name"])}</a>'
         f'<span class="col-sub">{esc(p.get("parent_company") or SEG_LABEL.get(p.get("segment",""), ""))}</span>'
-        + ('<span class="col-stale" title="Some documents are archived via the Internet Archive; the latest capture is over 7 days old">&#9888; archive stale</span>'
+        # Item 6: no per-provider "updated" line; the section header's checked stamp
+        # is the single freshness indicator. Keep the small "stale" flag only when a
+        # provider's capture is stale relative to the corpus.
+        + ('<span class="col-stale" title="Some documents are archived via the Internet Archive; the latest capture is over 7 days old">&#9888; stale</span>'
            if p.get("has_stale_capture") else "")
-        + (lambda d: f'<span class="col-updated" title="Terms last updated {esc(d)}">updated {esc(d)}</span></th>')((p.get("last_updated") or "")[:10])
+        + '</th>'
         for p in subset
     )
     ncols = len(subset) + 1
@@ -857,9 +866,12 @@ letter-spacing:.12em;padding:4px 0;border-bottom:2px solid transparent}
 /* Editorial deck line (replaces the boxed disclaimer). */
 .deck{border-bottom:1px solid var(--line)}
 .deck .wrap{padding:9px 24px}
-.deck a{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-style:italic;
+.deck .wrap{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-style:italic;
 color:var(--muted);font-size:13.5px}
-.deck a:hover{color:var(--ink);text-decoration:none}
+.deck a{color:inherit;text-decoration:underline;text-decoration-color:var(--line-2)}
+.deck a:hover{color:var(--ink)}
+.deck-short{display:none}
+@media(max-width:640px){.deck-full{display:none}.deck-short{display:inline}}
 
 /* Interior compact masthead: borderless, at most one hairline (under the deck). */
 .is-interior .site-head{border-bottom:0}
@@ -1165,8 +1177,6 @@ border-radius:9px;padding:10px 13px;font-size:13.5px;margin:0 0 16px}
   .secnav a{white-space:nowrap}
   .sn-model{flex-wrap:nowrap}
 }
-.col-updated{display:block;margin-top:3px;font-weight:400;font-size:11px;color:var(--faint);
-letter-spacing:0;text-transform:none}
 
 /* Print / Save as PDF: hide chrome, expand full values, fit to landscape paper */
 @media print{
