@@ -19,7 +19,7 @@ step) has its data; with a single snapshot per document it is empty (baselines).
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -73,6 +73,20 @@ def load_commitment_programs(path: str | Path = "commitment_programs.yaml") -> D
         return {}
     raw = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
     return {prog["provider"]: prog for prog in raw.get("programs", [])}
+
+
+WAYBACK_STALE_DAYS = 7
+
+
+def _capture_stale(capture_ts: str, days: int = WAYBACK_STALE_DAYS) -> bool:
+    """True if a wayback capture is older than `days` (measured at build time)."""
+    if not capture_ts:
+        return False
+    try:
+        cap = datetime.fromisoformat(capture_ts.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    return (datetime.now(timezone.utc) - cap) > timedelta(days=days)
 
 
 def _license_bucket(value: str) -> str:
@@ -129,9 +143,32 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
 
         matrix[provider] = fields
         docs_used = record.get("documents_used", [])
-        # "Last updated" = the most recent time any of this provider's tracked
-        # documents was fetched (i.e. how current the archived source is).
         last_updated = max((d.get("fetched_at", "") for d in docs_used), default="")
+
+        # Fetch provenance: read how each document's CURRENT snapshot was obtained
+        # (direct / browser / wayback + capture time) from the snapshot metadata, so
+        # the site can show it without re-classifying.
+        prov = {}
+        for doc in registry.for_provider(provider):
+            snap = store.latest(provider, doc.slug)
+            if snap:
+                fm = snap.meta.get("fetch_method", "direct")
+                cap = snap.meta.get("capture_timestamp", "")
+                prov[doc.slug] = {
+                    "fetch_method": fm,
+                    "capture_timestamp": cap,
+                    "stale": fm == "wayback" and _capture_stale(cap),
+                }
+        has_stale = False
+        for f in fields.values():
+            src = f.get("source")
+            if src and src.get("slug") in prov:
+                src.update(prov[src["slug"]])
+                has_stale = has_stale or src.get("stale", False)
+        for d in docs_used:
+            if d.get("slug") in prov:
+                d.update(prov[d["slug"]])
+
         # Grouping/filter metadata comes from the registry (carried on every doc).
         pdocs = registry.for_provider(provider)
         pd = pdocs[0] if pdocs else None
@@ -146,6 +183,7 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
                 "license_type": _license_bucket(lic_field.get("value", "")),
                 "extracted_at": record.get("extracted_at", ""),
                 "last_updated": last_updated,
+                "has_stale_capture": has_stale,
                 "model": record.get("model", ""),
                 "documents": docs_used,
                 "human_verified_dimensions": record.get("human_verified_dimensions", []),

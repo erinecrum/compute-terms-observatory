@@ -94,6 +94,26 @@ def _shell(title: str, body: str, active: str, subtitle: str = "") -> str:
 </html>"""
 
 
+def _source_line(source: dict) -> str:
+    """Provenance line for a value's source document. Direct/browser fetches show
+    the fetch date; wayback-tier documents show the Internet Archive capture date
+    (in place of the fetch date) plus a note and, if the capture is stale, a badge."""
+    if not source:
+        return ""
+    link = (f'<a href="{esc(source["url"])}" target="_blank" rel="noopener">'
+            f'{esc(source["name"])}</a>')
+    if source.get("fetch_method") == "wayback":
+        cap = esc((source.get("capture_timestamp", "") or "")[:10])
+        stale = ' <span class="badge stale">stale &middot; capture &gt;7 days old</span>' if source.get("stale") else ''
+        return (f'<div class="src wayback">Archived capture from <strong>{cap}</strong> '
+                f'via the Internet Archive{stale}'
+                f'<div class="wb-note">This source blocks automated retrieval, so the observatory '
+                f'relies on Internet Archive captures, which may lag the live page.</div>'
+                f'Source: {link}</div>')
+    return (f'<div class="src">Source: {link} &middot; fetched '
+            f'{esc((source.get("fetched_at", "") or "")[:10])}</div>')
+
+
 def _status_dot(field: dict) -> str:
     """Confidence/verification indicator. Human overrides and mechanically-verified
     quotes get a colored dot; anything unverified gets a distinct hollow dot."""
@@ -115,12 +135,7 @@ def _cell(provider: str, dim_key: str, field: dict) -> str:
     unverified = status != "verified"
     prog = field.get("commitment_program")
 
-    src_line = ""
-    if source:
-        src_line = (
-            f'<div class="src">Source: <a href="{esc(source["url"])}" target="_blank" rel="noopener">'
-            f'{esc(source["name"])}</a> · fetched {esc(source.get("fetched_at","")[:10])}</div>'
-        )
+    src_line = _source_line(source)
     cite_line = f'<div class="cite">“{esc(citation)}”</div>' if citation else ""
     if field.get("human_verified"):
         badge = '<span class="badge verified">✓ human-verified</span>'
@@ -156,7 +171,9 @@ def _matrix_table(dims: list, subset: list, matrix: dict, table_id: str) -> str:
         f'<th class="prov-col" data-provider="{esc(p["provider"])}">'
         f'<a href="provider-{esc(p["provider"])}.html">{esc(p["provider_name"])}</a>'
         f'<span class="col-sub">{esc(p.get("parent_company") or SEG_LABEL.get(p.get("segment",""), ""))}</span>'
-        f'<span class="col-updated">upd {esc((p.get("last_updated") or "")[:10])}</span></th>'
+        + ('<span class="col-stale" title="Some documents are archived via the Internet Archive; the latest capture is over 7 days old">&#9888; archive stale</span>'
+           if p.get("has_stale_capture") else "")
+        + f'<span class="col-updated">upd {esc((p.get("last_updated") or "")[:10])}</span></th>'
         for p in subset
     )
     ncols = len(subset) + 1
@@ -267,7 +284,10 @@ def render_matrix(dataset: dict) -> str:
     gen = dataset.get("generated_at", "")[:16].replace("T", " ")
     current = esc((dataset.get("data_current_as_of", "") or "")[:10])
     lc = esc((dataset.get("last_checked", {}).get("last_checked_utc", "") or "")[:16].replace("T", " "))
-    freshness = (f'<p class="freshness">Terms last checked: <strong>{lc} UTC</strong>, updated twice daily.</p>' if lc else "")
+    freshness = (
+        f'<p class="freshness">Terms last checked: <strong>{lc} UTC</strong>. Directly fetched '
+        f'sources are refreshed twice daily; documents archived via the Internet Archive are dated '
+        f'individually on each value.</p>' if lc else "")
     return f"""
 {freshness}
 <div class="actions">
@@ -336,8 +356,11 @@ licenses, and deprecation policies, and archives a normalized text snapshot with
 timestamp and content hash. Fetching uses three tiers in order &mdash; a direct request
 as an identified archival agent, a headless browser for JavaScript-rendered pages, and
 the Internet Archive as a fallback (dated by capture time) &mdash; and never attempts to
-bypass a CAPTCHA or other interactive challenge. The &ldquo;terms last checked&rdquo; time
-on the main page reflects the most recent run.</li>
+bypass a CAPTCHA or other interactive challenge. A small number of sources block direct
+automated retrieval; for those, the archived version is the most recent Internet Archive
+capture, dated individually on each value, and may lag the live page. The &ldquo;terms last
+checked&rdquo; time on the main page reflects the most recent run of the directly fetched
+sources.</li>
 <li><strong>Detect.</strong> When a document's normalized text changes between runs, the
 system records the localized before/after difference. The change feed is generated from
 those differences; quoted excerpts are kept short.</li>
@@ -381,14 +404,19 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
     fields = dataset["matrix"].get(provider, {})
     dims = dataset["dimensions"]
 
-    # Documents used, with provenance.
-    docs = "".join(
-        f'<li><a href="{esc(d["url"])}" target="_blank" rel="noopener">{esc(d["name"])}</a> '
-        f'<span class="tag">{esc(d["doc_type"])}</span> · fetched {esc(d["fetched_at"][:10])} · '
-        f'<code>{esc(d["text_sha256"][:12])}</code>'
-        f'{" · <em>truncated for length</em>" if d.get("truncated") else ""}</li>'
-        for d in pmeta.get("documents", [])
-    )
+    # Documents used, with provenance (fetch tier + date, or IA capture date).
+    def _doc_li(d):
+        if d.get("fetch_method") == "wayback":
+            cap = esc((d.get("capture_timestamp", "") or "")[:10])
+            stale = ' <span class="badge stale">stale</span>' if d.get("stale") else ''
+            when = f'Internet Archive capture {cap}{stale}'
+        else:
+            when = f'fetched {esc(d["fetched_at"][:10])}'
+        trunc = " · <em>truncated for length</em>" if d.get("truncated") else ""
+        return (f'<li><a href="{esc(d["url"])}" target="_blank" rel="noopener">{esc(d["name"])}</a> '
+                f'<span class="tag">{esc(d["doc_type"])}</span> · {when} · '
+                f'<code>{esc(d["text_sha256"][:12])}</code>{trunc}</li>')
+    docs = "".join(_doc_li(d) for d in pmeta.get("documents", []))
 
     rows = []
     for dim in dims:
@@ -401,11 +429,7 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
         source = f.get("source")
         prog = f.get("commitment_program")
         cite = f'<div class="cite">“{esc(f.get("citation",""))}”</div>' if f.get("citation") else ""
-        src = ""
-        if source:
-            src = (f'<div class="src">Source: <a href="{esc(source["url"])}" target="_blank" rel="noopener">'
-                   f'{esc(source["name"])}</a> · fetched {esc(source.get("fetched_at","")[:10])} · '
-                   f'<code>{esc(source.get("text_sha256","")[:12])}</code></div>')
+        src = _source_line(source)
         progline = ""
         if prog:
             progline = (f'<div class="prog"><strong>{esc(prog["program"])}:</strong> {esc(prog["value"])} '
@@ -432,8 +456,15 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
     else:
         change_html = '<p class="empty">No changes detected yet. The current snapshots are the baseline.</p>'
 
+    stale_note = (
+        '<p class="stale-note">⚠ Some documents for this entry are archived via the '
+        'Internet Archive (the provider blocks automated retrieval) and the most recent '
+        'capture is over 7 days old, so it may lag the live page.</p>'
+        if pmeta.get("has_stale_capture") else ""
+    )
     return f"""
 <p><a href="index.html">← Back to matrix</a></p>
+{stale_note}
 <h2>Documents archived</h2>
 <ul class="coverage">{docs}</ul>
 <h2>Extracted terms</h2>
@@ -771,6 +802,12 @@ background:var(--bg);border-bottom:1px solid var(--line-2);padding:10px 0;margin
 .cell.unverified .toggle{color:var(--muted);font-style:italic}
 .badge.ok{background:var(--high);color:#fff;border-radius:5px;padding:1px 7px;font-size:11px;font-weight:600}
 .badge.warn{background:var(--panel-2);color:var(--muted);border:1px solid var(--line-2);border-radius:5px;padding:1px 7px;font-size:11px;font-weight:600}
+.badge.stale{background:var(--medium);color:#fff;border-radius:5px;padding:1px 7px;font-size:11px;font-weight:600}
+.src.wayback{color:var(--muted)}
+.wb-note{font-size:11.5px;font-style:italic;color:var(--faint);margin:3px 0}
+.col-stale{display:block;margin-top:2px;font-size:10.5px;font-weight:700;color:var(--medium);letter-spacing:0;text-transform:none}
+.stale-note{background:var(--disc-bg);border:1px solid var(--disc-line);color:var(--disc-fg);
+border-radius:9px;padding:10px 13px;font-size:13.5px;margin:0 0 16px}
 
 @media(max-width:680px){
   .secnav{flex-wrap:nowrap;overflow-x:auto;gap:14px}
