@@ -37,9 +37,12 @@ jobs:
       - name: Use private corpus when available, else the committed baseline
         run: |
           if [ -d _data/snapshots ]; then
-            rm -rf snapshots data
+            rm -rf snapshots
             cp -R _data/snapshots snapshots
-            cp -R _data/data data
+            # Merge private structured data over the tree WITHOUT deleting public
+            # files (e.g. data/last-checked.json lives only in this public repo).
+            mkdir -p data
+            cp -R _data/data/. data/
             echo "Built from the private data corpus."
           else
             echo "No private corpus available; built from the committed baseline."

@@ -1,0 +1,103 @@
+name: Twice-daily terms snapshot
+
+# Runs the observatory pipeline twice daily: fetch all sources (direct/browser/
+# wayback tiers), snapshot anything changed, re-extract ONLY changed providers
+# (verbatim-quote classification), rebuild the dataset + site, push the corpus to
+# the PRIVATE data repo, commit the public last-checked timestamp, and deploy Pages.
+#
+# Secrets: ANTHROPIC_API_KEY (extraction), DATA_REPO_TOKEN (private data repo R/W).
+
+on:
+  schedule:
+    - cron: "0 13 * * *"   # 06:00 Pacific
+    - cron: "0 1 * * *"    # 18:00 Pacific
+  workflow_dispatch: {}
+
+permissions:
+  contents: write    # commit the public last-checked.json timestamp
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pull private data corpus
+        uses: actions/checkout@v4
+        with:
+          repository: erinecrum/compute-terms-observatory-data
+          token: ${{ secrets.DATA_REPO_TOKEN }}
+          path: _data
+
+      - name: Place corpus into the working tree (keep public files like last-checked.json)
+        run: |
+          rm -rf snapshots
+          cp -R _data/snapshots snapshots
+          mkdir -p data
+          cp -R _data/data/. data/ 2>/dev/null || true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Playwright + Chromium (browser fetch tier)
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Run pipeline (fetch -> extract changed -> build -> site)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python main.py run
+
+      - name: Push refreshed corpus to the private data repo
+        run: |
+          rm -rf _data/snapshots _data/data
+          cp -R snapshots _data/snapshots
+          cp -R data _data/data
+          cd _data
+          git config user.name  "terms-snapshot-bot"
+          git config user.email "actions@github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No corpus or dataset changes this run."
+          else
+            git commit -m "Corpus refresh $(date -u +%F) [skip ci]"
+            git push
+          fi
+
+      - name: Commit last-checked timestamp to this (public) repo
+        run: |
+          git config user.name  "terms-snapshot-bot"
+          git config user.email "actions@github.com"
+          git add data/last-checked.json
+          if git diff --cached --quiet; then
+            echo "No timestamp change."
+          else
+            git commit -m "Terms last checked: $(date -u +'%F %H:%M UTC')"
+            git pull --rebase origin "${GITHUB_REF_NAME}" || true
+            git push
+          fi
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: run
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -130,6 +130,12 @@ def cmd_run(skip_extract: bool) -> int:
     registry = load_registry("registry.yaml")
     store = SnapshotStore("snapshots")
 
+    # Freshness marker, updated every run. Not a snapshot, so it never triggers
+    # classification and never appears in the change feed.
+    from observatory.dataset import write_last_checked
+
+    print(f"0/4 Last checked: {write_last_checked()}")
+
     changed_providers = set()
     fetch_failed = extract_failed = 0
     print("1/4 Fetching + snapshotting changed documents...")
