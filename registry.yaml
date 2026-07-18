@@ -554,6 +554,15 @@ providers:
         generation: gpt-oss
         url: https://raw.githubusercontent.com/openai/gpt-oss/main/LICENSE
 
+      # -- Data protection & accountability (Phase B) --
+      - doc_type: ai_documentation
+        name: Model card / usage policy
+        status: unverified
+        url: https://openai.com/index/gpt-oss-model-card/
+      - doc_type: privacy_policy
+        name: Host privacy policy
+        status: unverified
+        url: https://openai.com/policies/privacy-policy/
   - provider: gemini
     provider_name: Gemini
     segment: model_provider
@@ -607,6 +616,15 @@ providers:
         generation: Gemma
         url: https://ai.google.dev/gemma/terms
 
+      # -- Data protection & accountability (Phase B) --
+      - doc_type: ai_documentation
+        name: Model card / usage policy
+        status: unverified
+        url: https://ai.google.dev/gemma/prohibited_use_policy
+      - doc_type: privacy_policy
+        name: Host privacy policy
+        status: unverified
+        url: https://policies.google.com/privacy
   - provider: grok
     provider_name: Grok
     segment: model_provider
@@ -665,6 +683,16 @@ providers:
         url: https://www.llama.com/use-policy/
         fetch_method: browser
 
+      # -- Data protection & accountability (Phase B) --
+      - doc_type: ai_documentation
+        name: Model card / usage policy
+        status: unverified
+        url: https://www.llama.com/llama4/use-policy/
+      - doc_type: privacy_policy
+        name: Host privacy policy
+        status: unverified
+        url: https://www.facebook.com/privacy/policy/
+        notes: Meta host privacy; confirm.
   - provider: deepseek
     provider_name: DeepSeek
     segment: model_provider
@@ -683,6 +711,15 @@ providers:
         url: https://platform.deepseek.com/downloads/DeepSeek_Open_Platform_Terms_of_Service.html
         notes: 403 to direct archival bot; use browser tier (confirm URL in re-fetch).
 
+      # -- Data protection & accountability (Phase B) --
+      - doc_type: ai_documentation
+        name: Model card / usage policy
+        status: unverified
+        url: https://cdn.deepseek.com/policies/en-US/deepseek-terms-of-use.html
+      - doc_type: privacy_policy
+        name: Host privacy policy
+        status: unverified
+        url: https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html
   - provider: qwen
     provider_name: Qwen
     segment: model_provider
@@ -696,6 +733,16 @@ providers:
         url: https://huggingface.co/Qwen/Qwen2.5-72B-Instruct/raw/main/LICENSE
         notes: Per-generation; Qwen mixes Apache-2.0 and the Qwen license across releases.
 
+      # -- Data protection & accountability (Phase B) --
+      - doc_type: ai_documentation
+        name: Model card / usage policy
+        status: unverified
+        url: https://huggingface.co/Qwen
+        notes: HF model cards; confirm license/usage.
+      - doc_type: privacy_policy
+        name: Host privacy policy
+        status: not_published
+        notes: Host privacy URL unconfirmed; confirm during capture.
   - provider: kimi
     provider_name: Kimi
     segment: model_provider
@@ -712,6 +759,15 @@ providers:
         generation: Kimi K2
         url: https://huggingface.co/moonshotai/Kimi-K2-Instruct/raw/main/LICENSE
 
+      # -- Data protection & accountability (Phase B) --
+      - doc_type: ai_documentation
+        name: Model card / usage policy
+        status: unverified
+        url: https://platform.moonshot.ai/docs/agreement/modeluse
+      - doc_type: privacy_policy
+        name: Host privacy policy
+        status: unverified
+        url: https://platform.kimi.ai/docs/agreement/userprivacy
   - provider: glm
     provider_name: GLM
     segment: model_provider
@@ -724,6 +780,16 @@ providers:
         generation: GLM-5.2
         url: https://huggingface.co/zai-org/GLM-5.2/raw/main/LICENSE
 
+      # -- Data protection & accountability (Phase B) --
+      - doc_type: ai_documentation
+        name: Model card / usage policy
+        status: unverified
+        url: https://huggingface.co/zai-org/GLM-4.5
+        notes: HF model card; MIT license in corpus.
+      - doc_type: privacy_policy
+        name: Host privacy policy
+        status: not_published
+        notes: Host privacy URL unconfirmed; confirm during capture.
   - provider: minimax
     provider_name: MiniMax
     segment: model_provider
@@ -736,6 +802,15 @@ providers:
         generation: MiniMax-M3
         url: https://huggingface.co/MiniMaxAI/MiniMax-M3/raw/main/LICENSE
 
+      # -- Data protection & accountability (Phase B) --
+      - doc_type: ai_documentation
+        name: Model card / usage policy
+        status: unverified
+        url: https://minimax-m2.com/terms
+      - doc_type: privacy_policy
+        name: Host privacy policy
+        status: unverified
+        url: https://www.minimax.io/privacy-policy-v2.html
   - provider: mistral-platform
     provider_name: Mistral platform
     segment: model_provider
@@ -782,6 +857,15 @@ providers:
         status: not_published
         notes: TODO — confirm canonical license URL (Apache-2.0 models vs Mistral Research/Non-Production License) per generation.
 
+      # -- Data protection & accountability (Phase B) --
+      - doc_type: ai_documentation
+        name: Model card / usage policy
+        status: unverified
+        url: https://legal.mistral.ai/terms
+      - doc_type: privacy_policy
+        name: Host privacy policy
+        status: unverified
+        url: https://legal.mistral.ai/terms/privacy-policy
   - provider: inkling
     provider_name: Inkling
     segment: model_provider
@@ -793,6 +877,15 @@ providers:
         status: not_published
         notes: TODO — no public terms or model license located; site minimal.
 
+      # -- Data protection & accountability (Phase B) --
+      - doc_type: ai_documentation
+        name: Model/system card
+        status: not_published
+        notes: No published model/system card confirmed; dims 7/8 silent unless found.
+      - doc_type: privacy_policy
+        name: Host privacy policy
+        status: not_published
+        notes: Host privacy URL unconfirmed; confirm during capture.
   - provider: command
     provider_name: Command
     segment: model_provider
