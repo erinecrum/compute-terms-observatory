@@ -414,41 +414,46 @@ window.CTO_DIMS={json.dumps([{"key": d["key"], "label": d["label"], "group": d.g
 
 
 def render_about(dataset: dict) -> str:
-    providers = dataset["providers"]
-    dims = dataset["dimensions"]
-    prov_list = "".join(
-        f"<li><strong>{esc(p['provider_name'])}</strong>: "
-        + ", ".join(esc(doc["name"]) for doc in p["documents"])
-        + "</li>"
-        for p in providers
+    n = len(dataset["providers"])
+    dims = len(dataset["dimensions"])
+    faqs = [
+        ("What is this?",
+         "<p>The Compute Terms Observatory is an automated research tracker that reads the "
+         "<em>published</em> terms of cloud infrastructure providers and AI model providers and "
+         "lays them out in one comparison matrix. Every value links to the source document it "
+         "came from.</p>"),
+        ("Where does the data come from?",
+         f"<p>Public documents only: terms of service, SLAs, acceptable-use and usage policies, "
+         f"model licenses, and deprecation policies for {n} providers across {dims} contract "
+         f"dimensions. Each value carries a short verbatim quote and a link to the archived "
+         f'source. See the <a href="methodology.html">methodology</a> for the full pipeline and '
+         f"coverage.</p>"),
+        ("How often is it checked?",
+         "<p>An automated workflow re-fetches every tracked document twice daily and archives a "
+         "timestamped, content-hashed snapshot. Each section header shows when its corpus was "
+         "last checked.</p>"),
+        ("Can I rely on it?",
+         "<p><em>No, verify before you rely on it.</em> These are an AI's readings of public "
+         "terms, not the terms themselves and not legal advice. They can be wrong, incomplete, "
+         "or out of date, and public terms are only a starting point; negotiated agreements "
+         "routinely differ. Every value links to its source so you can check it yourself. Nothing "
+         "here creates an attorney-client relationship.</p>"),
+        ("Who runs it?",
+         "<p>It is an independent, open-source research project. The code is MIT-licensed and the "
+         "brand is reserved. It is not affiliated with, endorsed by, or sponsored by any of the "
+         "providers it tracks.</p>"),
+        ("How do I report an error?",
+         '<p>Open an issue on the <a href="https://github.com/erinecrum/compute-terms-observatory">'
+         "source repository</a> with the provider, the dimension, and what you believe is wrong. "
+         "Corrections are re-checked against the archived source.</p>"),
+    ]
+    rows = "".join(
+        f'<details class="faq" name="faq"><summary>{esc(q)}'
+        f'<span class="faq-ind" aria-hidden="true"></span></summary>'
+        f'<div class="faq-a">{a}</div></details>'
+        for q, a in faqs
     )
-    dim_list = "".join(f"<li><strong>{esc(d['label'])}</strong>: {esc(d['guidance'])}</li>" for d in dims)
-    return f"""
-<h2>What this is</h2>
-<p>An AI reads each provider's <em>public</em> terms of service, SLAs, acceptable use policies,
-and AI-specific terms against a fixed 10-term schema, and records what it finds with a citation
-and a source link for every value. These are the AI's summaries of what the documents say, not the
-documents themselves and not legal advice. They can be wrong, incomplete, or out of date, which is
-why every value links to its source: so you can verify it yourself before relying on it. It does not
-advise, recommend, or rate.</p>
-
-<h2>Methodology</h2>
-<ul>
-<li><strong>Archival.</strong> Every fetched document version is preserved with a timestamp and content hash; nothing is overwritten.</li>
-<li><strong>Extraction.</strong> A structured pass with Claude (Opus) reads each provider's documents against a fixed 10-term schema, returning a value, a confidence level, and a citation for every field. Values it cannot support are recorded as “not specified” or “unclear”, never guessed.</li>
-<li><strong>Status.</strong> Everything here is AI-reviewed — there is no human-verified tier. Each value is labeled by how well it is supported: <em>quote verified</em>, <em>unverified</em> (no supporting quote matched), <em>silent</em> (the terms are silent, with no governing clause), or <em>not applicable</em> (the dimension does not apply to that offering).</li>
-<li><strong>Provenance.</strong> Every value links to its source document, with the fetch date and version hash behind it.</li>
-</ul>
-
-<h2>Coverage</h2>
-<h3>Providers &amp; documents</h3>
-<ul class="coverage">{prov_list}</ul>
-<h3>Term dimensions</h3>
-<ul class="coverage">{dim_list}</ul>
-
-<h2>Disclaimer</h2>
-<p>{esc(dataset.get("disclaimer",""))} Nothing here creates an attorney-client relationship.</p>
-"""
+    return f'<div class="faq-list">{rows}</div>'
 
 
 def _segment_dims_section() -> str:
@@ -902,6 +907,23 @@ padding-bottom:6px;border-bottom:1px solid var(--line)}
 .ms-link{margin-top:2px!important}
 .ms-link a{font-family:var(--display);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
 .ms-link a:hover{color:var(--ink);text-decoration:none}
+
+/* About page: accordion FAQ */
+.faq-list{max-width:760px;border-top:1px solid var(--line)}
+.faq{border-bottom:1px solid var(--line)}
+.faq>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+gap:18px;padding:18px 2px;font-family:var(--display);font-size:17px;font-weight:600;color:var(--ink)}
+.faq>summary::-webkit-details-marker{display:none}
+.faq>summary:hover{color:var(--ink)}
+.faq-ind{width:14px;height:14px;position:relative;flex:0 0 auto}
+.faq-ind::before,.faq-ind::after{content:"";position:absolute;background:var(--ink);border-radius:1px}
+.faq-ind::before{left:0;top:6px;width:14px;height:2px}
+.faq-ind::after{left:6px;top:0;width:2px;height:14px;transition:transform .15s}
+.faq[open] .faq-ind::after{transform:scaleY(0)}
+.faq-a{padding:0 2px 20px;color:var(--muted);font-size:15px;line-height:1.65;max-width:70ch}
+.faq-a p{margin:0}
+.faq-a a{color:var(--accent)}
+.faq-a em{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-style:italic;color:var(--ink)}
 /* Big-number stat callouts (homepage). Hairline cards, huge figure, tiny label. */
 .stats{display:flex;flex-wrap:wrap;gap:14px;margin:2px 0 22px}
 .stat{flex:1 1 150px;border:1px solid var(--line);border-radius:var(--radius);padding:15px 18px;background:var(--bg)}
