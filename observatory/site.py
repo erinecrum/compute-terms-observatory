@@ -215,6 +215,12 @@ _DECK_HTML = (
 )
 
 
+# The one-line statement of purpose. Appears in the footer of every page, and as
+# the standfirst on the methodology page, so the two never drift apart.
+_PURPOSE_LINE = ("One place to see what compute providers publish, side by side, "
+                 "as it changes.")
+
+
 def _sic(citation: str) -> str:
     """Cohere's published Terms of Use genuinely contain the typo 'OFFERINfGS'
     (verified in the raw HTML capture, not a normalization artifact). Flag it with
@@ -278,6 +284,7 @@ def _shell(title: str, body: str, active: str, subtitle: str = "",
   {body}
 </main>
 <footer class="site-foot"><div class="wrap">
+  <p class="foot-purpose">{esc(_PURPOSE_LINE)}</p>
   <span class="foot-copy">© 2026 Compute Terms Observatory</span> ·
   Public documents only · Descriptive, never advisory ·
   <a href="methodology.html">Methodology</a> ·
@@ -585,10 +592,19 @@ def render_about(dataset: dict) -> str:
     dims = len(dataset["dimensions"])
     faqs = [
         ("What is this?",
-         "<p>The Compute Terms Observatory is an automated research tracker that reads the "
-         "<em>published</em> terms of cloud infrastructure providers and AI model providers and "
-         "lays them out in one comparison matrix. Every value links to the source document it "
-         "came from.</p>"),
+         "<p>The Compute Terms Observatory compiles, in one continuously updated and "
+         "source-linked place, what cloud infrastructure and AI model providers actually "
+         "publish in their terms. Each provider's documents are archived twice daily, read "
+         "against a fixed schema of contract dimensions, and laid out side by side.</p>"
+         "<p>Assembled this way, the terms support three things that are awkward to do by "
+         "reading provider sites one at a time: seeing market posture across providers on the "
+         "same dimension, noticing when a provider's terms change, and reaching the primary "
+         "document behind any value in one click.</p>"
+         "<p>Audiences who have found this kind of assembly useful include counsel preparing "
+         "negotiations, researchers, journalists, and procurement teams. Whether it suits any "
+         "particular purpose is a judgment only you can make, and every value links to its "
+         "source so you can check it.</p>"
+         "<p>It describes what the documents say. It never advises what to do.</p>"),
         ("Where does the data come from?",
          f"<p>Public documents only: terms of service, SLAs, acceptable-use and usage policies, "
          f"model licenses, and deprecation policies for {n} providers across {dims} contract "
@@ -658,6 +674,9 @@ def render_methodology(dataset: dict) -> str:
     """Methodology page — adapted from METHODOLOGY.md to describe this pipeline
     accurately. Reports what the system does; contains no advisory language."""
     return ("""
+<p class="page-standfirst">{_PURPOSE_LINE} This page describes how that is done: what is
+captured, how values are extracted, what the status labels mean, and where the limits are.</p>
+
 <h2>How this works</h2>
 <p>The Compute Terms Observatory is an automated research tracker of the
 <em>published</em> terms of cloud infrastructure providers and AI model families. It works in three stages.</p>
@@ -727,7 +746,8 @@ in the <a href="https://github.com/erinecrum/compute-terms-observatory">source r
 <p>The code is open source (MIT). The change history is published here as the change feed;
 the archived snapshot corpus is maintained in the project's data repository. See the
 <a href="about.html">About</a> page for the full provider and dimension coverage.</p>
-""").replace("{_segment_dims_section()}", _segment_dims_section())
+""").replace("{_segment_dims_section()}", _segment_dims_section()
+             ).replace("{_PURPOSE_LINE}", _PURPOSE_LINE)
 
 
 def render_provider(dataset: dict, pmeta: dict) -> str:
@@ -1263,6 +1283,13 @@ border:1px solid var(--line-2);border-radius:8px;background:var(--bg);color:var(
 /* Footer */
 .site-foot{border-top:1px solid var(--line);color:var(--faint);font-size:13px;margin-top:52px}
 .site-foot .wrap{padding:22px 24px}
+/* One-line statement of purpose, in the deck's serif italic so it reads as voice
+   rather than as another metadata row. */
+.foot-purpose{margin:0 0 10px;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;
+font-style:italic;font-size:14.5px;color:var(--muted)}
+/* Standfirst above a page's body copy, same serif voice as the deck and footer. */
+.page-standfirst{margin:0 0 26px;max-width:660px;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;
+font-style:italic;font-size:16px;line-height:1.55;color:var(--muted)}
 
 /* Actions bar, buttons, last-updated */
 .actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 18px}
