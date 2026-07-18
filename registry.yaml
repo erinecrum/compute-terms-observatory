@@ -470,6 +470,27 @@ providers:
         status: not_published
         notes: No public API SLA; enterprise/negotiated.
 
+      # -- Data protection & accountability (Phase B) --
+      - doc_type: dpa
+        name: Anthropic DPA (via Commercial Terms)
+        status: not_published
+        notes: Standalone DPA is sign-gated; its terms live in the public Commercial Terms (captured as service_terms).
+      - doc_type: subprocessor_list
+        name: Anthropic Sub-processors
+        status: unverified
+        url: https://trust.anthropic.com/subprocessors
+      - doc_type: privacy_policy
+        name: Anthropic Privacy Policy
+        status: unverified
+        url: https://www.anthropic.com/legal/privacy
+      - doc_type: transparency_report
+        name: Anthropic Transparency Hub
+        status: unverified
+        url: https://www.anthropic.com/transparency
+      - doc_type: ai_documentation
+        name: Anthropic model cards / Transparency Hub
+        status: unverified
+        url: https://www.anthropic.com/transparency
   - provider: openai
     provider_name: OpenAI API / GPT
     segment: model_provider
@@ -500,6 +521,27 @@ providers:
         status: verified
         url: https://developers.openai.com/api/docs/deprecations
 
+      # -- Data protection & accountability (Phase B) --
+      - doc_type: dpa
+        name: OpenAI Data Processing Addendum
+        status: unverified
+        url: https://openai.com/policies/data-processing-addendum/
+      - doc_type: subprocessor_list
+        name: OpenAI Sub-processor List
+        status: unverified
+        url: https://openai.com/policies/sub-processor-list/
+      - doc_type: privacy_policy
+        name: OpenAI Privacy Policy
+        status: unverified
+        url: https://openai.com/policies/privacy-policy/
+      - doc_type: ai_documentation
+        name: OpenAI usage policies & system cards
+        status: unverified
+        url: https://openai.com/policies/usage-policies/
+      - doc_type: transparency_report
+        name: OpenAI transparency report
+        status: not_published
+        notes: No standalone government-request transparency report confirmed; dim 4 silent unless found.
   - provider: gpt-oss
     provider_name: gpt-oss
     segment: model_provider
@@ -531,6 +573,28 @@ providers:
         status: not_published
         notes: No standalone deprecation policy URL confirmed; model lifecycle noted in the models docs. TODO.
 
+      # -- Data protection & accountability (Phase B) --
+      - doc_type: dpa
+        name: Google Cloud Data Processing Addendum (Gemini)
+        status: unverified
+        url: https://cloud.google.com/terms/data-processing-addendum
+        notes: Gemini API DPA = Google Cloud CDPA where Google is processor.
+      - doc_type: privacy_policy
+        name: Gemini API Additional Terms
+        status: unverified
+        url: https://ai.google.dev/gemini-api/terms
+      - doc_type: ai_documentation
+        name: Google Generative AI Prohibited Use Policy + model cards
+        status: unverified
+        url: https://policies.google.com/terms/generative-ai
+      - doc_type: subprocessor_list
+        name: Google Cloud Third Party Subprocessors (Gemini)
+        status: unverified
+        url: https://cloud.google.com/terms/sccs/3p-subprocessors
+      - doc_type: transparency_report
+        name: Google Transparency Report (enterprise)
+        status: unverified
+        url: https://transparencyreport.google.com/user-data/enterprise
   - provider: gemma
     provider_name: Gemma
     segment: model_provider
@@ -562,6 +626,26 @@ providers:
         url: https://x.ai/legal/acceptable-use-policy
         notes: 403 to direct archival bot; use browser tier.
 
+      # -- Data protection & accountability (Phase B) --
+      - doc_type: dpa
+        name: xAI Data Processing Addendum
+        status: unverified
+        url: https://x.ai/legal/data-processing-addendum
+        fetch_method: browser
+        notes: Sub-processor terms within the DPA (dim 3). x.ai 403s the direct bot; browser tier.
+      - doc_type: privacy_policy
+        name: xAI Privacy Policy
+        status: unverified
+        url: https://x.ai/legal/privacy-policy
+        fetch_method: browser
+      - doc_type: ai_documentation
+        name: xAI model cards
+        status: not_published
+        notes: No published model/system card confirmed; dims 7/8 silent unless found.
+      - doc_type: transparency_report
+        name: xAI transparency report
+        status: not_published
+        notes: None published; dim 4 silent.
   - provider: llama
     provider_name: Llama
     segment: model_provider
@@ -664,6 +748,29 @@ providers:
         url: https://mistral.ai/terms
         notes: Redirects to legal.mistral.ai/terms.
 
+      # -- Data protection & accountability (Phase B) --
+      - doc_type: dpa
+        name: Mistral AI Data Processing Addendum
+        status: unverified
+        url: https://legal.mistral.ai/terms/data-processing-addendum
+      - doc_type: subprocessor_list
+        name: Mistral AI Sub-processors
+        status: unverified
+        url: https://trust.mistral.ai/subprocessors
+        notes: Email-notify on subprocessor changes.
+      - doc_type: privacy_policy
+        name: Mistral AI Privacy Policy
+        status: unverified
+        url: https://legal.mistral.ai/terms/privacy-policy
+      - doc_type: ai_documentation
+        name: Mistral usage policy / model cards
+        status: unverified
+        url: https://mistral.ai/terms/
+        notes: Confirm exact AI usage/model-card URL during capture.
+      - doc_type: transparency_report
+        name: Mistral transparency report
+        status: not_published
+        notes: None published; dim 4 silent.
   - provider: mistral-open
     provider_name: Mistral open models
     segment: model_provider
@@ -700,3 +807,25 @@ providers:
         name: Cohere usage / acceptable-use policy
         status: not_published
         notes: TODO — confirm standalone usage policy URL.
+      # -- Data protection & accountability (Phase B) --
+      - doc_type: dpa
+        name: Cohere DPA (request-only)
+        status: not_published
+        notes: DPA is request-only (privacy@cohere.com). Public Enterprise Data Commitments cover some dims.
+      - doc_type: ai_documentation
+        name: Cohere Enterprise Data Commitments
+        status: unverified
+        url: https://cohere.com/enterprise-data-commitments
+      - doc_type: subprocessor_list
+        name: Cohere Sub-processors (Trust Center)
+        status: unverified
+        url: https://trustcenter.cohere.com/
+        notes: May be gated; browser tier, else not_published.
+      - doc_type: privacy_policy
+        name: Cohere Privacy Policy
+        status: unverified
+        url: https://cohere.com/privacy
+      - doc_type: transparency_report
+        name: Cohere transparency report
+        status: not_published
+        notes: None published; dim 4 silent.
