@@ -41,7 +41,7 @@ CLOUD_COLUMN_ORDER = [
 
 # Phase C gate, released in Phase D: the data-protection and accountability groups
 # are now rendered behind the progressive-disclosure view switcher below.
-RENDER_NEW_GROUPS = False
+RENDER_NEW_GROUPS = True
 _HIDDEN_GROUPS = (set() if RENDER_NEW_GROUPS
                   else {"Data protection & privacy", "Accountability & transparency"})
 
