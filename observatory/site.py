@@ -202,14 +202,18 @@ def _status_meta(field: dict):
 
 
 def _status_dot(field: dict) -> str:
-    """Four-state status indicator (never color-alone: carries a descriptive title)."""
+    """Four-state status indicator. Never color-alone: it carries a descriptive
+    title and an aria-label so assistive tech announces the status."""
     status = field.get("status", _DEFAULT_STATUS)
-    dot_cls, title, _bc, _bt = _status_meta(field)
+    dot_cls, title, _bc, badge_text = _status_meta(field)
+    label = badge_text.lstrip("✓ ").strip()
     if status == "quote_verified":
         c = field.get("confidence", "low")
         c = c if c in ("high", "medium", "low") else "low"
         title = f"{title}; confidence {c}"
-    return f'<span class="dot {dot_cls}" title="{esc(title)}"></span>'
+        label = f"{label}, confidence {c}"
+    return (f'<span class="dot {dot_cls}" role="img" aria-label="Status: {esc(label)}" '
+            f'title="{esc(title)}"></span>')
 
 
 def _cell(provider: str, dim_key: str, field: dict) -> str:
@@ -265,7 +269,7 @@ def _matrix_table(dims: list, subset: list, matrix: dict, table_id: str) -> str:
         g = d.get("group", "")
         if g and g != cur:
             cur = g
-            rows.append(f'<tr class="grouprow" data-group="{esc(g)}"><th class="groupcell" colspan="{ncols}">{esc(g)}</th></tr>')
+            rows.append(f'<tr class="grouprow" data-group="{esc(g)}"><th scope="colgroup" class="groupcell" colspan="{ncols}">{esc(g)}</th></tr>')
         cells = "".join(
             (f'<td class="cell empty" data-provider="{esc(p["provider"])}" data-dim="{esc(d["key"])}">n/a</td>'
              if matrix.get(p["provider"], {}).get(d["key"]) is None
@@ -788,8 +792,9 @@ src:url("fonts/Baloo2-800.woff2") format("woff2")}
 --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 /* Warm editorial palette — cream paper, warm ink, hairlines. Accents (tomato /
    marigold / cobalt) appear only in small doses: badges, pills, links, spot art. */
---bg:#faf6ef;--panel:#f4eee2;--panel-2:#ece3d3;--ink:#14120f;--muted:#6b6357;--faint:#9a9080;
+--bg:#faf6ef;--panel:#f4eee2;--panel-2:#ece3d3;--ink:#14120f;--muted:#6b6357;--faint:#78705d;
 --line:#e5dfd2;--line-2:#d8d0bf;
+/* --faint darkened to #78705d so small labels clear WCAG AA (4.5:1) on cream. */
 --tomato:#e8502e;--marigold:#f5b72e;--cobalt:#2e5be8;
 --accent:#2e5be8;--accent-2:#2e5be8;--accent-soft:#e7ecfc;
 --high:#2e7d46;--medium:#c67d18;--low:#9a9080;
@@ -1070,7 +1075,7 @@ background:none;border:0;text-align:left;cursor:pointer;padding:2px 0;text-decor
 .sec-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:10px 16px;
 margin:0 0 14px;padding-bottom:9px;border-bottom:1px solid var(--line)}
 .sec-h{font-family:var(--display);font-weight:700;font-size:20px;margin:0;display:flex;align-items:baseline;gap:10px}
-.sec-cnt{font-family:var(--display);font-size:12px;font-weight:600;color:#946412;
+.sec-cnt{font-family:var(--display);font-size:12px;font-weight:600;color:#7c5510;
 background:#fbeecb;border-radius:var(--radius-pill);padding:1px 9px}
 .sec-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:14px}
 .sec-fresh{font-family:var(--display);font-size:10.5px;font-weight:600;text-transform:uppercase;
@@ -1097,8 +1102,8 @@ border:1px solid var(--line-2);border-radius:var(--radius-pill);padding:3px 11px
 /* Text-first status badges: subtle tint + colored text, pill-shaped. */
 .badge.ok,.badge.warn,.badge.muted,.badge.stale{border-radius:var(--radius-pill);
 padding:1px 9px;font-size:11px;font-weight:600;font-family:var(--display);letter-spacing:.01em;border:1px solid}
-.badge.ok{background:#e9f3ec;color:var(--high);border-color:#c3e0cc}
-.badge.warn{background:#fbe9e3;color:var(--tomato);border-color:#f2c3b6}
+.badge.ok{background:#e9f3ec;color:#1f6b38;border-color:#c3e0cc}
+.badge.warn{background:#fbe9e3;color:#b23a1c;border-color:#f2c3b6}
 .badge.muted{background:var(--panel);color:var(--muted);border-color:var(--line-2)}
 .badge.stale{background:#fbf0dc;color:var(--medium);border-color:#ecd6a6}
 .src.wayback{color:var(--muted)}
