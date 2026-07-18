@@ -237,9 +237,9 @@ def dimension(key: str) -> Dimension:
 
 SEGMENT_GROUPS = ("cloud", "closed", "open")
 SEGMENT_GROUP_LABEL = {
-    "cloud": "Cloud Infrastructure",
-    "closed": "Closed API",
-    "open": "Open Weight",
+    "cloud": "Cloud Infrastructure Providers",
+    "closed": "Closed API AI Model Providers",
+    "open": "Open Weight AI Model Providers",
 }
 
 # Dimensions removed from each group's table, with the one-line rationale that

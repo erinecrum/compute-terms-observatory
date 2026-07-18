@@ -27,10 +27,17 @@ EXPORT_XLSX_SEG = {
     "open": "compute-terms-open-weight.xlsx",
 }
 EXPORT_XLSX_SEG_TITLE = {
-    "cloud": "Cloud Infrastructure",
-    "closed": "Closed API",
-    "open": "Open Weight",
+    "cloud": "Cloud Infrastructure Providers",
+    "closed": "Closed API AI Model Providers",
+    "open": "Open Weight AI Model Providers",
 }
+# Column order for the Cloud Infrastructure table: hyperscalers first (contiguous),
+# then neoclouds by prominence. EDIT THIS LIST to re-order. Any cloud provider not
+# listed falls to the end in registry order. (Flagged for confirmation.)
+CLOUD_COLUMN_ORDER = [
+    "aws", "azure", "gcp",                                        # hyperscalers
+    "coreweave", "lambda", "crusoe", "together", "baseten", "runpod", "vast",  # neoclouds
+]
 # Custom domain for GitHub Pages. Written into the build as a CNAME file so that
 # Actions deploys keep the custom domain (a deploy without it would clear the
 # Pages custom-domain setting).
@@ -299,6 +306,9 @@ def render_matrix(dataset: dict) -> str:
     matrix = dataset["matrix"]
 
     cloud = [p for p in providers if p["segment"] in ("hyperscaler", "neocloud")]
+    # Curated column order: hyperscalers first, then neoclouds by prominence.
+    _rank = {pid: i for i, pid in enumerate(CLOUD_COLUMN_ORDER)}
+    cloud.sort(key=lambda p: (_rank.get(p["provider"], len(_rank)), p["provider_name"]))
     closed = [p for p in providers if p["segment"] == "model_provider" and p.get("openness") == "closed_api"]
     openw = [p for p in providers if p["segment"] == "model_provider" and p.get("openness") == "open_weight"]
 
@@ -382,9 +392,11 @@ def render_matrix(dataset: dict) -> str:
 
     grouped = (
         '<div id="grouped-view">'
-        + section("Cloud Infrastructure", "cloud", cloud, "tbl-cloud", "cloud-infrastructure")
-        + section("Closed API", "closed", closed, "tbl-closed", "closed-api")
-        + section("Open Weight", "open", openw, "tbl-open", "open-weight")
+        + section("Cloud Infrastructure Providers", "cloud", cloud, "tbl-cloud", "cloud-infrastructure")
+        + '<div class="mgroup" id="ai-model-providers"><h2 class="mgroup-h">AI Model Providers</h2>'
+        + section("Closed API AI Model Providers", "closed", closed, "tbl-closed", "closed-api")
+        + section("Open Weight AI Model Providers", "open", openw, "tbl-open", "open-weight")
+        + '</div>'
         + '</div><div id="flat-view" hidden></div>'
     )
 
@@ -1120,6 +1132,9 @@ border-radius:8px;background:var(--bg);color:var(--ink)}
 .sec-x{font-family:var(--display);font-size:11px;font-weight:600;color:var(--muted);background:var(--bg);
 border:1px solid var(--line-2);border-radius:var(--radius-pill);padding:3px 11px;cursor:pointer;text-decoration:none}
 .sec-x:hover{color:var(--ink);border-color:var(--ink);text-decoration:none}
+.mgroup{margin:8px 0 0}
+.mgroup-h{font-family:var(--display);font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.1em;
+color:var(--faint);margin:0 0 16px;padding-bottom:0}
 
 /* Unverified / status distinction */
 /* Four honest status states (Issue 2). Warning reserved for quote_unverified;
@@ -1336,7 +1351,8 @@ document.addEventListener('click',function(e){
     });
   }
 
-  document.querySelectorAll('.sec-sort-sel').forEach(sortSection);
+  // Do not auto-sort on load: the server-rendered order (curated for Cloud
+  // Infrastructure) is the default; per-section sort is applied on demand.
   apply();
 })();
 
