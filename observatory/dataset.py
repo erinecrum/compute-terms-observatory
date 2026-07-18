@@ -35,6 +35,30 @@ from .snapshot import SnapshotStore
 # Which dimensions are SLA-specific (grouped at the bottom of the matrix).
 _SLA_DIMS = {"availability_definition", "credit_regime", "claim_mechanics", "sla_exclusions"}
 
+# "Terms last checked" freshness marker, written on every pipeline run and shown on
+# the main page. It is public and is NOT a snapshot, so updating it never triggers
+# classification and never appears in the change feed.
+LAST_CHECKED_PATH = Path("data/last-checked.json")
+
+
+def write_last_checked() -> str:
+    ts = datetime.now(timezone.utc).isoformat()
+    LAST_CHECKED_PATH.parent.mkdir(parents=True, exist_ok=True)
+    LAST_CHECKED_PATH.write_text(
+        json.dumps({"last_checked_utc": ts, "schedule": "twice daily"}, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return ts
+
+
+def read_last_checked() -> dict:
+    if LAST_CHECKED_PATH.exists():
+        try:
+            return json.loads(LAST_CHECKED_PATH.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            return {}
+    return {}
+
 DISCLAIMER = (
     "These values are an AI's reading of each provider's public terms, not the terms "
     "themselves and not legal advice. They can be wrong, incomplete, or out of date. "
@@ -49,6 +73,21 @@ def load_commitment_programs(path: str | Path = "commitment_programs.yaml") -> D
         return {}
     raw = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
     return {prog["provider"]: prog for prog in raw.get("programs", [])}
+
+
+def _license_bucket(value: str) -> str:
+    """Normalize a classified model-license value into a filterable bucket. Derived
+    from the license data (with its citation), not asserted independently."""
+    v = (value or "").lower()
+    if not v or "not applicable" in v or "not specified" in v or "unclear" in v:
+        return ""
+    if "modified mit" in v:
+        return "Modified MIT"
+    if "apache" in v:
+        return "Apache 2.0"
+    if "mit" in v:
+        return "MIT"
+    return "bespoke/community license"
 
 
 def _enrich_capacity(field: dict, program: Optional[dict]) -> dict:
@@ -93,10 +132,18 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
         # "Last updated" = the most recent time any of this provider's tracked
         # documents was fetched (i.e. how current the archived source is).
         last_updated = max((d.get("fetched_at", "") for d in docs_used), default="")
+        # Grouping/filter metadata comes from the registry (carried on every doc).
+        pdocs = registry.for_provider(provider)
+        pd = pdocs[0] if pdocs else None
+        lic_field = fields.get("model_license") or {}
         providers_meta.append(
             {
                 "provider": provider,
                 "provider_name": provider_names.get(provider, provider),
+                "segment": pd.segment if pd else "hyperscaler",
+                "parent_company": pd.parent_company if pd else "",
+                "openness": pd.openness if pd else "",
+                "license_type": _license_bucket(lic_field.get("value", "")),
                 "extracted_at": record.get("extracted_at", ""),
                 "last_updated": last_updated,
                 "model": record.get("model", ""),
@@ -111,6 +158,7 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "data_current_as_of": data_current_as_of,
+        "last_checked": read_last_checked(),
         "disclaimer": DISCLAIMER,
         "dimensions": [
             {
