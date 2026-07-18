@@ -637,31 +637,31 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
 
 
 def _change_item(c: dict) -> str:
-    blocks = "".join(
-        f'<div class="cblock"><div class="old">− {esc(b["old"])}</div><div class="new">+ {esc(b["new"])}</div></div>'
-        for b in c.get("blocks", [])
-    )
-    if c.get("source_changed") or c.get("non_text"):
-        meta = f'<div class="cmeta">{esc(c.get("note",""))} <a href="{esc(c["url"])}" target="_blank" rel="noopener">source</a></div>'
-    else:
-        meta = (
-            f'<div class="cmeta">+{c.get("added_lines",0)} / {c.get("removed_lines",0)} lines removed · '
-            f'<a href="{esc(c["url"])}" target="_blank" rel="noopener">source</a></div>'
-        )
-    ai = ""
     dims = c.get("dimensions", [])
-    chips = ""
-    if dims:
-        chips = '<div class="chips">' + "".join(
-            f'<span class="chip">{esc(d["label"])}</span>' for d in dims
-        ) + "</div>"
+    chips = ("".join(f'<span class="chip">{esc(d["label"])}</span>' for d in dims))
+    chips = f'<div class="chips">{chips}</div>' if chips else ""
+
+    # The AI summary is the primary readable content.
     if c.get("ai_explanation"):
-        ai = (
-            f'<div class="ai-note"><span class="ai-label">AI summary of this change</span>'
-            f'<p>{esc(c["ai_explanation"])}</p>{chips}'
-            f'<span class="ai-verify">This is an AI-generated description. Verify it against the '
-            f'source document before relying on it.</span></div>'
-        )
+        summary = (f'<p class="csummary">{esc(c["ai_explanation"])}</p>{chips}'
+                   '<p class="ai-verify">AI-generated description; verify against the source '
+                   'before relying on it.</p>')
+    elif c.get("note"):
+        summary = f'<p class="csummary muted-note">{esc(c["note"])}</p>'
+    else:
+        summary = ""
+
+    # A collapsed lawyer-style redline (inline, in reading order) from the change
+    # blocks: deletions struck through, insertions underlined. No side-by-side hunks.
+    rl = "".join(
+        (f'<del>{esc(b["old"])}</del> ' if b.get("old") else "")
+        + (f'<ins>{esc(b["new"])}</ins> ' if b.get("new") else "")
+        for b in c.get("blocks", [])
+    ).strip()
+    redline = (f'<details class="redline"><summary>View redline</summary>'
+               f'<div class="rl">{rl}</div></details>') if rl else ""
+
+    meta = f'<a class="csource" href="{esc(c["url"])}" target="_blank" rel="noopener">source</a>'
     dim_keys = " ".join(d["key"] for d in dims)
     substantive = c.get("substantive", True)
     cosmetic_tag = "" if substantive else '<span class="badge muted cosmetic-tag">cosmetic</span>'
@@ -671,9 +671,8 @@ def _change_item(c: dict) -> str:
   <div class="chead"><strong>{esc(c["provider_name"])}</strong>: {esc(c["document"])}
     <span class="tag">{esc(c["doc_type"])}</span>{cosmetic_tag}
     <span class="cdate">{esc(c["detected_at"][:10])}</span></div>
-  {meta}
-  {ai}
-  {blocks}
+  {summary}
+  <div class="cfoot">{meta}{redline}</div>
 </article>"""
 
 
@@ -716,8 +715,8 @@ def render_changes(dataset: dict) -> str:
     <button type="button" id="cf-clear" class="btn ghost">Clear filters</button>
   </div>
   <div class="cf-facets">
-    <details><summary>Filter providers</summary><div class="checks">{prov_checks}</div></details>
-    <details><summary>Filter provisions</summary><div class="checks">{prv_checks}</div></details>
+    <details class="pill"><summary>Filter providers</summary><div class="checks">{prov_checks}</div></details>
+    <details class="pill"><summary>Filter provisions</summary><div class="checks">{prv_checks}</div></details>
   </div>
 </div>"""
     items = "".join(_change_item(c) for c in log)
@@ -1015,15 +1014,20 @@ font-family:var(--sans);display:flex;align-items:center;gap:9px}
 .change{border:1px solid var(--line-2);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
 .chead{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-family:var(--display)}
 .cdate{margin-left:auto;color:var(--faint);font-size:13px;font-family:var(--sans)}
-.cmeta{color:var(--muted);font-size:12.5px;margin:5px 0 9px}
-.cblock{margin:6px 0;font-size:13px;font-family:var(--mono)}
-.cblock .old{background:var(--old-bg);color:var(--old-fg);border-radius:6px;padding:4px 7px;margin-bottom:4px}
-.cblock .new{background:var(--new-bg);color:var(--new-fg);border-radius:6px;padding:4px 7px}
-.ai-note{background:var(--accent-soft);border:1px solid var(--line-2);border-left:3px solid var(--accent);
-border-radius:0 8px 8px 0;padding:9px 12px;margin:8px 0}
-.ai-note p{margin:5px 0;font-size:13.5px;max-width:none}
-.ai-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent-2)}
-.ai-verify{font-size:11.5px;font-style:italic;color:var(--muted)}
+/* Change entry: AI summary is primary; a collapsed lawyer-style redline below. */
+.csummary{margin:10px 0 4px;font-size:15px;line-height:1.55;color:var(--ink);max-width:80ch}
+.muted-note{color:var(--muted);font-style:italic}
+.ai-verify{font-size:11.5px;font-style:italic;color:var(--muted);margin:6px 0 0}
+.cfoot{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:10px}
+.csource{font-family:var(--display);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.csource:hover{color:var(--ink);text-decoration:none}
+.redline>summary{list-style:none;cursor:pointer;font-family:var(--display);font-size:11px;font-weight:600;
+text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.redline>summary::-webkit-details-marker{display:none}
+.rl{margin-top:9px;padding:12px 14px;background:var(--panel);border:1px solid var(--line);border-radius:8px;
+line-height:2;font-size:13.5px;color:var(--ink)}
+.rl del{text-decoration:line-through;text-decoration-color:#bd7862;color:#a85c46}
+.rl ins{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:2px;color:var(--ink)}
 .chips{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 2px}
 .chip{background:var(--bg);border:1px solid var(--line-2);border-radius:20px;padding:1px 10px;
 font-size:11.5px;color:var(--accent-2);font-weight:600}
