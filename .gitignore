@@ -13,12 +13,12 @@ __pycache__/
 # Generated site output is a build artifact, rebuilt from the corpus + dataset.
 site/
 
-# Data corpus lives in the PRIVATE repo compute-terms-observatory-data. New
-# snapshots and dataset files are NOT committed to this public repo going forward.
-# The already-committed snapshots/ + data/ remain as a frozen public baseline
-# (git keeps tracking files added before this rule; only NEW files are ignored).
+# Data corpus (snapshots + extractions + dataset + change notes) lives in the
+# PRIVATE repo compute-terms-observatory-data. Only the public freshness marker
+# (data/last-checked.json) is committed here.
 snapshots/
-data/
+data/*
+!data/last-checked.json
 
 # macOS Finder metadata
 .DS_Store
