@@ -223,3 +223,63 @@ def dimension(key: str) -> Dimension:
         if d.key == key:
             return d
     raise KeyError(key)
+
+
+# ---------------------------------------------------------------------------
+# Per-segment dimension sets (single source of truth)
+#
+# Each matrix table renders only the dimensions applicable to its segment. A
+# dimension is removed from a segment ONLY when it is structurally inapplicable —
+# the entry type cannot meaningfully have it (the precondition does not exist),
+# not merely that today's providers are silent. Collective silence is a finding
+# and stays. Reviewed and approved 2026-07-18.
+# ---------------------------------------------------------------------------
+
+SEGMENT_GROUPS = ("cloud", "closed", "open")
+SEGMENT_GROUP_LABEL = {
+    "cloud": "Cloud Infrastructure",
+    "closed": "Closed API",
+    "open": "Open Weight",
+}
+
+# Dimensions removed from each group's table, with the one-line rationale that
+# appears in the methodology.
+SEGMENT_REMOVED = {
+    "cloud": {
+        "model_license": "infrastructure providers distribute no model weights, so "
+        "the license under which weights are distributed has no referent",
+    },
+    "closed": {
+        "hardware_substitution": "a closed API allocates tokens/throughput, not GPUs; "
+        "there is no hardware to substitute",
+    },
+    "open": {
+        "availability_definition": "an availability definition describes a service's "
+        "uptime commitment; an open-weight license distributes weights with no service "
+        "attached, so the precondition does not exist",
+        "credit_regime": "SLA service credits presuppose a service level to breach; a "
+        "downloadable license has no service",
+        "claim_mechanics": "there is no SLA to claim credits against",
+        "sla_exclusions": "there is no SLA whose scope could be excluded",
+        "capacity_reservation": "no hosted capacity is provisioned to reserve",
+        "capacity_remedies": "there is no capacity delivery obligation to remedy",
+        "hardware_substitution": "no hardware is allocated, so none can be substituted",
+    },
+}
+
+
+def segment_group(segment: str, openness: str) -> str:
+    """Map a provider's (segment, openness) to its matrix table group."""
+    if segment in ("hyperscaler", "neocloud"):
+        return "cloud"
+    if openness == "open_weight":
+        return "open"
+    return "closed"
+
+
+def is_applicable(group: str, dim_key: str) -> bool:
+    return dim_key not in SEGMENT_REMOVED.get(group, {})
+
+
+def applicable_dimensions(group: str) -> List[Dimension]:
+    return [d for d in DIMENSIONS if is_applicable(group, d.key)]

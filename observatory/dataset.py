@@ -29,7 +29,7 @@ from .differ import diff_text
 from .extractor import load_extraction
 from .overrides import apply_overrides, load_overrides
 from .registry import Registry, load_registry
-from .schema import DIMENSIONS
+from .schema import DIMENSIONS, is_applicable, segment_group
 from .snapshot import SnapshotStore
 from .textcheck import NON_TEXT_MESSAGE, looks_like_text
 
@@ -139,35 +139,46 @@ _ABSENCE_VALUES = {
     "not applicable", "silent",
 }
 
-# Dimensions that are structurally inapplicable to an OPEN-WEIGHT MODEL FAMILY —
-# a published license, not a hosted service: the four SLA dimensions plus the
-# capacity/hardware provisioning dimensions. For every other provider (including
-# closed-API model providers that run real services), an absence is a genuine
-# silence, never "not applicable". Applicability rule reviewed 2026-07-17.
-_OPEN_WEIGHT_NA_DIMS = _SLA_DIMS | {
-    "capacity_reservation", "hardware_substitution", "capacity_remedies",
-}
-
-
 def _is_absence(value: str) -> bool:
     return (value or "").strip().lower().rstrip(".") in _ABSENCE_VALUES
 
 
-def _derive_status(field: dict, dim_key: str, openness: str):
-    """Return (status, ambiguous). `ambiguous` marks an absence that was defaulted
-    to no_clause_found but whose text said "not applicable" on a provider where the
-    applicability rule does not grant not_applicable — worth a human glance."""
+def _derive_status(field: dict, dim_key: str, group: str, openness: str) -> str:
+    """Derive the four-state status. A dimension the segment map removes, and
+    model_license on a provider that distributes no weights, resolve to
+    not_applicable (the status is kept in the data for compare mode even though the
+    segment table does not render the row)."""
     # A recorded commitment-program fact ("negotiated, not published") is a real
     # value, never an absence.
     substantive = bool(field.get("commitment_program")) or not _is_absence(field.get("value", ""))
+    if not is_applicable(group, dim_key):
+        return "not_applicable"
+    if dim_key == "model_license" and openness != "open_weight" and not substantive:
+        return "not_applicable"
     if substantive:
-        verified = field.get("status") == "verified"
-        return ("quote_verified" if verified else "quote_unverified"), False
+        return "quote_verified" if field.get("status") == "verified" else "quote_unverified"
+    return "no_clause_found"
 
-    if openness == "open_weight" and dim_key in _OPEN_WEIGHT_NA_DIMS:
-        return "not_applicable", False
-    said_na = (field.get("value", "") or "").strip().lower().rstrip(".") == "not applicable"
-    return "no_clause_found", said_na
+
+def _warn_reason(field: dict, dim_key: str, group: str, openness: str):
+    """Reason this cell belongs in the build-warning report, or None. Surfaces real
+    content (a verified quote or a citation) that the segment map would drop, so it
+    is reviewed rather than silently lost, and 'not applicable' text left in a
+    dimension that stays applicable to the segment."""
+    verified = field.get("status") == "verified"
+    citation = (field.get("citation") or "").strip()
+    value_na = (field.get("value", "") or "").strip().lower().rstrip(".") == "not applicable"
+    if not is_applicable(group, dim_key):
+        if verified:
+            return "verified quote in a dimension removed for this segment"
+        if citation:
+            return "citation in a dimension removed for this segment"
+        return None
+    if dim_key == "model_license" and openness != "open_weight" and citation:
+        return "model_license citation on a provider that distributes no weights"
+    if value_na and dim_key != "model_license":
+        return "value says 'not applicable' but the dimension applies to this segment"
+    return None
 
 
 def _enrich_capacity(field: dict, program: Optional[dict]) -> dict:
@@ -193,7 +204,8 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
     provider_names = registry.provider_names()
     providers_meta: List[dict] = []
     matrix: Dict[str, Dict[str, dict]] = {}
-    status_report: List[tuple] = []  # (provider, dim, old_status, new_status, value, ambiguous)
+    status_report: List[tuple] = []  # (provider, dim, old_status, new_status, value, flagged)
+    warn_rows: List[tuple] = []      # (provider, group, dim, status, reason, excerpt)
 
     for provider in registry.providers():
         record = load_extraction(provider)
@@ -240,18 +252,24 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
         pdocs = registry.for_provider(provider)
         pd = pdocs[0] if pdocs else None
         openness_val = pd.openness if pd else ""
+        segment_val = pd.segment if pd else "hyperscaler"
+        group = segment_group(segment_val, openness_val)
 
-        # Derive the honest four-state display status for every field (Issue 2),
-        # overwriting the extractor's binary verified/unverified. Recorded for the
-        # migration report; raw extraction files on disk are untouched.
+        # Derive the honest four-state display status for every field, overwriting
+        # the extractor's binary verified/unverified, and flag any cell whose real
+        # content the segment map would drop. Raw extraction files are untouched.
         for dim_key, f in fields.items():
             old_status = f.get("status", "")
-            new_status, ambiguous = _derive_status(f, dim_key, openness_val)
-            if new_status != old_status or ambiguous:
+            new_status = _derive_status(f, dim_key, group, openness_val)
+            warn = _warn_reason(f, dim_key, group, openness_val)
+            if new_status != old_status:
                 status_report.append(
                     (provider, dim_key, old_status, new_status,
-                     (f.get("value", "") or "")[:48], ambiguous)
+                     (f.get("value", "") or "")[:48], bool(warn))
                 )
+            if warn:
+                excerpt = (f.get("citation", "") or "").strip() or (f.get("value", "") or "").strip()
+                warn_rows.append((provider, group, dim_key, new_status, warn, excerpt[:70]))
             f["status"] = new_status
             f["display_value"] = display_value(f)
 
@@ -261,6 +279,7 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
                 "provider": provider,
                 "provider_name": provider_names.get(provider, provider),
                 "segment": pd.segment if pd else "hyperscaler",
+                "group": group,
                 "parent_company": pd.parent_company if pd else "",
                 "openness": pd.openness if pd else "",
                 "license_type": _license_bucket(lic_field.get("value", "")),
@@ -274,6 +293,7 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
         )
 
     _write_status_report(status_report)
+    _write_warning_report(warn_rows)
 
     data_current_as_of = max(
         (p.get("last_updated", "") for p in providers_meta), default=""
@@ -298,6 +318,29 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
         "matrix": matrix,
         "change_log": _build_change_log(registry, store),
     }
+
+
+WARNING_REPORT_PATH = Path("data/segment_map_warnings.txt")
+
+
+def _write_warning_report(rows: List[tuple]) -> None:
+    """Cells the per-segment map affects that carry real content or an explicit
+    'not applicable' — surfaced for review rather than silently dropped (Issue 7)."""
+    lines = [
+        "Segment-map build warnings (Issue 7) — review, do not ignore.",
+        f"Generated: {datetime.now(timezone.utc).isoformat()}",
+        "",
+        f"{len(rows)} cell(s) flagged. For each: decide whether to keep the content, "
+        "move it to another dimension, adjust the applicability map, or drop it.",
+        "",
+    ]
+    for provider, group, dim, status, reason, excerpt in sorted(rows):
+        lines.append(f"  [{group:6s}] {provider:15s} {dim:26s} -> {status}")
+        lines.append(f"           {reason}")
+        if excerpt:
+            lines.append(f"           excerpt: {excerpt!r}")
+    WARNING_REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    WARNING_REPORT_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 STATUS_REPORT_PATH = Path("data/status_migration_report.txt")

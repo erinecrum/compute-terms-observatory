@@ -14,6 +14,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import List
 
+from .schema import is_applicable
+
 SITE_DIR = Path("site")
 EXPORT_XLSX = "compute-terms-observatory.xlsx"
 # Custom domain for GitHub Pages. Written into the build as a CNAME file so that
@@ -221,6 +223,10 @@ def render_matrix(dataset: dict) -> str:
     closed = [p for p in providers if p["segment"] == "model_provider" and p.get("openness") == "closed_api"]
     openw = [p for p in providers if p["segment"] == "model_provider" and p.get("openness") == "open_weight"]
 
+    # Per-segment dimension sets: each table renders only its applicable dimensions.
+    def dims_for(group):
+        return [d for d in dims if is_applicable(group, d["key"])]
+
     # Attribute map for client-side filtering/sorting (counts, columns).
     pmap = {p["provider"]: {"seg": p["segment"], "open": p.get("openness", ""),
                             "parent": p.get("parent_company", ""), "lic": p.get("license_type", ""),
@@ -283,16 +289,16 @@ def render_matrix(dataset: dict) -> str:
         '<section id="cloud-infrastructure" class="msec">'
         f'<h2 class="sec-h">Cloud Infrastructure <span class="sec-cnt" data-cnt="cloud">{len(cloud)}</span></h2>'
         '<p class="sec-note">Hyperscalers and neoclouds, compared at the company level.</p>'
-        f'{_matrix_table(dims, cloud, matrix, "tbl-cloud")}</section>'
+        f'{_matrix_table(dims_for("cloud"), cloud, matrix, "tbl-cloud")}</section>'
         '<section id="ai-model-providers" class="msec">'
         f'<h2 class="sec-h">AI Model Providers <span class="sec-cnt" data-cnt="model">{len(closed)+len(openw)}</span></h2>'
         '<p class="sec-note">By model family. License values attach to the specific license document and generation, not the whole family.</p>'
         '<section id="closed-api" class="msub">'
         f'<h3 class="sub-h">Closed API <span class="sec-cnt" data-cnt="closed">{len(closed)}</span></h3>'
-        f'{_matrix_table(dims, closed, matrix, "tbl-closed")}</section>'
+        f'{_matrix_table(dims_for("closed"), closed, matrix, "tbl-closed")}</section>'
         '<section id="open-weight" class="msub">'
         f'<h3 class="sub-h">Open Weight <span class="sec-cnt" data-cnt="open">{len(openw)}</span></h3>'
-        f'{_matrix_table(dims, openw, matrix, "tbl-open")}</section>'
+        f'{_matrix_table(dims_for("open"), openw, matrix, "tbl-open")}</section>'
         '</section></div>'
         # Flat view is built lazily from the grouped tables on first toggle, to keep
         # the initial DOM light (it would otherwise duplicate every cell).
@@ -317,7 +323,8 @@ def render_matrix(dataset: dict) -> str:
 {controls}
 <div class="toolbar">{legend}<span class="hint">Tip: click any cell for the full value, verbatim quote, source link, and fetch date.</span></div>
 {grouped}
-<script>window.CTO_PROVIDERS={json.dumps(pmap)};</script>
+<script>window.CTO_PROVIDERS={json.dumps(pmap)};
+window.CTO_DIMS={json.dumps([{"key": d["key"], "label": d["label"], "group": d.get("group","")} for d in dims])};</script>
 <p class="genline">Generated {esc(gen)} UTC · {len(providers)} entries · {len(dims)} term dimensions.</p>
 """
 
@@ -360,10 +367,41 @@ advise, recommend, or rate.</p>
 """
 
 
+def _segment_dims_section() -> str:
+    """Document, from the applicability map, which dimensions each segment omits and
+    why — so the omissions read as editorial judgment, not missing data."""
+    from .schema import SEGMENT_GROUP_LABEL, SEGMENT_REMOVED, dimension
+
+    blocks = []
+    for group in ("cloud", "closed", "open"):
+        removed = SEGMENT_REMOVED.get(group, {})
+        if not removed:
+            items = "<li>No dimensions are omitted for this segment.</li>"
+        else:
+            items = "".join(
+                f'<li><strong>{esc(dimension(k).label)}</strong> — {esc(reason)}.</li>'
+                for k, reason in removed.items()
+            )
+        blocks.append(
+            f'<h3>{esc(SEGMENT_GROUP_LABEL[group])}</h3><ul>{items}</ul>'
+        )
+    return (
+        '<h2 id="dimension-sets">Why the tables differ by segment</h2>'
+        '<p>Each segment&rsquo;s table shows only the dimensions that can meaningfully '
+        'exist for that entry type. A dimension is omitted only when it is '
+        '<em>structurally</em> inapplicable &mdash; the precondition does not exist &mdash; '
+        'not merely because today&rsquo;s providers are silent. Collective silence is a '
+        'finding and stays (for example, closed-API providers that publish no SLA still '
+        'show an availability row, because a service <em>could</em> commit to uptime). '
+        'The omissions per segment:</p>'
+        + "".join(blocks)
+    )
+
+
 def render_methodology(dataset: dict) -> str:
     """Methodology page — adapted from METHODOLOGY.md to describe this pipeline
     accurately. Reports what the system does; contains no advisory language."""
-    return """
+    return ("""
 <h2>How this works</h2>
 <p>The Compute Contract Terms Observatory is an automated research tracker of the
 <em>published</em> terms of cloud infrastructure providers and AI model families. It works in three stages.</p>
@@ -389,6 +427,8 @@ code mechanically checks that the quote actually appears in the archived text. V
 quote cannot be verified are published as <strong>&ldquo;unverified&rdquo;</strong> with low
 confidence and should be given no weight.</li>
 </ol>
+
+{_segment_dims_section()}
 
 <h2 id="status-labels">Reading the status labels</h2>
 <p>Every value in the matrix carries one of four labels describing how well it is supported.
@@ -431,13 +471,15 @@ in the <a href="https://github.com/erinecrum/compute-terms-observatory">source r
 <p>The code is open source (MIT). The change history is published here as the change feed;
 the archived snapshot corpus is maintained in the project's data repository. See the
 <a href="about.html">About</a> page for the full provider and dimension coverage.</p>
-"""
+""").replace("{_segment_dims_section()}", _segment_dims_section())
 
 
 def render_provider(dataset: dict, pmeta: dict) -> str:
     provider = pmeta["provider"]
     fields = dataset["matrix"].get(provider, {})
-    dims = dataset["dimensions"]
+    # A provider page shows only the dimensions applicable to its segment.
+    group = pmeta.get("group", "cloud")
+    dims = [d for d in dataset["dimensions"] if is_applicable(group, d["key"])]
 
     # Documents used, with provenance (fetch tier + date, or IA capture date).
     def _doc_li(d):
@@ -833,6 +875,8 @@ background:var(--bg);border-bottom:1px solid var(--line-2);padding:10px 0;margin
 .dot.na{background:transparent;border:1.5px dotted var(--faint)}
 .cell.unverified .toggle{color:var(--muted);font-style:italic}
 .cell.absent .toggle{color:var(--faint)}
+.cell.na-cross{background:repeating-linear-gradient(45deg,transparent,transparent 6px,var(--panel-2) 6px,var(--panel-2) 7px)}
+.na-cross-lbl{color:var(--faint);font-size:12px;font-style:italic}
 .badge.ok{background:var(--high);color:#fff;border-radius:5px;padding:1px 7px;font-size:11px;font-weight:600}
 .badge.warn{background:var(--panel-2);color:var(--medium);border:1px solid var(--medium);border-radius:5px;padding:1px 7px;font-size:11px;font-weight:600}
 .badge.muted{background:var(--panel-2);color:var(--faint);border:1px solid var(--line-2);border-radius:5px;padding:1px 7px;font-size:11px;font-weight:600}
@@ -946,19 +990,37 @@ document.addEventListener('click',function(e){
     var fv=document.getElementById('flat-view');
     if(fv.getAttribute('data-built')) return;
     fv.setAttribute('data-built','1');
-    var base=document.getElementById('tbl-cloud').cloneNode(true); base.id='tbl-flat';
-    ['tbl-closed','tbl-open'].forEach(function(srcId){
-      var src=document.getElementById(srcId); if(!src) return;
-      var bhead=base.querySelector('thead tr');
-      src.querySelectorAll('thead .prov-col').forEach(function(th){ bhead.appendChild(th.cloneNode(true)); });
-      src.querySelectorAll('tbody tr[data-dim]').forEach(function(tr){
-        var brow=base.querySelector('tbody tr[data-dim="'+tr.dataset.dim+'"]');
-        if(brow) tr.querySelectorAll('td.cell').forEach(function(td){ brow.appendChild(td.cloneNode(true)); });
+    // Cross-segment view: the union of all dimensions, with a "not applicable for
+    // this provider type" placeholder wherever a segment removed that dimension.
+    var dims=window.CTO_DIMS||[];
+    var provCols=[], cellMap={};
+    ['tbl-cloud','tbl-closed','tbl-open'].forEach(function(id){
+      var t=document.getElementById(id); if(!t) return;
+      t.querySelectorAll('thead .prov-col').forEach(function(th){ provCols.push(th.cloneNode(true)); });
+      t.querySelectorAll('tbody td.cell').forEach(function(td){
+        if(td.dataset.provider) cellMap[td.dataset.provider+'||'+td.dataset.dim]=td.cloneNode(true);
       });
     });
-    var total=base.querySelectorAll('thead .prov-col').length+1;
-    base.querySelectorAll('.groupcell').forEach(function(c){ c.setAttribute('colspan',total); });
-    var wrap=document.createElement('div'); wrap.className='table-scroll'; wrap.appendChild(base); fv.appendChild(wrap);
+    var esc=function(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;};
+    var total=provCols.length+1;
+    var thead='<thead><tr><th class="corner">Term dimension</th>'+provCols.map(function(th){return th.outerHTML;}).join('')+'</tr></thead>';
+    var rows='', curGroup=null;
+    dims.forEach(function(d){
+      if(d.group && d.group!==curGroup){ curGroup=d.group;
+        rows+='<tr class="grouprow" data-group="'+esc(d.group)+'"><th class="groupcell" colspan="'+total+'">'+esc(d.group)+'</th></tr>'; }
+      var cells='';
+      provCols.forEach(function(th){
+        var p=th.dataset.provider, hit=cellMap[p+'||'+d.key];
+        cells += hit ? hit.outerHTML
+          : '<td class="cell na-cross" data-provider="'+esc(p)+'" data-dim="'+esc(d.key)+'" data-status="not_applicable">'
+            + '<div class="cell-head"><span class="dot na"></span><span class="na-cross-lbl">not applicable for this provider type</span></div></td>';
+      });
+      rows+='<tr data-dim="'+esc(d.key)+'" data-group="'+esc(d.group||'')+'"><th class="dim-col">'+esc(d.label)+'</th>'+cells+'</tr>';
+    });
+    var wrap=document.createElement('div'); wrap.className='table-scroll';
+    wrap.innerHTML='<table class="matrix" id="tbl-flat"><thead></thead></table>';
+    wrap.querySelector('table').innerHTML=thead+'<tbody>'+rows+'</tbody>';
+    fv.appendChild(wrap);
   }
 
   document.addEventListener('change',function(e){
