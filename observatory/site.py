@@ -38,6 +38,18 @@ CLOUD_COLUMN_ORDER = [
     "aws", "azure", "gcp",                                        # hyperscalers
     "coreweave", "lambda", "crusoe", "together", "baseten", "runpod", "vast",  # neoclouds
 ]
+
+# Phase C gate: the new dimension groups are captured and extracted into the data,
+# but are NOT rendered until the Phase D progressive-disclosure UI lands. Flip to
+# True in Phase D to reveal them (with the view switcher).
+RENDER_NEW_GROUPS = False
+_HIDDEN_GROUPS = (set() if RENDER_NEW_GROUPS
+                  else {"Data protection & privacy", "Accountability & transparency"})
+
+
+def _visible_dims(dims):
+    """Dimensions rendered on the site (drops the gated new groups until Phase D)."""
+    return [d for d in dims if d.get("group") not in _HIDDEN_GROUPS]
 # Custom domain for GitHub Pages. Written into the build as a CNAME file so that
 # Actions deploys keep the custom domain (a deploy without it would clear the
 # Pages custom-domain setting).
@@ -310,7 +322,7 @@ OPEN_LABEL = {"closed_api": "Closed API", "open_weight": "Open weight"}
 
 
 def render_matrix(dataset: dict) -> str:
-    dims = dataset["dimensions"]
+    dims = _visible_dims(dataset["dimensions"])
     providers = dataset["providers"]
     matrix = dataset["matrix"]
 
@@ -589,7 +601,7 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
     fields = dataset["matrix"].get(provider, {})
     # A provider page shows only the dimensions applicable to its segment.
     group = pmeta.get("group", "cloud")
-    dims = [d for d in dataset["dimensions"] if is_applicable(group, d["key"])]
+    dims = [d for d in _visible_dims(dataset["dimensions"]) if is_applicable(group, d["key"])]
 
     # Documents used, with provenance (fetch tier + date, or IA capture date).
     def _doc_li(d):

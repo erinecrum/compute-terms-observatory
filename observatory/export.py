@@ -21,6 +21,7 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
 from .schema import is_applicable
+from .site import _visible_dims  # Phase C render-gate (hides new groups until Phase D)
 
 _INK = "16202E"
 _ACCENT = "1C3F63"
@@ -58,7 +59,7 @@ def _comparison_sheet(ws, dataset: dict, group: str, title: str) -> None:
     from .schema import is_applicable
 
     providers = [p for p in dataset["providers"] if p.get("group") == group]
-    dims = [d for d in dataset["dimensions"] if is_applicable(group, d["key"])]
+    dims = [d for d in _visible_dims(dataset["dimensions"]) if is_applicable(group, d["key"])]
     matrix = dataset["matrix"]
 
     ws.title = title
@@ -103,7 +104,7 @@ def _comparison_sheet(ws, dataset: dict, group: str, title: str) -> None:
 
 def _detail_sheet(ws, dataset: dict) -> None:
     providers = dataset["providers"]
-    dims = dataset["dimensions"]
+    dims = _visible_dims(dataset["dimensions"])
     matrix = dataset["matrix"]
 
     ws.title = "Detail"
