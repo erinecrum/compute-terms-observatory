@@ -150,6 +150,17 @@ def _detail_sheet(ws, dataset: dict) -> None:
         ws.column_dimensions[get_column_letter(c)].width = w
 
 
+def write_segment_workbook(dataset: dict, group: str, title: str, path: str | Path) -> Path:
+    """One-segment workbook (a single Comparison sheet) mirroring that section's
+    on-site table and its per-segment dimension set."""
+    wb = Workbook()
+    _comparison_sheet(wb.active, dataset, group, title)
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    wb.save(p)
+    return p
+
+
 def write_workbook(dataset: dict, path: str | Path) -> Path:
     # One comparison sheet per segment, each with only its applicable dimensions,
     # so the workbook mirrors the site's per-segment tables. Plus a full Detail

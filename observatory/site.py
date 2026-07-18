@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import html
 import json
+import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import List
@@ -19,6 +20,17 @@ from .schema import is_applicable
 SITE_DIR = Path("site")
 BRAND = "Compute Terms Observatory"
 EXPORT_XLSX = "compute-terms-observatory.xlsx"
+# Per-section workbooks (one segment each, respecting the per-segment dimension sets).
+EXPORT_XLSX_SEG = {
+    "cloud": "compute-terms-cloud-infrastructure.xlsx",
+    "closed": "compute-terms-closed-api.xlsx",
+    "open": "compute-terms-open-weight.xlsx",
+}
+EXPORT_XLSX_SEG_TITLE = {
+    "cloud": "Cloud Infrastructure",
+    "closed": "Closed API",
+    "open": "Open Weight",
+}
 # Custom domain for GitHub Pages. Written into the build as a CNAME file so that
 # Actions deploys keep the custom domain (a deploy without it would clear the
 # Pages custom-domain setting).
@@ -26,21 +38,36 @@ CUSTOM_DOMAIN = "www.computeterms.ai"
 
 _CONF_LABEL = {"high": "high", "medium": "medium", "low": "low", "verified": "verified"}
 
-# A small "comparison columns" mark, used as the header emblem and the favicon.
-_EMBLEM = (
-    '<svg class="emblem" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true">'
-    '<rect width="32" height="32" rx="7" fill="currentColor"/>'
-    '<rect x="7" y="9" width="4" height="14" rx="1.5" fill="#fff"/>'
-    '<rect x="14" y="9" width="4" height="14" rx="1.5" fill="#fff"/>'
-    '<rect x="21" y="9" width="4" height="14" rx="1.5" fill="#fff"/></svg>'
+# The "O." brand mark: a chunky, hand-drawn organic letter O with a fully detached
+# dot at the 4-5 o'clock position. Double reading — the period (finality/confidence)
+# and, at larger sizes, the handle of a magnifying glass (the counter is nudged
+# up-left to strengthen the lens read). Custom shape, NOT typeset. One color at a
+# time; ink is default, tomato is an optional accent. Drawn on a 100x100 canvas.
+_MARK_O = (
+    '<path fill-rule="evenodd" d="'
+    'M45,9 C61,8 74,14 81,26 C86,34 84,42 83,50 C82,62 75,73 65,80 '
+    'C57,86 50,89 43,88 C31,87 21,82 14,72 C8,63 8,54 9,45 '
+    'C10,33 16,22 26,15 C32,11 38,9 45,9 Z '
+    'M41,25 C49,25 56,31 57,40 C58,50 52,57 43,57 C33,58 26,50 26,41 '
+    'C26,32 32,25 41,25 Z'
+    '"/>'
 )
-_FAVICON = (
-    "data:image/svg+xml,"
-    "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E"
-    "%3Crect width='32' height='32' rx='7' fill='%231c3f63'/%3E"
-    "%3Crect x='7' y='9' width='4' height='14' rx='1.5' fill='%23fff'/%3E"
-    "%3Crect x='14' y='9' width='4' height='14' rx='1.5' fill='%23fff'/%3E"
-    "%3Crect x='21' y='9' width='4' height='14' rx='1.5' fill='%23fff'/%3E%3C/svg%3E"
+_MARK_DOT = '<path d="M83,71 C90,71 95,76 94,83 C94,90 88,94 81,93 C75,92 71,87 71,81 C71,75 76,71 83,71 Z"/>'
+
+
+def _brand_mark(color: str = "#14120f", cls: str = "", title: str = "") -> str:
+    """The O. mark as inline SVG in a single color. `cls` sets a CSS class for
+    sizing; `title` adds an accessible label (else the mark is decorative)."""
+    c = f' class="{cls}"' if cls else ""
+    a = f'<title>{esc(title)}</title>' if title else ' aria-hidden="true"'
+    return (f'<svg{c} viewBox="0 0 100 100" fill="{color}" xmlns="http://www.w3.org/2000/svg">'
+            f'{a}{_MARK_O}{_MARK_DOT}</svg>')
+
+
+# The favicon is the standalone O. glyph (ink), inline data URI, legible at 16px.
+_FAVICON = "data:image/svg+xml," + urllib.parse.quote(
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='#14120f'>"
+    + _MARK_O + _MARK_DOT + "</svg>"
 )
 
 
@@ -52,7 +79,21 @@ def esc(s) -> str:
     return html.escape(text)
 
 
-def _shell(title: str, body: str, active: str, subtitle: str = "") -> str:
+def _wordmark() -> str:
+    """The O.bservatory lockup: 'COMPUTE TERMS' eyebrow, then the bespoke O. mark
+    reading straight into 'bservatory' set in the rounded display face."""
+    return (
+        '<span class="wm-eyebrow">Compute Terms</span>'
+        f'<span class="wm-word">{_brand_mark(cls="wm-o")}<span class="wm-txt">bservatory</span></span>'
+    )
+
+
+_DECK_TEXT = ("AI-generated summaries of public terms, not legal advice. "
+              "Every value links to its source.")
+
+
+def _shell(title: str, body: str, active: str, subtitle: str = "",
+           hide_title: bool = False, home: bool = False) -> str:
     nav_items = [("index.html", "Matrix"), ("changes.html", "Change feed"),
                  ("methodology.html", "Methodology"), ("about.html", "About")]
     nav = "".join(
@@ -60,6 +101,30 @@ def _shell(title: str, body: str, active: str, subtitle: str = "") -> str:
         for href, label in [(h, l) for h, l in nav_items]
         for key in [href.split(".")[0]]
     )
+    if hide_title:
+        heading = f'<h1 class="sr-only">{esc(title)}</h1>'
+    else:
+        heading = f'<h1>{esc(title)}</h1>' + (
+            f'<p class="subtitle">{esc(subtitle)}</p>' if subtitle else '')
+
+    if home:
+        # Centered hero: nav only up top, then the big wordmark and the serif deck
+        # line beneath it. No masthead band, no box.
+        masthead = (
+            f'<div class="home-top"><nav class="nav">{nav}</nav></div>'
+            '<section class="hero"><div class="hero-in">'
+            f'<div class="hero-wm">{_wordmark()}</div>'
+            f'<p class="hero-deck"><a href="methodology.html">{_DECK_TEXT}</a></p>'
+            '</div></section>'
+        )
+    else:
+        # Interior: compact borderless masthead, lockup left, nav right, deck beneath.
+        masthead = (
+            '<header class="site-head"><div class="wrap">'
+            f'<a class="brand" href="index.html" aria-label="{esc(BRAND)} home">{_wordmark()}</a>'
+            f'<nav class="nav">{nav}</nav></div></header>'
+            f'<div class="deck"><div class="wrap"><a href="methodology.html">{_DECK_TEXT}</a></div></div>'
+        )
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -69,22 +134,10 @@ def _shell(title: str, body: str, active: str, subtitle: str = "") -> str:
 <link rel="icon" href="{_FAVICON}">
 <style>{_CSS}</style>
 </head>
-<body>
-<header class="site-head">
-  <div class="wrap">
-    <a class="brand" href="index.html">{_EMBLEM}<span class="wordmark">Compute Terms<br><span class="wordmark-2">Observatory</span></span></a>
-    <nav class="nav">{nav}</nav>
-  </div>
-</header>
-<div class="disclaimer{'' if active=='index' else ' disc-slim'}"><div class="wrap">
-  <span class="disc-icon" aria-hidden="true">i</span>
-  <span><strong>AI-generated summaries, not legal advice.</strong>
-  Every value here is an AI's reading of a provider's public terms, not the terms themselves. It can be
-  wrong, incomplete, or out of date. We link each value to its source document, so verify anything
-  yourself before you rely on it.</span></div></div>
+<body class="{'is-home' if home else 'is-interior'}">
+{masthead}
 <main class="wrap">
-  <h1>{esc(title)}</h1>
-  {f'<p class="subtitle">{esc(subtitle)}</p>' if subtitle else ''}
+  {heading}
   {body}
 </main>
 <footer class="site-foot"><div class="wrap">
@@ -245,96 +298,79 @@ def render_matrix(dataset: dict) -> str:
     parents = sorted({p["parent_company"] for p in providers if p.get("parent_company")})
     lics = sorted({p["license_type"] for p in providers if p.get("license_type")})
 
-    nav = (
-        '<nav class="secnav" id="secnav" aria-label="Sections">'
-        '<a href="#cloud-infrastructure" class="sn-main" data-sec="cloud-infrastructure">'
-        f'Cloud Infrastructure <span class="cnt" data-cnt="cloud">{len(cloud)}</span></a>'
-        '<span class="sn-model"><a href="#ai-model-providers" class="sn-main" data-sec="ai-model-providers">'
-        f'AI Model Providers <span class="cnt" data-cnt="model">{len(closed)+len(openw)}</span></a>'
-        '<span class="sn-subs">'
-        f'<a href="#closed-api" class="sn-sub" data-sec="closed-api">Closed API <span class="cnt" data-cnt="closed">{len(closed)}</span></a>'
-        f'<a href="#open-weight" class="sn-sub" data-sec="open-weight">Open Weight <span class="cnt" data-cnt="open">{len(openw)}</span></a>'
-        '</span></span></nav>'
-    )
+    lc = esc((dataset.get("last_checked", {}).get("last_checked_utc", "") or "")[:16].replace("T", " "))
+    fresh = f'<span class="sec-fresh">checked {lc} UTC</span>' if lc else ''
 
-    controls = (
-        '<div class="controls">'
-        '<div class="ctl-row">'
-        '<label>Sort <select id="m-sort"><option value="name">Name A to Z</option>'
-        '<option value="updated">Recently updated</option></select></label>'
-        '<label class="flat-toggle"><input type="checkbox" id="m-flat"> Flat (ungrouped) view</label>'
+    def pill(cls, label, items, labels=None):
+        return (f'<details class="pill"><summary>{esc(label)}</summary>'
+                f'<div class="checks">{facet(cls, items, labels)}</div></details>')
+
+    # The primary choice: which terms to view. Big pills own segment + openness
+    # selection (default: All). The AI Model Providers pill reveals a sub-control.
+    chooser = (
+        '<div class="chooser" id="chooser">'
+        '<div class="chooser-main">'
+        '<button type="button" class="cpill" data-choose="cloud">Cloud Infrastructure</button>'
+        '<button type="button" class="cpill" data-choose="model">AI Model Providers</button>'
+        '<button type="button" class="cpill selected" data-choose="all">All</button>'
         '</div>'
-        '<div class="facets">'
-        f'<details><summary>Segment</summary><div class="checks">{facet("f-seg", segs, SEG_LABEL)}</div></details>'
-        f'<details><summary>Openness</summary><div class="checks">{facet("f-open", opens, OPEN_LABEL)}</div></details>'
-        f'<details><summary>Parent company</summary><div class="checks">{facet("f-parent", parents)}</div></details>'
-        f'<details><summary>License type</summary><div class="checks">{facet("f-lic", lics)}</div></details>'
+        '<div class="chooser-sub" id="chooser-sub" hidden>'
+        '<button type="button" class="spill selected" data-sub="all">All model providers</button>'
+        '<button type="button" class="spill" data-sub="closed">Closed API</button>'
+        '<button type="button" class="spill" data-sub="open">Open weight</button>'
         '</div></div>'
     )
-
-    legend = (
-        '<div class="legend"><span class="legend-lbl">Status</span>'
-        '<span class="lg" title="A short verbatim quote was mechanically matched in the archived source text.">'
-        '<span class="dot ok"></span>quote verified</span>'
-        '<span class="lg" title="The model returned a value but no supporting quote could be matched. Give it no weight without checking the source.">'
-        '<span class="dot warn"></span>unverified — quote not matched</span>'
-        '<span class="lg" title="The provider\'s terms do not address this dimension; there is no governing clause to quote.">'
-        '<span class="dot absent"></span>silent — no clause found</span>'
-        '<span class="lg" title="The dimension does not apply to this offering (e.g. SLA or capacity terms for a downloadable open-weight model).">'
-        '<span class="dot na"></span>not applicable</span>'
-        ' <a class="legend-more" href="methodology.html#status-labels">What do these mean?</a></div>'
+    # Slim secondary toolbar: the remaining filters + compare + export, subordinate
+    # to the chooser (segment/openness live in the chooser now).
+    toolbar = (
+        '<div class="toolbar" id="toolbar"><div class="tb-filters">'
+        + pill("f-parent", "Parent company", parents)
+        + pill("f-lic", "License type", lics)
+        + '<button type="button" class="pill pill-btn" id="compare-btn" title="Compare mode">Compare</button>'
+        + '</div>'
+        + '<details class="pill export-menu"><summary>Export</summary><div class="menu">'
+        + f'<a href="{esc(EXPORT_XLSX)}" download>Full workbook (.xlsx)</a>'
+        + '<button type="button" onclick="window.print()">Print / save all as PDF</button>'
+        + '</div></details></div>'
     )
+
+    def sort_select(table_id):
+        return (f'<label class="sec-sort">Sort <select class="sec-sort-sel" data-target="{table_id}">'
+                '<option value="name">Name A-Z</option>'
+                '<option value="updated">Recently updated</option></select></label>')
+
+    def sec_exports(group, sec_id):
+        return (f'<a class="sec-x" href="{esc(EXPORT_XLSX_SEG[group])}" download title="Download this section as .xlsx">.xlsx</a>'
+                f'<button class="sec-x" type="button" data-print-sec="{sec_id}" title="Print this section">PDF</button>')
+
+    def section(name, group, subset, table_id, sec_id):
+        # One-row section header: name + count left; freshness + per-section sort +
+        # scoped export right.
+        header = (
+            f'<div class="sec-head"><h2 class="sec-h">{esc(name)} '
+            f'<span class="sec-cnt" data-cnt="{group}">{len(subset)}</span></h2>'
+            f'<div class="sec-ctl">{fresh}{sort_select(table_id)}'
+            f'<span class="sec-exports">{sec_exports(group, sec_id)}</span></div></div>'
+        )
+        return (f'<section id="{sec_id}" class="msec" data-sec="{sec_id}">{header}'
+                f'{_matrix_table(dims_for(group), subset, matrix, table_id)}</section>')
 
     grouped = (
         '<div id="grouped-view">'
-        '<section id="cloud-infrastructure" class="msec">'
-        f'<h2 class="sec-h">Cloud Infrastructure <span class="sec-cnt" data-cnt="cloud">{len(cloud)}</span></h2>'
-        '<p class="sec-note">Hyperscalers and neoclouds, compared at the company level.</p>'
-        f'{_matrix_table(dims_for("cloud"), cloud, matrix, "tbl-cloud")}</section>'
-        '<section id="ai-model-providers" class="msec">'
-        f'<h2 class="sec-h">AI Model Providers <span class="sec-cnt" data-cnt="model">{len(closed)+len(openw)}</span></h2>'
-        '<p class="sec-note">By model family. License values attach to the specific license document and generation, not the whole family.</p>'
-        '<section id="closed-api" class="msub">'
-        f'<h3 class="sub-h">Closed API <span class="sec-cnt" data-cnt="closed">{len(closed)}</span></h3>'
-        f'{_matrix_table(dims_for("closed"), closed, matrix, "tbl-closed")}</section>'
-        '<section id="open-weight" class="msub">'
-        f'<h3 class="sub-h">Open Weight <span class="sec-cnt" data-cnt="open">{len(openw)}</span></h3>'
-        f'{_matrix_table(dims_for("open"), openw, matrix, "tbl-open")}</section>'
-        '</section></div>'
-        # Flat view is built lazily from the grouped tables on first toggle, to keep
-        # the initial DOM light (it would otherwise duplicate every cell).
-        '<div id="flat-view" hidden></div>'
+        + section("Cloud Infrastructure", "cloud", cloud, "tbl-cloud", "cloud-infrastructure")
+        + section("Closed API", "closed", closed, "tbl-closed", "closed-api")
+        + section("Open Weight", "open", openw, "tbl-open", "open-weight")
+        + '</div><div id="flat-view" hidden></div>'
     )
 
     gen = dataset.get("generated_at", "")[:16].replace("T", " ")
-    current = esc((dataset.get("data_current_as_of", "") or "")[:10])
-    lc = esc((dataset.get("last_checked", {}).get("last_checked_utc", "") or "")[:16].replace("T", " "))
-    freshness = (
-        f'<p class="freshness">Terms last checked: <strong>{lc} UTC</strong>. Directly fetched '
-        f'sources are refreshed twice daily; documents archived via the Internet Archive are dated '
-        f'individually on each value.</p>' if lc else "")
-    stats = (
-        '<div class="stats">'
-        f'<div class="stat"><span class="stat-num">{len(providers)}</span><span class="stat-lbl">Providers tracked</span></div>'
-        f'<div class="stat"><span class="stat-num">{len(dims)}</span><span class="stat-lbl">Term dimensions</span></div>'
-        '<div class="stat"><span class="stat-num">2&times;</span><span class="stat-lbl">Checked daily</span></div>'
-        '</div>'
-    )
     return f"""
-{stats}
-{freshness}
-<div class="actions">
-  <a class="btn" href="{EXPORT_XLSX}" download>Download Excel (.xlsx)</a>
-  <button class="btn ghost" type="button" onclick="window.print()">Print / Save as PDF</button>
-  <span class="updated">Data current as of {current} · <a href="methodology.html">Methodology</a></span>
-</div>
-{nav}
-{controls}
-<div class="toolbar">{legend}<span class="hint">Tip: click any cell for the full value, verbatim quote, source link, and fetch date.</span></div>
+{chooser}
+{toolbar}
 {grouped}
 <script>window.CTO_PROVIDERS={json.dumps(pmap)};
 window.CTO_DIMS={json.dumps([{"key": d["key"], "label": d["label"], "group": d.get("group","")} for d in dims])};</script>
-<p class="genline">Generated {esc(gen)} UTC · {len(providers)} entries · {len(dims)} term dimensions.</p>
+<p class="genline">Generated {esc(gen)} UTC</p>
 """
 
 
@@ -657,7 +693,10 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
         "about.html": ("About & coverage", render_about(dataset), "about", ""),
     }
     for fname, (title, body, active, subtitle) in pages.items():
-        (out_dir / fname).write_text(_shell(title, body, active, subtitle), encoding="utf-8")
+        is_home = fname == "index.html"
+        (out_dir / fname).write_text(
+            _shell(title, body, active, subtitle, hide_title=is_home, home=is_home),
+            encoding="utf-8")
         written.append(out_dir / fname)
     # One detail page per provider.
     for pmeta in dataset["providers"]:
@@ -686,19 +725,26 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
         (out_dir / "CNAME").write_text(CUSTOM_DOMAIN + "\n", encoding="utf-8")
         written.append(out_dir / "CNAME")
 
-    # Downloadable Excel workbook, linked from the matrix page.
-    from .export import write_workbook
+    # Downloadable Excel workbooks: the full workbook (Export overflow) plus one
+    # per section (scoped download in each section header).
+    from .export import write_segment_workbook, write_workbook
 
     written.append(write_workbook(dataset, out_dir / EXPORT_XLSX))
+    for group, fname in EXPORT_XLSX_SEG.items():
+        written.append(write_segment_workbook(
+            dataset, group, EXPORT_XLSX_SEG_TITLE[group], out_dir / fname))
     return written
 
 
 _CSS = """
 @font-face{font-family:"Space Grotesk";font-style:normal;font-weight:300 700;font-display:swap;
 src:url("fonts/SpaceGrotesk.woff2") format("woff2")}
+@font-face{font-family:"Baloo 2";font-style:normal;font-weight:800;font-display:swap;
+src:url("fonts/Baloo2-800.woff2") format("woff2")}
 :root{
 /* Type */
 --display:"Space Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+--wordmark:"Baloo 2","Space Grotesk",-apple-system,sans-serif;
 --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 /* Warm editorial palette — cream paper, warm ink, hairlines. Accents (tomato /
@@ -706,7 +752,7 @@ src:url("fonts/SpaceGrotesk.woff2") format("woff2")}
 --bg:#faf6ef;--panel:#f4eee2;--panel-2:#ece3d3;--ink:#14120f;--muted:#6b6357;--faint:#9a9080;
 --line:#e5dfd2;--line-2:#d8d0bf;
 --tomato:#e8502e;--marigold:#f5b72e;--cobalt:#2e5be8;
---accent:#2348c0;--accent-2:#2348c0;--accent-soft:#e7ecfc;
+--accent:#2e5be8;--accent-2:#2e5be8;--accent-soft:#e7ecfc;
 --high:#2e7d46;--medium:#c67d18;--low:#9a9080;
 --disc-bg:#f7eee2;--disc-line:#ead9c0;--disc-fg:#7a4a22;
 --old-bg:#fbe9e3;--old-fg:#9a2f1a;--new-bg:#e9f3ec;--new-fg:#2e7d46;
@@ -723,24 +769,67 @@ a{color:var(--accent-2);text-decoration:none}
 a:hover{text-decoration:underline}
 
 /* Header */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .site-head{border-bottom:1px solid var(--line);background:var(--bg)}
-.site-head .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:66px}
-.brand{display:flex;align-items:center;gap:11px}
+.site-head .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:70px}
+/* O.bservatory wordmark lockup */
+.brand{display:flex;flex-direction:column;align-items:flex-start;gap:1px}
 .brand:hover{text-decoration:none}
-.emblem{color:var(--accent);flex:0 0 auto;box-shadow:var(--shadow);border-radius:7px}
-.wordmark{display:block;font-family:var(--display);color:var(--faint);font-size:11px;font-weight:600;
-letter-spacing:.14em;text-transform:uppercase;line-height:1.35}
-.wordmark-2{display:block;color:var(--ink);font-size:19px;letter-spacing:.005em;text-transform:none}
-.nav{display:flex;gap:22px}
-.nav a{color:var(--muted);font-weight:500;font-size:14.5px;padding:4px 0;border-bottom:2px solid transparent}
-.nav a.active{color:var(--ink);border-bottom-color:var(--accent)}
+.wm-eyebrow{font-family:var(--display);color:var(--faint);font-size:10.5px;font-weight:600;
+letter-spacing:.17em;text-transform:uppercase;line-height:1}
+.wm-word{display:flex;align-items:flex-end;line-height:.85;color:var(--ink);font-size:31px}
+.wm-o{width:1.3em;height:1.3em;flex:0 0 auto;margin-bottom:-.18em;margin-right:-.14em}
+.wm-word .wm-o path{fill:var(--ink)}
+.wm-txt{font-family:var(--wordmark);font-weight:800;letter-spacing:-.005em}
+.nav{display:flex;gap:26px}
+.nav a{color:var(--muted);font-family:var(--display);font-weight:600;font-size:11px;text-transform:uppercase;
+letter-spacing:.12em;padding:4px 0;border-bottom:2px solid transparent}
+.nav a.active{color:var(--ink);border-bottom-color:var(--ink)}
 .nav a:hover{color:var(--ink);text-decoration:none}
 
-/* Disclaimer */
-.disclaimer{background:var(--disc-bg);border-bottom:1px solid var(--disc-line);color:var(--disc-fg);font-size:13px}
-.disclaimer .wrap{padding:10px 24px;display:flex;gap:10px;align-items:flex-start}
-.disclaimer.disc-slim{font-size:12px}
-.disclaimer.disc-slim .wrap{padding:6px 24px}
+/* Editorial deck line (replaces the boxed disclaimer). */
+.deck{border-bottom:1px solid var(--line)}
+.deck .wrap{padding:9px 24px}
+.deck a{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-style:italic;
+color:var(--muted);font-size:13.5px}
+.deck a:hover{color:var(--ink);text-decoration:none}
+
+/* Interior compact masthead: borderless, at most one hairline (under the deck). */
+.is-interior .site-head{border-bottom:0}
+
+/* Homepage centered hero (Roamie-style) */
+.home-top{display:flex;justify-content:center;padding:24px 24px 0}
+.home-top .nav{gap:30px}
+.hero{padding:40px 24px 26px;text-align:center}
+.hero-in{max-width:1040px;margin:0 auto}
+.hero-wm{display:inline-flex;flex-direction:column;align-items:center}
+.hero-wm .wm-eyebrow{font-size:clamp(11px,1.4vw,15px);letter-spacing:.24em;margin-bottom:8px}
+.hero-wm .wm-word{font-size:clamp(52px,11vw,116px);justify-content:center;line-height:.9}
+.hero-deck{margin:20px auto 0;max-width:620px;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;
+font-style:italic;color:var(--muted);font-size:clamp(14px,1.5vw,17px)}
+.hero-deck a{color:inherit}
+.hero-deck a:hover{color:var(--ink);text-decoration:none}
+
+/* The chooser: the biggest interactive elements on the page. */
+.chooser{display:flex;flex-direction:column;align-items:center;gap:12px;margin:6px 0 22px}
+.chooser-main{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.chooser-sub{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.chooser-sub[hidden]{display:none}
+.cpill{font-family:var(--display);font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;
+padding:15px 30px;border-radius:var(--radius-pill);border:1.5px solid var(--ink);background:transparent;
+color:var(--ink);cursor:pointer;transition:background .12s}
+.cpill:hover{background:var(--panel)}
+.cpill.selected{background:var(--tomato);border-color:var(--tomato);color:var(--ink)}
+.spill{font-family:var(--display);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;
+padding:8px 16px;border-radius:var(--radius-pill);border:1px solid var(--line-2);background:transparent;
+color:var(--muted);cursor:pointer}
+.spill:hover{background:var(--panel);color:var(--ink)}
+.spill.selected{background:var(--tomato);border-color:var(--tomato);color:var(--ink)}
+.pill>summary:hover{background:var(--panel)}
+/* Mark used muted on empty states / 404, with a serif italic caption. */
+.mark-state{display:flex;flex-direction:column;align-items:center;gap:14px;padding:40px 0 8px;text-align:center}
+.mark-state svg{width:140px;height:140px;opacity:.4}
+.mark-state p{margin:0;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-style:italic;color:var(--muted);font-size:16px}
 /* Big-number stat callouts (homepage). Hairline cards, huge figure, tiny label. */
 .stats{display:flex;flex-wrap:wrap;gap:14px;margin:2px 0 22px}
 .stat{flex:1 1 150px;border:1px solid var(--line);border-radius:var(--radius);padding:15px 18px;background:var(--bg)}
@@ -786,7 +875,7 @@ font-size:13.5px;font-weight:600;color:var(--ink)}
 .matrix th.prov-col a{color:var(--accent-2);font-weight:700}
 .matrix tbody tr:hover td.cell{background:var(--accent-soft)}
 .matrix td.cell{min-width:236px;max-width:290px;background:var(--bg);transition:background .12s}
-.matrix tr.grouprow th.groupcell{position:sticky;left:0;background:var(--panel-2);color:var(--accent-2);
+.matrix tr.grouprow th.groupcell{position:sticky;left:0;background:var(--panel-2);color:var(--muted);
 font-family:var(--display);font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.09em;
 padding:8px 14px;border-bottom:1px solid var(--line-2);border-right:0}
 .cell-head{display:flex;gap:8px;align-items:flex-start}
@@ -893,8 +982,42 @@ background:var(--bg);border-bottom:1px solid var(--line-2);padding:10px 0;margin
 .sec-h{font-family:var(--display);font-weight:600;font-size:22px;margin:0 0 4px;display:flex;align-items:center;gap:9px}
 .sub-h{font-size:13px;margin:18px 0 8px;color:var(--accent-2);text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:8px}
 .sec-note{color:var(--muted);font-size:13.5px;margin:0 0 12px;max-width:78ch}
-.sec-cnt{background:var(--panel-2);border-radius:20px;padding:0 9px;font-size:12px;color:var(--muted);font-weight:600;font-family:var(--sans);text-transform:none;letter-spacing:0}
 .col-sub{display:block;margin-top:2px;font-weight:400;font-size:11px;color:var(--muted);letter-spacing:0;text-transform:none}
+
+/* --- Revised toolbar + per-section header controls --- */
+.toolbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin:0 0 24px}
+.tb-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pill{position:relative}
+.pill>summary,.pill-btn{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+font-family:var(--display);font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--ink);
+background:var(--bg);border:1px solid var(--line-2);border-radius:var(--radius-pill);padding:7px 15px}
+.pill>summary::-webkit-details-marker{display:none}
+.pill>summary::after{content:"";width:5px;height:5px;border-right:1.5px solid var(--faint);
+border-bottom:1.5px solid var(--faint);transform:rotate(45deg);margin:-3px 0 0 2px}
+.pill[open]>summary{background:var(--panel);border-color:var(--ink)}
+.pill .checks,.export-menu .menu{position:absolute;top:calc(100% + 6px);left:0;z-index:20;min-width:184px;
+background:var(--bg);border:1px solid var(--line-2);border-radius:12px;padding:11px 13px;
+display:flex;flex-direction:column;gap:8px}
+.export-menu{margin-left:auto}
+.export-menu .menu{left:auto;right:0}
+.export-menu .menu a,.export-menu .menu button{font:inherit;font-family:var(--sans);font-size:13px;color:var(--ink);
+background:none;border:0;text-align:left;cursor:pointer;padding:2px 0;text-decoration:none}
+.export-menu .menu a:hover,.export-menu .menu button:hover{color:var(--accent)}
+.sec-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:10px 16px;
+margin:0 0 14px;padding-bottom:9px;border-bottom:1px solid var(--line)}
+.sec-h{font-family:var(--display);font-weight:700;font-size:20px;margin:0;display:flex;align-items:baseline;gap:10px}
+.sec-cnt{font-family:var(--display);font-size:12px;font-weight:600;color:#946412;
+background:#fbeecb;border-radius:var(--radius-pill);padding:1px 9px}
+.sec-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+.sec-fresh{font-family:var(--display);font-size:10.5px;font-weight:600;text-transform:uppercase;
+letter-spacing:.09em;color:var(--faint)}
+.sec-sort{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center}
+.sec-sort select{font:inherit;font-size:12px;padding:4px 8px;border:1px solid var(--line-2);
+border-radius:8px;background:var(--bg);color:var(--ink)}
+.sec-exports{display:flex;gap:6px}
+.sec-x{font-family:var(--display);font-size:11px;font-weight:600;color:var(--muted);background:var(--bg);
+border:1px solid var(--line-2);border-radius:var(--radius-pill);padding:3px 11px;cursor:pointer;text-decoration:none}
+.sec-x:hover{color:var(--ink);border-color:var(--ink);text-decoration:none}
 
 /* Unverified / status distinction */
 /* Four honest status states (Issue 2). Warning reserved for quote_unverified;
@@ -931,7 +1054,8 @@ letter-spacing:0;text-transform:none}
 /* Print / Save as PDF: hide chrome, expand full values, fit to landscape paper */
 @media print{
 @page{size:landscape;margin:12mm}
-.site-head,.filters,.actions,.toolbar,.site-foot,.genline{display:none!important}
+.site-head,.filters,.actions,.toolbar,.deck,.site-foot,.genline,.sec-ctl{display:none!important}
+body[data-print-sec] .msec:not(.print-me){display:none!important}
 .disclaimer{background:#fff!important;border:0;color:#000}
 .disclaimer .wrap{padding:0 0 8px}.disc-icon{display:none}
 body{color:#000;background:#fff;font-size:10px}
@@ -990,22 +1114,21 @@ document.addEventListener('click',function(e){
     return vis;
   }
 
-  function sortCols(){
-    var mode=(document.getElementById('m-sort')||{}).value||'name';
-    document.querySelectorAll('table.matrix').forEach(function(tbl){
-      var head=tbl.querySelector('thead tr');
-      var cols=[].slice.call(head.querySelectorAll('.prov-col')).sort(function(a,b){
-        var A=PM[a.dataset.provider]||{}, B=PM[b.dataset.provider]||{};
-        if(mode==='updated') return (B.upd||'').localeCompare(A.upd||'');
-        return (A.name||'').localeCompare(B.name||'');
-      });
-      cols.forEach(function(c){head.appendChild(c);});
-      var order=cols.map(function(c){return c.dataset.provider;});
-      tbl.querySelectorAll('tbody tr[data-dim]').forEach(function(tr){
-        order.forEach(function(pid){ var td=tr.querySelector('td.cell[data-provider="'+pid+'"]'); if(td) tr.appendChild(td); });
-      });
+  // Sorting is per-section now: each section's select reorders only its table.
+  function sortTable(tbl, mode){
+    var head=tbl.querySelector('thead tr'); if(!head) return;
+    var cols=[].slice.call(head.querySelectorAll('.prov-col')).sort(function(a,b){
+      var A=PM[a.dataset.provider]||{}, B=PM[b.dataset.provider]||{};
+      if(mode==='updated') return (B.upd||'').localeCompare(A.upd||'');
+      return (A.name||'').localeCompare(B.name||'');
+    });
+    cols.forEach(function(c){head.appendChild(c);});
+    var order=cols.map(function(c){return c.dataset.provider;});
+    tbl.querySelectorAll('tbody tr[data-dim]').forEach(function(tr){
+      order.forEach(function(pid){ var td=tr.querySelector('td.cell[data-provider="'+pid+'"]'); if(td) tr.appendChild(td); });
     });
   }
+  function sortSection(sel){ var tbl=document.getElementById(sel.dataset.target); if(tbl) sortTable(tbl, sel.value); }
 
   function apply(){
     var vis=visible();
@@ -1016,65 +1139,58 @@ document.addEventListener('click',function(e){
            open:cnt(function(a){return a.seg==='model_provider'&&a.open==='open_weight';})};
     c.model=c.closed+c.open;
     document.querySelectorAll('[data-cnt]').forEach(function(el){ if(c[el.dataset.cnt]!=null) el.textContent=c[el.dataset.cnt]; });
-    sortCols();
   }
 
-  function buildFlat(){
-    var fv=document.getElementById('flat-view');
-    if(fv.getAttribute('data-built')) return;
-    fv.setAttribute('data-built','1');
-    // Cross-segment view: the union of all dimensions, with a "not applicable for
-    // this provider type" placeholder wherever a segment removed that dimension.
-    var dims=window.CTO_DIMS||[];
-    var provCols=[], cellMap={};
-    ['tbl-cloud','tbl-closed','tbl-open'].forEach(function(id){
-      var t=document.getElementById(id); if(!t) return;
-      t.querySelectorAll('thead .prov-col').forEach(function(th){ provCols.push(th.cloneNode(true)); });
-      t.querySelectorAll('tbody td.cell').forEach(function(td){
-        if(td.dataset.provider) cellMap[td.dataset.provider+'||'+td.dataset.dim]=td.cloneNode(true);
-      });
+  // Print one section only: isolate it for the print stylesheet, then restore.
+  function printSection(sec){
+    var el=document.getElementById(sec); if(!el) return;
+    el.classList.add('print-me'); document.body.setAttribute('data-print-sec', sec);
+    window.addEventListener('afterprint', function h(){
+      el.classList.remove('print-me'); document.body.removeAttribute('data-print-sec');
+      window.removeEventListener('afterprint', h);
     });
-    var esc=function(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;};
-    var total=provCols.length+1;
-    var thead='<thead><tr><th class="corner">Term dimension</th>'+provCols.map(function(th){return th.outerHTML;}).join('')+'</tr></thead>';
-    var rows='', curGroup=null;
-    dims.forEach(function(d){
-      if(d.group && d.group!==curGroup){ curGroup=d.group;
-        rows+='<tr class="grouprow" data-group="'+esc(d.group)+'"><th class="groupcell" colspan="'+total+'">'+esc(d.group)+'</th></tr>'; }
-      var cells='';
-      provCols.forEach(function(th){
-        var p=th.dataset.provider, hit=cellMap[p+'||'+d.key];
-        cells += hit ? hit.outerHTML
-          : '<td class="cell na-cross" data-provider="'+esc(p)+'" data-dim="'+esc(d.key)+'" data-status="not_applicable">'
-            + '<div class="cell-head"><span class="dot na"></span><span class="na-cross-lbl">not applicable for this provider type</span></div></td>';
-      });
-      rows+='<tr data-dim="'+esc(d.key)+'" data-group="'+esc(d.group||'')+'"><th class="dim-col">'+esc(d.label)+'</th>'+cells+'</tr>';
-    });
-    var wrap=document.createElement('div'); wrap.className='table-scroll';
-    wrap.innerHTML='<table class="matrix" id="tbl-flat"><thead></thead></table>';
-    wrap.querySelector('table').innerHTML=thead+'<tbody>'+rows+'</tbody>';
-    fv.appendChild(wrap);
+    window.print();
   }
 
   document.addEventListener('change',function(e){
-    if(e.target.matches('.f-seg,.f-open,.f-parent,.f-lic,#m-sort')) apply();
-    if(e.target.id==='m-flat'){
-      if(e.target.checked) buildFlat();
-      document.getElementById('grouped-view').hidden=e.target.checked;
-      document.getElementById('flat-view').hidden=!e.target.checked;
-      apply();
-    }
+    if(e.target.matches('.f-seg,.f-open,.f-parent,.f-lic')) apply();
+    if(e.target.matches('.sec-sort-sel')) sortSection(e.target);
+  });
+  document.addEventListener('click',function(e){
+    var pb=e.target.closest('[data-print-sec]'); if(pb){ e.preventDefault(); printSection(pb.dataset.printSec); }
   });
 
-  // Sticky scroll-spy: highlight the section currently in view.
-  var secnav=document.getElementById('secnav');
-  var obs=new IntersectionObserver(function(entries){
-    entries.forEach(function(en){
-      if(en.isIntersecting) secnav.querySelectorAll('[data-sec]').forEach(function(a){ a.classList.toggle('active', a.dataset.sec===en.target.id); });
+  // The chooser owns which section(s) render (segment + openness selection).
+  function setSec(id, on){ var el=document.getElementById(id); if(el) el.style.display = on ? '' : 'none'; }
+  function applyChooser(choose, sub){
+    var s={cloud:false, closed:false, open:false};
+    if(choose==='all'){ s.cloud=s.closed=s.open=true; }
+    else if(choose==='cloud'){ s.cloud=true; }
+    else if(choose==='model'){
+      if(sub==='closed'){ s.closed=true; }
+      else if(sub==='open'){ s.open=true; }
+      else { s.closed=s.open=true; }
+    }
+    setSec('cloud-infrastructure', s.cloud); setSec('closed-api', s.closed); setSec('open-weight', s.open);
+    var subEl=document.getElementById('chooser-sub'); if(subEl) subEl.hidden = (choose!=='model');
+  }
+  var chooser=document.getElementById('chooser');
+  if(chooser){
+    var choose='all', sub='all';
+    chooser.addEventListener('click',function(e){
+      var m=e.target.closest('[data-choose]'), sp=e.target.closest('[data-sub]');
+      if(m){ choose=m.dataset.choose;
+        chooser.querySelectorAll('.cpill').forEach(function(b){ b.classList.toggle('selected', b===m); });
+        if(choose!=='model'){ sub='all'; chooser.querySelectorAll('.spill').forEach(function(b){ b.classList.toggle('selected', b.dataset.sub==='all'); }); }
+        applyChooser(choose, sub);
+      } else if(sp){ sub=sp.dataset.sub;
+        chooser.querySelectorAll('.spill').forEach(function(b){ b.classList.toggle('selected', b===sp); });
+        applyChooser(choose, sub);
+      }
     });
-  }, {rootMargin:'-45% 0px -50% 0px'});
-  ['cloud-infrastructure','ai-model-providers','closed-api','open-weight'].forEach(function(id){ var el=document.getElementById(id); if(el) obs.observe(el); });
+  }
 
+  document.querySelectorAll('.sec-sort-sel').forEach(sortSection);
   apply();
 })();
 
