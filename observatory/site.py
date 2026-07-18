@@ -251,10 +251,14 @@ def _shell(title: str, body: str, active: str, subtitle: str = "",
             f'<p class="subtitle">{esc(subtitle)}</p>' if subtitle else '')
 
     if home:
-        # Centered hero: nav only up top, then the big wordmark and the serif deck
-        # line beneath it. No masthead band, no box.
+        # The home page keeps its centered hero, but the nav sits in exactly the
+        # same header geometry as every interior page (same wrap, same min-height,
+        # same right alignment) so it does not move between pages. The left slot is
+        # empty here because the wordmark appears at full size in the hero below.
         masthead = (
-            f'<div class="home-top"><nav class="nav">{nav}</nav></div>'
+            '<header class="site-head"><div class="wrap">'
+            '<span class="brand-slot" aria-hidden="true"></span>'
+            f'<nav class="nav">{nav}</nav></div></header>'
             '<section class="hero"><div class="hero-in">'
             f'<div class="hero-wm">{_wordmark()}</div>'
             f'<p class="hero-deck">{_DECK_HTML}</p>'
@@ -944,7 +948,11 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
         fname = f"provider-{pmeta['provider']}.html"
         title = pmeta["provider_name"]
         (out_dir / fname).write_text(
-            _shell(title, render_provider(dataset, pmeta), "", "Published terms, citations, and change history."),
+            # Provider pages are children of the matrix, so the matrix stays lit in
+            # the nav; without this the indicator vanishes on the way in from a
+            # provider column and the nav reads as a different nav.
+            _shell(title, render_provider(dataset, pmeta), "index",
+                   "Published terms, citations, and change history."),
             encoding="utf-8",
         )
         written.append(out_dir / fname)
@@ -1064,12 +1072,14 @@ color:var(--muted);font-size:13.5px}
 .deck-short{display:none}
 @media(max-width:640px){.deck-full{display:none}.deck-short{display:inline}}
 
-/* Interior compact masthead: borderless, at most one hairline (under the deck). */
-.is-interior .site-head{border-bottom:0}
+/* Compact masthead: borderless, at most one hairline (under the deck). The home
+   page uses the same header so the nav never shifts between pages; its left slot
+   is empty because the wordmark is in the hero below. */
+.is-interior .site-head,.is-home .site-head{border-bottom:0}
+.is-home .site-head{background:transparent}
+.brand-slot{display:block}
 
 /* Homepage centered hero (Roamie-style) */
-.home-top{display:flex;justify-content:center;padding:24px 24px 0}
-.home-top .nav{gap:30px}
 .hero{padding:40px 24px 26px;text-align:center}
 .hero-in{max-width:1040px;margin:0 auto}
 .hero-wm{display:inline-flex;flex-direction:column;align-items:center}
