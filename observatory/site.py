@@ -38,21 +38,27 @@ CUSTOM_DOMAIN = "www.computeterms.ai"
 
 _CONF_LABEL = {"high": "high", "medium": "medium", "low": "low", "verified": "verified"}
 
-# The "O." brand mark: a chunky, hand-drawn organic letter O with a fully detached
-# dot at the 4-5 o'clock position. Double reading — the period (finality/confidence)
-# and, at larger sizes, the handle of a magnifying glass (the counter is nudged
-# up-left to strengthen the lens read). Custom shape, NOT typeset. One color at a
-# time; ink is default, tomato is an optional accent. Drawn on a 100x100 canvas.
-_MARK_O = (
-    '<path fill-rule="evenodd" d="'
-    'M45,9 C61,8 74,14 81,26 C86,34 84,42 83,50 C82,62 75,73 65,80 '
-    'C57,86 50,89 43,88 C31,87 21,82 14,72 C8,63 8,54 9,45 '
-    'C10,33 16,22 26,15 C32,11 38,9 45,9 Z '
-    'M41,25 C49,25 56,31 57,40 C58,50 52,57 43,57 C33,58 26,50 26,41 '
-    'C26,32 32,25 41,25 Z'
-    '"/>'
-)
-_MARK_DOT = '<path d="M83,71 C90,71 95,76 94,83 C94,90 88,94 81,93 C75,92 71,87 71,81 C71,75 76,71 83,71 Z"/>'
+# The bespoke "O." brand mark (a chunky organic letter O with a detached dot,
+# reading as a period and, at size, a magnifier). Its vector source is a reserved
+# brand asset kept OUT of this public repo: it is loaded at build time from the
+# private brand store (data/brand.json). When that asset is absent (a code-only
+# build) a neutral geometric ring+dot placeholder is used instead.
+def _load_brand_mark():
+    p = Path("data/brand.json")
+    if p.exists():
+        try:
+            b = json.loads(p.read_text(encoding="utf-8"))
+            if b.get("mark_o") and b.get("mark_dot"):
+                return b["mark_o"], b["mark_dot"]
+        except (ValueError, OSError):
+            pass
+    return (
+        '<path fill-rule="evenodd" d="M46,12 a34,34 0 1 0 0.1,0 Z M46,30 a16,16 0 1 0 0.1,0 Z"/>',
+        '<circle cx="83" cy="83" r="9"/>',
+    )
+
+
+_MARK_O, _MARK_DOT = _load_brand_mark()
 
 
 def _brand_mark(color: str = "#14120f", cls: str = "", title: str = "") -> str:
@@ -155,6 +161,7 @@ def _shell(title: str, body: str, active: str, subtitle: str = "",
   {body}
 </main>
 <footer class="site-foot"><div class="wrap">
+  <span class="foot-copy">© 2026 Compute Terms Observatory</span> ·
   Public documents only · Descriptive, never advisory ·
   <a href="methodology.html">Methodology</a> ·
   <a href="https://github.com/erinecrum/compute-terms-observatory">Source</a>

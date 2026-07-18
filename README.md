@@ -169,7 +169,15 @@ and features can be added without rework.
 
 ## License
 
-Released under the [MIT License](LICENSE). You may use, modify, and redistribute
-the code freely, including commercially, provided the copyright notice is kept.
-The license covers the software; the site's contents remain AI-generated
-summaries of public documents and are not legal advice (see the disclaimer above).
+The **source code** is released under the [MIT License](LICENSE). You may use,
+modify, and redistribute the code freely, including commercially, provided the
+copyright notice is kept.
+
+The **brand is not covered by the code license.** The "Compute Terms Observatory"
+name, the O. logo and O.bservatory wordmark, and the site's visual identity are all
+rights reserved and may not be used to imply affiliation — see
+[TRADEMARKS.md](TRADEMARKS.md). The brand vector sources are kept out of this public
+repository and injected at build time from a private asset store.
+
+The license covers the software; the site's contents remain AI-generated summaries
+of public documents and are not legal advice (see the disclaimer above).
