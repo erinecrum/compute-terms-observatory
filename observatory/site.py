@@ -370,11 +370,25 @@ def render_matrix(dataset: dict) -> str:
         + '</div><div id="flat-view" hidden></div>'
     )
 
+    # Compare mode: pick 2-3 providers, dimensions render as stacked cards (reuses
+    # the same cells + detail component). Toggled from the Compare control.
+    cmp_pills = "".join(
+        f'<button type="button" class="cmp-pp" data-pid="{esc(p["provider"])}">{esc(p["provider_name"])}</button>'
+        for p in providers)
+    compare_view = (
+        '<div id="compare-view" hidden>'
+        '<div class="cmp-pick"><span class="cmp-pick-lbl">Pick 2-3 providers</span>'
+        f'<div class="cmp-pick-pills">{cmp_pills}</div></div>'
+        f'<div id="cmp-empty">{_mark_state("Choose two or three providers to compare.")}</div>'
+        '<div id="cmp-out"></div></div>'
+    )
+
     gen = dataset.get("generated_at", "")[:16].replace("T", " ")
     return f"""
 {chooser}
 {toolbar}
 {grouped}
+{compare_view}
 <script>window.CTO_PROVIDERS={json.dumps(pmap)};
 window.CTO_DIMS={json.dumps([{"key": d["key"], "label": d["label"], "group": d.get("group","")} for d in dims])};</script>
 <p class="genline">Generated {esc(gen)} UTC</p>
@@ -838,6 +852,24 @@ color:var(--muted);cursor:pointer}
 .spill:hover{background:var(--panel);color:var(--ink)}
 .spill.selected{background:var(--tomato);border-color:var(--tomato);color:var(--ink)}
 .pill>summary:hover{background:var(--panel)}
+.pill-active{background:var(--tomato)!important;border-color:var(--tomato)!important;color:var(--ink)!important}
+
+/* Compare mode: pick 2-3 providers, dimensions as stacked cards */
+.cmp-pick{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 22px}
+.cmp-pick-lbl{font-family:var(--display);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--faint)}
+.cmp-pick-pills{display:flex;flex-wrap:wrap;gap:7px}
+.cmp-pp{font-family:var(--display);font-size:12px;font-weight:600;padding:6px 13px;border-radius:var(--radius-pill);
+border:1px solid var(--line-2);background:var(--bg);color:var(--muted);cursor:pointer}
+.cmp-pp:hover{color:var(--ink);border-color:var(--ink)}
+.cmp-pp.selected{background:var(--tomato);border-color:var(--tomato);color:var(--ink)}
+.cmp-dim{margin:0 0 24px}
+.cmp-dim h4{font-family:var(--display);font-size:13.5px;font-weight:700;margin:0 0 10px;color:var(--ink);
+padding-bottom:6px;border-bottom:1px solid var(--line)}
+.cmp-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.cmp-card{border:1px solid var(--line);border-radius:var(--radius);padding:13px 15px;background:var(--bg)}
+.cmp-card-prov{font-family:var(--display);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin-bottom:9px}
+.cmp-card .cell-head{align-items:flex-start}
+.cmp-card.cmp-na .na-cross-lbl{font-size:13px}
 /* Mark used muted on empty states / 404, with a serif italic caption. */
 .mark-state{display:flex;flex-direction:column;align-items:center;gap:16px;padding:56px 0 24px;text-align:center}
 .mark-state svg{width:120px;height:120px;opacity:.4}
@@ -1202,6 +1234,50 @@ document.addEventListener('click',function(e){
         chooser.querySelectorAll('.spill').forEach(function(b){ b.classList.toggle('selected', b===sp); });
         applyChooser(choose, sub);
       }
+    });
+  }
+
+  // Compare mode: pick 2-3 providers; dimensions render as stacked cards, reusing
+  // the existing cells (so the detail toggle keeps working).
+  var compareBtn=document.getElementById('compare-btn'), compareView=document.getElementById('compare-view');
+  if(compareBtn && compareView){
+    var chooserEl=document.getElementById('chooser'), groupedEl=document.getElementById('grouped-view');
+    var cmpEmpty=document.getElementById('cmp-empty'), cmpOut=document.getElementById('cmp-out');
+    var cesc=function(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;};
+    var selected=[], cellMap=null;
+    function buildMap(){ cellMap={}; ['tbl-cloud','tbl-closed','tbl-open'].forEach(function(id){
+      var t=document.getElementById(id); if(!t) return;
+      t.querySelectorAll('tbody td.cell').forEach(function(td){ if(td.dataset.provider) cellMap[td.dataset.provider+'||'+td.dataset.dim]=td; }); }); }
+    function renderCompare(){
+      if(selected.length<2){ cmpEmpty.hidden=false; cmpOut.innerHTML=''; return; }
+      cmpEmpty.hidden=true; if(!cellMap) buildMap();
+      var html='';
+      (window.CTO_DIMS||[]).forEach(function(d){
+        if(!selected.some(function(pid){return cellMap[pid+'||'+d.key];})) return; // all N/A -> skip
+        var cards='';
+        selected.forEach(function(pid){
+          var pname=(PM[pid]||{}).name||pid, cell=cellMap[pid+'||'+d.key];
+          cards += cell
+            ? '<div class="cmp-card cell"><div class="cmp-card-prov">'+cesc(pname)+'</div>'+cell.innerHTML+'</div>'
+            : '<div class="cmp-card cmp-na"><div class="cmp-card-prov">'+cesc(pname)+'</div><span class="na-cross-lbl">not applicable for this provider type</span></div>';
+        });
+        html += '<div class="cmp-dim"><h4>'+cesc(d.label)+'</h4><div class="cmp-cards">'+cards+'</div></div>';
+      });
+      cmpOut.innerHTML=html;
+    }
+    compareView.querySelector('.cmp-pick-pills').addEventListener('click',function(e){
+      var b=e.target.closest('.cmp-pp'); if(!b) return;
+      var pid=b.dataset.pid, i=selected.indexOf(pid);
+      if(i>=0){ selected.splice(i,1); b.classList.remove('selected'); }
+      else if(selected.length<3){ selected.push(pid); b.classList.add('selected'); }
+      renderCompare();
+    });
+    compareBtn.addEventListener('click',function(){
+      var on=compareView.hasAttribute('hidden');
+      if(on){ compareView.removeAttribute('hidden'); } else { compareView.setAttribute('hidden',''); }
+      if(chooserEl) chooserEl.style.display = on ? 'none' : '';
+      if(groupedEl) groupedEl.style.display = on ? 'none' : '';
+      compareBtn.classList.toggle('pill-active', on);
     });
   }
 
