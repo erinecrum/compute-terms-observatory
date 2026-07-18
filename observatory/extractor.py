@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -44,6 +45,12 @@ def _clip_citation(s: str, max_words: int = 14) -> str:
     rather than reproduce a long passage."""
     words = s.split()
     return s if len(words) <= max_words else " ".join(words[:max_words]) + "…"
+
+
+def _norm(s: str) -> str:
+    """Whitespace-normalized lowercase, for mechanically checking that a quote
+    appears verbatim in the archived text (the automated-verification guardrail)."""
+    return re.sub(r"\s+", " ", s or "").lower().strip()
 
 
 @dataclass
@@ -140,8 +147,11 @@ def _tool_schema(available_slugs: List[str]) -> dict:
                             "confidence": {"type": "string", "enum": CONFIDENCE_LEVELS},
                             "citation": {
                                 "type": "string",
-                                "description": "Section heading or a quoted anchor "
-                                "UNDER 15 words. Empty if not found.",
+                                "description": "A VERBATIM excerpt copied EXACTLY from "
+                                "the cited document (not paraphrased), UNDER 15 words, "
+                                "that supports the value. Empty only if the value is "
+                                "'not specified'/'unclear'. This quote is mechanically "
+                                "checked against the archived text.",
                             },
                             "citation_document": {
                                 "type": "string",
@@ -166,12 +176,16 @@ def _tool_schema(available_slugs: List[str]) -> dict:
 
 _SYSTEM = (
     "You are a careful legal-document analyst building an informational comparison "
-    "of PUBLISHED cloud/GPU compute provider terms. You describe only what the "
-    "documents say. You never give advice, never rate providers, and never guess. "
-    "If a document does not support a value, return 'not specified' or 'unclear' "
-    "with low confidence and an empty citation. Every citation must be a real "
-    "section heading or a quoted anchor UNDER 15 words taken from the provided "
-    "text, and citation_document must be the document it came from."
+    "of PUBLISHED cloud/GPU compute and AI-model provider terms. You describe only "
+    "what the documents say. You never give advice, never rate providers, and never "
+    "guess. If a document does not support a value, return 'not specified' or "
+    "'unclear' with low confidence and an empty citation. For every value you DO "
+    "classify, the citation MUST be a short VERBATIM excerpt (under 15 words) copied "
+    "EXACTLY, character for character, from the cited document text — never "
+    "paraphrased. The quote is mechanically checked against the archived text; if it "
+    "is not an exact excerpt the value is published as UNVERIFIED, so accuracy of the "
+    "quote matters. If you cannot find an exact supporting quote, answer 'not "
+    "specified'. citation_document must be the document (by id) the quote is from."
 )
 
 
@@ -250,17 +264,29 @@ def extract_provider(
                 "confidence": "low",
                 "citation": "",
                 "citation_document": "none",
+                "status": "unverified",
                 "source": None,
                 "human_verified": False,
             }
             continue
         cited = e.get("citation_document", "none")
         src = source_index.get(cited)
+        # Automated-verification guardrail (replaces human review): the citation must
+        # be a VERBATIM excerpt that mechanically appears in the archived text. We
+        # check the model's RAW quote (before clipping for display) so the 15-word
+        # display clip cannot break the match. Anything unverified publishes as
+        # "unverified" with low confidence rather than as fact.
+        raw_quote = e.get("citation", "").strip()
+        verified = bool(raw_quote) and src is not None and _norm(raw_quote) in _norm(src.text)
+        confidence = e.get("confidence", "low")
+        if not verified:
+            confidence = "low"
         fields[key] = {
             "value": e.get("value", "").strip(),
-            "confidence": e.get("confidence", "low"),
-            "citation": _clip_citation(e.get("citation", "").strip()),
+            "confidence": confidence,
+            "citation": _clip_citation(raw_quote),
             "citation_document": cited,
+            "status": "verified" if verified else "unverified",
             # Provenance: the exact source this value is anchored to.
             "source": None
             if src is None

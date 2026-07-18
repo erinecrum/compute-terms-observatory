@@ -79,6 +79,7 @@ def apply_overrides(record: dict, overrides: Dict[str, dict]) -> dict:
             if src:
                 field["source"] = src
         field["human_verified"] = True
+        field["status"] = "verified"  # a human override is authoritative
         field["override_note"] = ov.get("note", "")
         applied.append(dim)
 
