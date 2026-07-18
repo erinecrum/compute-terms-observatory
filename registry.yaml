@@ -46,6 +46,28 @@ providers:
         status: verified
         url: https://aws.amazon.com/ai/responsible-ai/policy/
         notes: Verified, last updated Jan 13 2025; supplements the AUP and Service Terms.
+      # ── Data protection & accountability (Phase B) ──
+      - doc_type: dpa
+        name: AWS GDPR Center (DPA)
+        status: unverified
+        url: https://aws.amazon.com/compliance/gdpr-center/
+        notes: AWS DPA terms are incorporated into the Service Terms; GDPR Center is the public hub.
+      - doc_type: subprocessor_list
+        name: AWS Sub-processors
+        status: unverified
+        url: https://aws.amazon.com/compliance/sub-processors/
+      - doc_type: privacy_policy
+        name: AWS Privacy Notice
+        status: unverified
+        url: https://aws.amazon.com/privacy/
+      - doc_type: transparency_report
+        name: AWS government-request / transparency page
+        status: not_published
+        notes: No AWS-specific transparency report; Amazon-wide Information Request Report only. Confirm during capture.
+      - doc_type: ai_documentation
+        name: AWS AI Service Cards
+        status: unverified
+        url: https://aws.amazon.com/machine-learning/responsible-machine-learning/
 
   - provider: azure
     provider_name: Microsoft Azure

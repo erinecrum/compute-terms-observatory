@@ -23,12 +23,18 @@ from typing import Any, Dict, Optional
 # registry can introduce a new type without a code change; these are the
 # canonical spellings used for snapshot paths and the comparison schema.
 DOC_TYPES = (
-    "service_terms",   # general service / API / customer agreement terms
-    "sla",             # service level agreement (compute/GPU prioritized)
-    "aup",             # acceptable use / usage policy
-    "ai_terms",        # AI-specific or GPU-specific service terms
-    "model_license",   # open-weight model license (per generation)
-    "deprecation",     # model deprecation / version-pinning policy
+    "service_terms",       # general service / API / customer agreement terms
+    "sla",                 # service level agreement (compute/GPU prioritized)
+    "aup",                 # acceptable use / usage policy
+    "ai_terms",            # AI-specific or GPU-specific service terms
+    "model_license",       # open-weight model license (per generation)
+    "deprecation",         # model deprecation / version-pinning policy
+    # Data-protection & accountability corpus (Phase B).
+    "dpa",                 # data processing addendum / agreement
+    "privacy_policy",      # privacy policy / notice
+    "subprocessor_list",   # sub-processor list / page
+    "transparency_report", # trust center / government-request / transparency report
+    "ai_documentation",    # model/system cards, AI usage/prohibited-use policies
 )
 
 # Provider segments (the two top-level site sections + their subgroups).
