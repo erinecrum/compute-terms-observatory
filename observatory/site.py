@@ -143,7 +143,7 @@ def _status_dot(field: dict) -> str:
 
 
 def _cell(provider: str, dim_key: str, field: dict) -> str:
-    value = field.get("value", "")
+    value = field.get("display_value", field.get("value", ""))
     citation = field.get("citation", "")
     source = field.get("source")
     conf = field.get("confidence", "low")
@@ -267,10 +267,15 @@ def render_matrix(dataset: dict) -> str:
 
     legend = (
         '<div class="legend"><span class="legend-lbl">Status</span>'
-        '<span class="lg"><span class="dot ok"></span>quote verified</span>'
-        '<span class="lg"><span class="dot warn"></span>unverified — quote not matched</span>'
-        '<span class="lg"><span class="dot absent"></span>silent — no clause found</span>'
-        '<span class="lg"><span class="dot na"></span>not applicable</span></div>'
+        '<span class="lg" title="A short verbatim quote was mechanically matched in the archived source text.">'
+        '<span class="dot ok"></span>quote verified</span>'
+        '<span class="lg" title="The model returned a value but no supporting quote could be matched. Give it no weight without checking the source.">'
+        '<span class="dot warn"></span>unverified — quote not matched</span>'
+        '<span class="lg" title="The provider\'s terms do not address this dimension; there is no governing clause to quote.">'
+        '<span class="dot absent"></span>silent — no clause found</span>'
+        '<span class="lg" title="The dimension does not apply to this offering (e.g. SLA or capacity terms for a downloadable open-weight model).">'
+        '<span class="dot na"></span>not applicable</span>'
+        ' <a class="legend-more" href="methodology.html#status-labels">What do these mean?</a></div>'
     )
 
     grouped = (
@@ -385,6 +390,21 @@ quote cannot be verified are published as <strong>&ldquo;unverified&rdquo;</stro
 confidence and should be given no weight.</li>
 </ol>
 
+<h2 id="status-labels">Reading the status labels</h2>
+<p>Every value in the matrix carries one of four labels describing how well it is supported.
+Nothing here is human-verified; the labels describe the automated check, not anyone's review.</p>
+<ul>
+<li><strong>Quote verified.</strong> The value is backed by a short verbatim quote that the
+code mechanically found in the archived source text.</li>
+<li><strong>Unverified.</strong> The model returned a value but no supporting quote could be
+matched to the source. Give it no weight without reading the document yourself.</li>
+<li><strong>Silent.</strong> The provider's terms do not address this dimension &mdash; there is
+no governing clause to quote. This is a finding about the terms, not a failure of the tool.</li>
+<li><strong>Not applicable.</strong> The dimension does not apply to this offering &mdash; for
+example, service-level or capacity terms for a downloadable open-weight model, which is a
+license rather than a hosted service.</li>
+</ul>
+
 <h2>Provenance</h2>
 <p>Every value records the document it came from, its source URL, the fetch date, the
 archived version's content hash, and the model used, so any datapoint traces back to the
@@ -451,7 +471,7 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
         rows.append(f"""
 <section class="pdim">
   <h3>{_status_dot(f)} {esc(dim["label"])} {badge}</h3>
-  <p class="pval">{esc(f.get("value",""))}</p>
+  <p class="pval">{esc(f.get("display_value", f.get("value","")))}</p>
   {cite}{progline}{src}
 </section>""")
 

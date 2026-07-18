@@ -120,6 +120,16 @@ def _license_bucket(value: str) -> str:
 
 STATUSES = ("quote_verified", "quote_unverified", "no_clause_found", "not_applicable")
 
+# Issue 3: absence is shown with exactly two display labels, regardless of the raw
+# vocabulary the model used ("not specified", "none", "no", "n/a", ...).
+_ABSENCE_DISPLAY = {"no_clause_found": "silent", "not_applicable": "not applicable"}
+
+
+def display_value(field: dict) -> str:
+    """The value as shown to a reader: absence is normalized to 'silent' / 'not
+    applicable'; every substantive value is shown verbatim."""
+    return _ABSENCE_DISPLAY.get(field.get("status", ""), field.get("value", ""))
+
 # Values the model returns when it found no governing clause (an ABSENCE, not a
 # term). Matched case-insensitively on the whole value with a trailing period
 # stripped, so substantive values that merely contain "none" are not caught.
@@ -243,6 +253,7 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
                      (f.get("value", "") or "")[:48], ambiguous)
                 )
             f["status"] = new_status
+            f["display_value"] = display_value(f)
 
         lic_field = fields.get("model_license") or {}
         providers_meta.append(
