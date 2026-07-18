@@ -92,6 +92,13 @@ _DECK_TEXT = ("AI-generated summaries of public terms, not legal advice. "
               "Every value links to its source.")
 
 
+def _mark_state(caption: str, link_href: str = "", link_text: str = "") -> str:
+    """A character-free empty/404 state: the muted O. glyph + one serif-italic line."""
+    link = (f'<p class="ms-link"><a href="{esc(link_href)}">{esc(link_text)}</a></p>'
+            if link_href else "")
+    return f'<div class="mark-state">{_brand_mark()}<p>{esc(caption)}</p>{link}</div>'
+
+
 def _shell(title: str, body: str, active: str, subtitle: str = "",
            hide_title: bool = False, home: bool = False) -> str:
     nav_items = [("index.html", "Matrix"), ("changes.html", "Change feed"),
@@ -631,10 +638,7 @@ def _change_item(c: dict) -> str:
 def render_changes(dataset: dict) -> str:
     log = dataset.get("change_log", [])
     if not log:
-        return """
-<p class="empty">No document changes detected yet. This feed is the observatory's heartbeat.
-Once a provider edits a tracked document, the change (with short before/after excerpts) appears
-here in reverse-chronological order. The current run establishes the baseline.</p>"""
+        return _mark_state("All quiet. Still watching.")
 
     # Build filter options from the changes that actually exist.
     providers = {}
@@ -676,7 +680,7 @@ here in reverse-chronological order. The current run establishes the baseline.</
     items = "".join(_change_item(c) for c in log)
     return f"""{controls}
 <div class="changes" id="cf-list">{items}</div>
-<p class="empty" id="cf-empty" hidden>No changes match your filters.</p>"""
+<div id="cf-empty" hidden>{_mark_state("All quiet. Still watching.")}</div>"""
 
 
 def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
@@ -707,6 +711,14 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
             encoding="utf-8",
         )
         written.append(out_dir / fname)
+
+    # 404 page (GitHub Pages serves /404.html for unknown paths).
+    (out_dir / "404.html").write_text(
+        _shell("Not found",
+               _mark_state("Nothing observed here.", "index.html", "Back to the matrix"),
+               active="", hide_title=True),
+        encoding="utf-8")
+    written.append(out_dir / "404.html")
 
     # Self-hosted fonts (same-origin; preserves the zero-third-party-request
     # property). Copied from assets/fonts into site/fonts, referenced by @font-face.
@@ -827,9 +839,12 @@ color:var(--muted);cursor:pointer}
 .spill.selected{background:var(--tomato);border-color:var(--tomato);color:var(--ink)}
 .pill>summary:hover{background:var(--panel)}
 /* Mark used muted on empty states / 404, with a serif italic caption. */
-.mark-state{display:flex;flex-direction:column;align-items:center;gap:14px;padding:40px 0 8px;text-align:center}
-.mark-state svg{width:140px;height:140px;opacity:.4}
-.mark-state p{margin:0;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-style:italic;color:var(--muted);font-size:16px}
+.mark-state{display:flex;flex-direction:column;align-items:center;gap:16px;padding:56px 0 24px;text-align:center}
+.mark-state svg{width:120px;height:120px;opacity:.4}
+.mark-state p{margin:0;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-style:italic;color:var(--muted);font-size:17px}
+.ms-link{margin-top:2px!important}
+.ms-link a{font-family:var(--display);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.ms-link a:hover{color:var(--ink);text-decoration:none}
 /* Big-number stat callouts (homepage). Hairline cards, huge figure, tiny label. */
 .stats{display:flex;flex-wrap:wrap;gap:14px;margin:2px 0 22px}
 .stat{flex:1 1 150px;border:1px solid var(--line);border-radius:var(--radius);padding:15px 18px;background:var(--bg)}
