@@ -31,6 +31,7 @@ from .overrides import apply_overrides, load_overrides
 from .registry import Registry, load_registry
 from .schema import DIMENSIONS
 from .snapshot import SnapshotStore
+from .textcheck import NON_TEXT_MESSAGE, looks_like_text
 
 # Which dimensions are SLA-specific (grouped at the bottom of the matrix).
 _SLA_DIMS = {"availability_definition", "credit_regime", "claim_mechanics", "sla_exclusions"}
@@ -232,11 +233,19 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
             # different documents is meaningless as an "edit", so we flag it and
             # withhold the excerpts rather than present a misleading change.
             source_changed = prev.meta.get("url") != curr.meta.get("url")
+            # If either snapshot decoded as non-text (binary/mojibake — e.g. an old
+            # Llama capture that predates the fetcher's text check), a diff would
+            # render as corrupted garbage. Suppress it rather than show it, and do
+            # not attach any AI summary (the model can only describe noise).
+            non_text = not source_changed and not (
+                looks_like_text(prev.text or "")[0] and looks_like_text(curr.text or "")[0]
+            )
             # A source swap compares two different documents; the diff would be
             # both meaningless and expensive (char-level on very long text), so we
             # skip it entirely and only record that the source changed.
-            d = None if source_changed else diff_text(prev.text, curr.text)
-            if not source_changed and not d.has_changes:
+            suppressed = source_changed or non_text
+            d = None if suppressed else diff_text(prev.text, curr.text)
+            if not suppressed and not d.has_changes:
                 continue
             entry = {
                 "provider": doc.provider,
@@ -247,16 +256,19 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
                 "url": curr.meta.get("url", doc.url),
                 "detected_at": curr.fetched_at,
                 "source_changed": source_changed,
-                "added_lines": 0 if source_changed else d.added_lines,
-                "removed_lines": 0 if source_changed else d.removed_lines,
+                "non_text": non_text,
+                "added_lines": 0 if suppressed else d.added_lines,
+                "removed_lines": 0 if suppressed else d.removed_lines,
                 "blocks": []
-                if source_changed
+                if suppressed
                 else [{"old": b.old_focus, "new": b.new_focus} for b in d.blocks[:5]],
             }
             if source_changed:
                 entry["note"] = (
                     "Tracked source document changed; not an edit of the same document."
                 )
+            elif non_text:
+                entry["note"] = NON_TEXT_MESSAGE
             else:
                 note = notes.get(change_key(doc.provider, doc.slug, prev.stamp, curr.stamp))
                 if note:

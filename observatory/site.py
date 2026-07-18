@@ -480,7 +480,7 @@ def _change_item(c: dict) -> str:
         f'<div class="cblock"><div class="old">− {esc(b["old"])}</div><div class="new">+ {esc(b["new"])}</div></div>'
         for b in c.get("blocks", [])
     )
-    if c.get("source_changed"):
+    if c.get("source_changed") or c.get("non_text"):
         meta = f'<div class="cmeta">{esc(c.get("note",""))} <a href="{esc(c["url"])}" target="_blank" rel="noopener">source</a></div>'
     else:
         meta = (

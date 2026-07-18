@@ -21,6 +21,7 @@ from .differ import diff_text
 from .registry import Registry
 from .schema import DIMENSION_KEYS, DIMENSIONS
 from .snapshot import SnapshotStore
+from .textcheck import looks_like_text
 
 MODEL = "claude-sonnet-5"  # light, fast model is enough for short change summaries
 
@@ -139,6 +140,10 @@ def generate_missing(registry: Registry, store: SnapshotStore) -> int:
             # Skip source swaps (different URL) — a text diff across two different
             # documents is not a meaningful "edit" to describe.
             if prev.meta.get("url") != curr.meta.get("url"):
+                continue
+            # Skip non-text snapshots (binary/mojibake): the model can only describe
+            # noise, and the change feed suppresses the diff anyway.
+            if not (looks_like_text(prev.text or "")[0] and looks_like_text(curr.text or "")[0]):
                 continue
             key = change_key(doc.provider, doc.slug, prev.stamp, curr.stamp)
             # Regenerate if absent or if it predates the provision-tagging field.

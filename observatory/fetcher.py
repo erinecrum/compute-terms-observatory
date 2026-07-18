@@ -25,6 +25,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from .model import Document, FetchResult, sha256_bytes, sha256_text
+from .textcheck import looks_like_text
 
 # We identify honestly as an archival bot (not a spoofed browser) and link back to
 # the project, so any site owner can see exactly who we are. We are archivists,
@@ -182,7 +183,7 @@ _WAYBACK_AVAILABLE = "https://archive.org/wayback/available"
 
 
 def _finalize(result: FetchResult, url: str, content: bytes, content_type: str,
-              html_text: str | None = None) -> None:
+              html_text: str | None = None, charset: str = "") -> None:
     """Detect the document type, normalize to text, and populate the result. Shared
     by all fetch tiers so a browser- or wayback-sourced document goes through the
     exact same selector/filter/version pipeline as a direct fetch. Raises on an
@@ -202,6 +203,24 @@ def _finalize(result: FetchResult, url: str, content: bytes, content_type: str,
         raise RuntimeError("unsupported document format (Office binary other than DOCX/PDF)")
     else:
         raw_html = html_text if html_text is not None else content.decode("utf-8", "replace")
+        # Refuse to snapshot a capture that did not decode as text (binary,
+        # compressed, or wrong charset). Record the content-type and encoding so
+        # the underlying fetch problem can be diagnosed and fixed, not just
+        # suppressed downstream.
+        is_text, stats = looks_like_text(raw_html)
+        if not is_text:
+            enc = charset or "unknown"
+            result.meta["reject_reason"] = "non_text"
+            result.meta["content_type"] = content_type or "unknown"
+            result.meta["encoding"] = enc
+            result.meta["replacement_ratio"] = stats["replacement_ratio"]
+            result.meta["nonprint_ratio"] = stats["nonprint_ratio"]
+            raise RuntimeError(
+                "response decoded as non-text (likely binary, compressed, or wrong "
+                f"charset); content-type={content_type or 'unknown'} encoding={enc} "
+                f"replacement_ratio={stats['replacement_ratio']} "
+                f"nonprint_ratio={stats['nonprint_ratio']} — refusing to snapshot"
+            )
         text = _normalize(raw_html)
         result.raw_html, result.raw_ext, result.raw_sha256 = raw_html, "html", sha256_text(raw_html)
 
@@ -234,7 +253,8 @@ def _fetch_direct(doc: Document, result: FetchResult) -> FetchResult:
         result.http_status = resp.status_code
         resp.raise_for_status()
         result.fetch_method = "direct"
-        _finalize(result, doc.url, resp.content, resp.headers.get("content-type", ""), resp.text)
+        _finalize(result, doc.url, resp.content, resp.headers.get("content-type", ""),
+                  resp.text, charset=resp.encoding or "")
     except Exception as exc:  # noqa: BLE001
         result.ok, result.error = False, f"{type(exc).__name__}: {exc}"
     return result
@@ -271,7 +291,8 @@ def _fetch_browser(doc: Document, result: FetchResult) -> FetchResult:
             result.meta["challenge"] = True
             return result
         result.fetch_method = "browser"
-        _finalize(result, doc.url, html.encode("utf-8"), "text/html", html_text=html)
+        _finalize(result, doc.url, html.encode("utf-8"), "text/html",
+                  html_text=html, charset="utf-8")
     except Exception as exc:  # noqa: BLE001
         result.ok, result.error = False, f"browser: {type(exc).__name__}: {exc}"
     return result
@@ -303,7 +324,8 @@ def _fetch_wayback(doc: Document, result: FetchResult) -> FetchResult:
         resp = _get_politely(raw_url)
         result.http_status = resp.status_code
         result.fetch_method = "wayback"
-        _finalize(result, doc.url, resp.content, resp.headers.get("content-type", ""), resp.text)
+        _finalize(result, doc.url, resp.content, resp.headers.get("content-type", ""),
+                  resp.text, charset=resp.encoding or "")
         ts = snap.get("timestamp", "")
         if len(ts) == 14:
             result.capture_timestamp = f"{ts[0:4]}-{ts[4:6]}-{ts[6:8]}T{ts[8:10]}:{ts[10:12]}:{ts[12:14]}Z"
