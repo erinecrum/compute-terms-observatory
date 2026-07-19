@@ -124,7 +124,15 @@ def seg_xlsx_name(group: str, view: str) -> str:
 # Custom domain for GitHub Pages. Written into the build as a CNAME file so that
 # Actions deploys keep the custom domain (a deploy without it would clear the
 # Pages custom-domain setting).
-CUSTOM_DOMAIN = "www.computeterms.ai"
+#
+# This constant, not the Pages settings UI, is the source of truth: every deploy
+# rewrites CNAME from it, so a domain set only in the UI is reverted on the next
+# build. Change it here.
+#
+# GitHub Pages serves exactly ONE custom domain. Any other domain pointed at the
+# site can only redirect to this one, which is configured at the registrar rather
+# than in this repo.
+CUSTOM_DOMAIN = "www.termsobservatory.ai"
 
 _CONF_LABEL = {"high": "high", "medium": "medium", "low": "low", "verified": "verified"}
 
