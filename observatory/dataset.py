@@ -502,9 +502,18 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
                 else [{"old": b.old, "new": b.new} for b in d.blocks],
             }
             if source_changed:
-                entry["note"] = (
-                    "Tracked source document changed; not an edit of the same document."
-                )
+                # A hand-written curation note takes precedence over the generic
+                # wording, because for a curation decision the generic phrasing can
+                # be misread as the provider having changed their terms.
+                cur_note = _curation_note(doc.provider, doc.slug, curr.meta.get("url", ""))
+                if cur_note:
+                    entry["note"] = cur_note["note"]
+                    entry["curation"] = True
+                    entry["substantive"] = bool(cur_note.get("substantive"))
+                else:
+                    entry["note"] = (
+                        "Tracked source document changed; not an edit of the same document."
+                    )
             elif non_text:
                 entry["note"] = NON_TEXT_MESSAGE
             else:
@@ -542,6 +551,30 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
     _write_non_text_report(non_text_rows)
     entries.sort(key=lambda e: e["detected_at"], reverse=True)
     return entries
+
+
+_CURATION_NOTES_CACHE = None
+
+
+def _curation_note(provider: str, slug: str, to_url: str):
+    """Hand-written change-feed text for a specific Observatory curation decision.
+
+    Matched on provider + slug + the URL being moved to, so a note fires once for
+    the transition it describes and not for every later change to that document.
+    """
+    global _CURATION_NOTES_CACHE
+    if _CURATION_NOTES_CACHE is None:
+        p = Path("curation_notes.yaml")
+        try:
+            import yaml
+            _CURATION_NOTES_CACHE = (yaml.safe_load(p.read_text(encoding="utf-8")) or {}).get("notes", [])
+        except (OSError, ValueError, ImportError):
+            _CURATION_NOTES_CACHE = []
+    for n in _CURATION_NOTES_CACHE:
+        if (n.get("provider") == provider and n.get("slug") == slug
+                and n.get("to_url") == to_url):
+            return n
+    return None
 
 
 GENERATION_REPORT_PATH = Path("data/generation-mismatches.json")

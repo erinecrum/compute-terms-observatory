@@ -288,10 +288,14 @@ providers:
         status: unverified
         url: https://trust.crusoe.ai/
         notes: Via trust center (may be JS-rendered).
+        fetch_method: browser
+        notes: JavaScript-rendered; direct fetch returns 0 chars.
       - doc_type: privacy_policy
         name: Crusoe Privacy Notice
         status: unverified
         url: https://privacy.crusoe.ai/
+        fetch_method: browser
+        notes: JavaScript-rendered; direct fetch returns 0 chars.
       - doc_type: transparency_report
         name: Crusoe transparency report
         status: not_published
@@ -479,6 +483,8 @@ providers:
         name: Anthropic Sub-processors
         status: unverified
         url: https://trust.anthropic.com/subprocessors
+        fetch_method: browser
+        notes: JavaScript-rendered; direct fetch returns 0 chars.
       - doc_type: privacy_policy
         name: Anthropic Privacy Policy
         status: unverified
@@ -600,6 +606,8 @@ providers:
         name: Google Transparency Report (enterprise)
         status: unverified
         url: https://transparencyreport.google.com/user-data/enterprise
+        fetch_method: browser
+        notes: JavaScript-rendered; direct fetch returns 0 chars.
   - provider: gemma
     provider_name: Gemma
     segment: model_provider
@@ -691,6 +699,8 @@ providers:
       # never governed the tracked artifact. Governing-document rule: every document
       # in a provider's registry must govern the tracked artifact or relationship,
       # not merely share a parent company.
+        fetch_method: browser
+        notes: JavaScript-rendered; direct fetch returns 0 chars.
   - provider: deepseek
     provider_name: DeepSeek
     segment: model_provider
@@ -826,6 +836,8 @@ providers:
         status: unverified
         url: https://trust.mistral.ai/subprocessors
         notes: Email-notify on subprocessor changes.
+        fetch_method: browser
+        notes: JavaScript-rendered; direct fetch returns 0 chars.
       - doc_type: privacy_policy
         name: Mistral AI Privacy Policy
         status: unverified

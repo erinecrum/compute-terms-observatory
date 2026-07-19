@@ -1,0 +1,47 @@
+# Curation notes: explicit change-feed text for Observatory decisions.
+#
+# When a tracked document's URL changes, the pipeline records a source change and
+# writes a generic note ("Tracked source document changed; not an edit of the same
+# document."). That is right for a relocation, but wrong for a curation decision,
+# where the generic phrasing can be misread as the provider having changed their
+# terms.
+#
+# Entries here override the generic note for one specific transition, keyed by
+# provider/slug plus the URL being moved to. The note is written by hand, not
+# derived, because the framing is the point: these entries must never be readable
+# as a provider changing a licence.
+#
+# `substantive: true` means the governing document itself changed (a different
+# artifact is now tracked). `substantive: false` is a pure relocation where the
+# governing text is identical at a new address.
+
+notes:
+  - provider: qwen
+    slug: model_license
+    to_url: https://huggingface.co/Qwen/Qwen3-235B-A22B/raw/main/LICENSE
+    substantive: true
+    note: >-
+      Observatory curation update: tracked Qwen generation moved from Qwen2.5-72B
+      (bespoke Qwen LICENSE AGREEMENT) to Qwen3-235B-A22B (Apache 2.0). Qwen did
+      not relicense existing models; newer generations are published under
+      Apache 2.0 and the Observatory now tracks the current flagship.
+
+  - provider: llama
+    slug: model_license
+    to_url: https://raw.githubusercontent.com/meta-llama/llama-models/main/models/llama4/LICENSE
+    substantive: false
+    note: >-
+      Observatory source relocation: the Llama 4 Community License is now tracked
+      from Meta's official meta-llama repository rather than the website copy. For
+      an open-weight family the repository copy is the licence attached to the
+      distributed artifact. The licence text is unchanged; Meta did not amend it.
+
+  - provider: llama
+    slug: aup
+    to_url: https://raw.githubusercontent.com/meta-llama/llama-models/main/models/llama4/USE_POLICY.md
+    substantive: false
+    note: >-
+      Observatory source relocation: the Llama 4 Acceptable Use Policy is now
+      tracked from Meta's official meta-llama repository rather than the website
+      copy. The previous archived capture was the Llama 2 policy, which does not
+      govern Llama 4. Meta did not amend either policy.
