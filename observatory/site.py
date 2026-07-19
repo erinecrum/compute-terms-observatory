@@ -643,9 +643,10 @@ def render_about(dataset: dict) -> str:
     return f'<div class="faq-list">{rows}</div>'
 
 
-def _segment_dims_section() -> str:
+def _segment_dims_body() -> str:
     """Document, from the applicability map, which dimensions each segment omits and
-    why — so the omissions read as editorial judgment, not missing data."""
+    why, so the omissions read as editorial judgment rather than missing data. Body
+    only: the accordion summary supplies the heading and the <details> the anchor."""
     from .schema import SEGMENT_GROUP_LABEL, SEGMENT_REMOVED, dimension
 
     blocks = []
@@ -655,17 +656,16 @@ def _segment_dims_section() -> str:
             items = "<li>No dimensions are omitted for this segment.</li>"
         else:
             items = "".join(
-                f'<li><strong>{esc(dimension(k).label)}</strong> — {esc(reason)}.</li>'
+                f'<li><strong>{esc(dimension(k).label)}</strong>: {esc(reason)}.</li>'
                 for k, reason in removed.items()
             )
         blocks.append(
             f'<h3>{esc(SEGMENT_GROUP_LABEL[group])}</h3><ul>{items}</ul>'
         )
     return (
-        '<h2 id="dimension-sets">Why the tables differ by segment</h2>'
         '<p>Each segment&rsquo;s table shows only the dimensions that can meaningfully '
         'exist for that entry type. A dimension is omitted only when it is '
-        '<em>structurally</em> inapplicable &mdash; the precondition does not exist &mdash; '
+        '<em>structurally</em> inapplicable, meaning the precondition does not exist, '
         'not merely because today&rsquo;s providers are silent. Collective silence is a '
         'finding and stays (for example, closed-API providers that publish no SLA still '
         'show an availability row, because a service <em>could</em> commit to uptime). '
@@ -675,83 +675,121 @@ def _segment_dims_section() -> str:
 
 
 def render_methodology(dataset: dict) -> str:
-    """Methodology page — adapted from METHODOLOGY.md to describe this pipeline
-    accurately. Reports what the system does; contains no advisory language."""
-    return ("""
-<p class="page-standfirst">{_PURPOSE_LINE} This page describes how that is done: what is
-captured, how values are extracted, what the status labels mean, and where the limits are.</p>
+    """Methodology page - the same accordion pattern as About, grouped by topic and
+    collapsed by default. Reports what the system does; contains no advisory
+    language. Sections carry stable ids so inbound anchors keep working; anchors
+    that predate this grouping are redirected by _METHOD_ANCHOR_ALIAS."""
+    sections = [
+        ("capture", "How documents are captured", """
+<p>Twice daily, an automated workflow fetches each tracked provider's public terms of
+service, SLAs, acceptable-use and usage policies, model licenses, and deprecation
+policies, and archives a normalized text snapshot with a timestamp and content hash.</p>
+<p>Fetching uses three tiers in order: a direct request as an identified archival agent,
+a headless browser for JavaScript-rendered pages, and the Internet Archive as a fallback
+(dated by capture time). It never attempts to bypass a CAPTCHA or other interactive
+challenge. A small number of sources block direct automated retrieval; for those, the
+archived version is the most recent Internet Archive capture, dated individually on each
+value, and may lag the live page.</p>
+<p>The &ldquo;terms last checked&rdquo; time on the main page reflects the most recent run
+of the directly fetched sources.</p>"""),
 
-<h2>How this works</h2>
-<p>The Compute Terms Observatory is an automated research tracker of the
-<em>published</em> terms of cloud infrastructure providers and AI model families. It works in three stages.</p>
-<ol>
-<li><strong>Archive.</strong> Twice daily, an automated workflow fetches each tracked
-provider's public terms of service, SLAs, acceptable-use and usage policies, model
-licenses, and deprecation policies, and archives a normalized text snapshot with a
-timestamp and content hash. Fetching uses three tiers in order &mdash; a direct request
-as an identified archival agent, a headless browser for JavaScript-rendered pages, and
-the Internet Archive as a fallback (dated by capture time) &mdash; and never attempts to
-bypass a CAPTCHA or other interactive challenge. A small number of sources block direct
-automated retrieval; for those, the archived version is the most recent Internet Archive
-capture, dated individually on each value, and may lag the live page. The &ldquo;terms last
-checked&rdquo; time on the main page reflects the most recent run of the directly fetched
-sources.</li>
-<li><strong>Detect.</strong> When a document's normalized text changes between runs, the
-system records the localized before/after difference. The change feed is generated from
-those differences; quoted excerpts are kept short.</li>
-<li><strong>Classify.</strong> When a document changes, an AI model (Claude, by Anthropic)
-reads it against a fixed, published schema of contract dimensions and records, for each, a
-value and a short <strong>verbatim supporting quote</strong> copied from the document. The
-code mechanically checks that the quote actually appears in the archived text. Values whose
-quote cannot be verified are published as <strong>&ldquo;unverified&rdquo;</strong> with low
-confidence and should be given no weight.</li>
-</ol>
+        ("extraction", "How values are extracted", """
+<p>When a document changes, an AI model (Claude, by Anthropic) reads it against a fixed,
+published schema of contract dimensions and records, for each, a value and a short
+<strong>verbatim supporting quote</strong> copied from the document. The code mechanically
+checks that the quote actually appears in the archived text. Values whose quote cannot be
+verified are published as <strong>&ldquo;unverified&rdquo;</strong> with low confidence and
+should be given no weight.</p>
+<p>Every value records the document it came from, its source URL, the fetch date, the
+archived version's content hash, and the model used, so any datapoint traces back to the
+exact text that produced it. License values attach to the specific license document and
+model generation they came from; they are never asserted across a whole model family.</p>"""),
 
-{_segment_dims_section()}
-
-<h2 id="status-labels">Reading the status labels</h2>
-<p>Every value in the matrix carries one of four labels describing how well it is supported.
-Nothing here is human-verified; the labels describe the automated check, not anyone's review.</p>
+        ("verification-statuses", "Verification statuses and confidence", """
+<p>Every value in the matrix carries one of four labels describing how well it is
+supported. Nothing here is human-verified; the labels describe the automated check, not
+anyone's review.</p>
 <ul>
 <li><strong>Quote verified.</strong> The value is backed by a short verbatim quote that the
 code mechanically found in the archived source text.</li>
 <li><strong>Unverified.</strong> The model returned a value but no supporting quote could be
 matched to the source. Give it no weight without reading the document yourself.</li>
-<li><strong>Silent.</strong> The provider's terms do not address this dimension &mdash; there is
-no governing clause to quote. This is a finding about the terms, not a failure of the tool.</li>
-<li><strong>Not applicable.</strong> The dimension does not apply to this offering &mdash; for
+</ul>
+<p>The remaining two labels, <strong>silent</strong> and <strong>not applicable</strong>,
+describe the terms rather than the check; they are explained in the next section.</p>
+<p>Confidence (high, medium, low) is recorded alongside the status and reflects how
+directly the source text supported the reading. A verified quote with low confidence
+usually means the clause was found but was partial, qualified, or spread across several
+documents.</p>"""),
+
+        ("silent-not-applicable", "What silent and not applicable mean", """
+<ul>
+<li><strong>Silent.</strong> The provider's terms do not address this dimension: there is
+no governing clause to quote. This is a finding about the terms, not a failure of the
+tool.</li>
+<li><strong>Not applicable.</strong> The dimension does not apply to this offering. For
 example, service-level or capacity terms for a downloadable open-weight model, which is a
 license rather than a hosted service.</li>
 </ul>
+<p>The distinction matters when reading across a row. A silent cell means the provider
+could have addressed the point and did not. A not-applicable cell means the point could
+not arise for that kind of offering.</p>"""),
 
-<h2>Provenance</h2>
-<p>Every value records the document it came from, its source URL, the fetch date, the
-archived version's content hash, and the model used, so any datapoint traces back to the
-exact text that produced it. License values attach to the specific license document and
-model generation they came from; they are never asserted across a whole model family.</p>
+        ("dimension-sets", "Dimension sets by segment", "{_segment_dims_body}"),
 
-<h2>What this is not</h2>
+        ("change-detection", "Change detection and the feed", """
+<p>When a document's normalized text changes between runs, the system records the
+localized before/after difference. The change feed is generated from those differences;
+quoted excerpts are kept short.</p>
+<p>A change to a document also triggers re-extraction of that provider, so the matrix and
+the feed stay in step. Changes that alter only formatting or boilerplate are marked
+cosmetic and can be filtered out of the feed.</p>"""),
+
+        ("coverage-limitations", "Coverage and limitations", """
 <p>This site reports what public documents say, with citations. It does not characterize,
-rate, or recommend, and it gives no advice. It is AI-generated analysis of public documents;
-no attorney reviews individual classifications before publication, and classifications may be
-wrong, incomplete, or out of date. Public terms are only a starting point &mdash; negotiated
-agreements routinely differ from a provider's public documents. Nothing here is legal advice,
-and no attorney-client relationship is created by reading it. Read the underlying documents,
-which are linked from every datapoint, and consult your own counsel.</p>
+rate, or recommend, and it gives no advice. It is AI-generated analysis of public
+documents; no attorney reviews individual classifications before publication, and
+classifications may be wrong, incomplete, or out of date. Public terms are only a starting
+point: negotiated agreements routinely differ from a provider's public documents. Nothing
+here is legal advice, and no attorney-client relationship is created by reading it. Read
+the underlying documents, which are linked from every datapoint, and consult your own
+counsel.</p>
+<p><strong>Corrections.</strong> Every datapoint links to its source. Everything here is
+AI-reviewed; there is no human-verified tier. A correction can adjust a value or its
+citation, but the corrected quote is then re-checked against the archived source exactly
+like any other value, and carries no special badge. If you spot an error, open an issue in
+the <a href="https://github.com/erinecrum/compute-terms-observatory">source repository</a>.</p>
+<p><strong>Code and data.</strong> The code is open source (MIT). The change history is
+published here as the change feed; the archived snapshot corpus is maintained in the
+project's data repository. See the <a href="about.html">About</a> page for the full
+provider and dimension coverage.</p>"""),
 
-<h2>Corrections</h2>
-<p>Every datapoint links to its source. Everything here is AI-reviewed — there is no
-human-verified tier. A correction can adjust a value or its citation, but the corrected
-quote is then re-checked against the archived source exactly like any other value, and
-carries no special badge. If you spot an error, open an issue
-in the <a href="https://github.com/erinecrum/compute-terms-observatory">source repository</a>.</p>
-
-<h2>Coverage &amp; data</h2>
-<p>The code is open source (MIT). The change history is published here as the change feed;
-the archived snapshot corpus is maintained in the project's data repository. See the
-<a href="about.html">About</a> page for the full provider and dimension coverage.</p>
-""").replace("{_segment_dims_section()}", _segment_dims_section()
-             ).replace("{_PURPOSE_LINE}", _PURPOSE_LINE)
+        ("how-to-cite", "How to cite", """
+<p>Every value carries the document it came from, that document's URL, the archived
+version's content hash, and the date it was fetched, so a citation can be pinned to an
+exact text rather than to a page that may since have changed.</p>
+<p>A citation to a term generally names the provider, the dimension, the source document,
+and the date of the archived version, and links to the primary document. The provider's
+own document is the authority; this site is a reading of it.</p>
+<p>Where the point being cited is that terms <em>changed</em>, the change feed entry
+records the date the change was first detected, which is the date that supports that
+point. Where the reading itself is what is being cited rather than the underlying
+document, cite this site together with the &ldquo;checked&rdquo; timestamp shown on the
+relevant section, since values are re-derived whenever their documents change.</p>"""),
+    ]
+    items = "".join(
+        f'<details class="faq" id="{sid}"><summary>{esc(title)}'
+        f'<span class="faq-ind" aria-hidden="true"></span></summary>'
+        f'<div class="faq-a">{body}</div></details>'
+        for sid, title, body in sections
+    )
+    return (
+        '<p class="page-standfirst">{_PURPOSE_LINE} This page describes how that is done: '
+        'what is captured, how values are extracted, what the status labels mean, and where '
+        'the limits are.</p>'
+        f'<div class="faq-list method-list">{items}</div>'
+    ).replace("{_segment_dims_body}", _segment_dims_body()
+              ).replace("{_PURPOSE_LINE}", _PURPOSE_LINE)
 
 
 def render_provider(dataset: dict, pmeta: dict) -> str:
@@ -1164,6 +1202,16 @@ gap:18px;padding:18px 2px;font-family:var(--display);font-size:17px;font-weight:
 .faq[open] .faq-ind::after{transform:scaleY(0)}
 .faq-a{padding:0 2px 20px;color:var(--muted);font-size:15px;line-height:1.65;max-width:70ch}
 .faq-a p{margin:0}
+/* Multi-paragraph and list answers (About's "What is this?", every methodology
+   section). Without these the paragraphs run together under .faq-a p{margin:0}. */
+.faq-a p+p,.faq-a ul+p,.faq-a p+ul,.faq-a h3{margin-top:13px}
+.faq-a ul{margin:0;padding-left:19px}
+.faq-a li{margin:5px 0}
+.faq-a h3{font-family:var(--display);font-size:11.5px;font-weight:600;text-transform:uppercase;
+letter-spacing:.1em;color:var(--faint);margin-bottom:5px}
+/* Scroll targets sit below nothing sticky, but leave the summary breathing room
+   when an inbound anchor scrolls a section to the top of the viewport. */
+.method-list .faq{scroll-margin-top:18px}
 .faq-a a{color:var(--accent)}
 .faq-a em{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-style:italic;color:var(--ink)}
 /* Big-number stat callouts (homepage). Hairline cards, huge figure, tiny label. */
@@ -1651,6 +1699,24 @@ document.addEventListener('click',function(e){
   // Do not auto-sort on load: the server-rendered order (curated for Cloud
   // Infrastructure) is the default; per-section sort is applied on demand.
   apply();
+})();
+
+// Methodology accordion: open the section an inbound anchor points at (and scroll
+// to it), so links that predate the topic grouping still land somewhere useful.
+// Old anchor -> section id. #dimension-sets kept its name and needs no alias.
+(function(){
+  var list=document.querySelector('.method-list'); if(!list) return;
+  var ALIAS={'status-labels':'verification-statuses'};
+  function openFromHash(){
+    var h=(location.hash||'').replace(/^#/,''); if(!h) return;
+    var el=document.getElementById(ALIAS[h]||h);
+    if(!el) return;
+    // The anchor may point at a section or at something inside one.
+    var sec=el.tagName==='DETAILS' ? el : el.closest('details');
+    if(sec){ sec.open=true; sec.scrollIntoView({block:'start'}); }
+  }
+  window.addEventListener('hashchange',openFromHash);
+  openFromHash();
 })();
 
 // Change-feed: sort + filter by provider, date range, and provision.
