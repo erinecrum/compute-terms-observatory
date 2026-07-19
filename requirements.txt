@@ -13,7 +13,7 @@
 requests==2.32.5        # HTTP fetching of public terms/SLA/AUP pages
 beautifulsoup4==4.15.0  # HTML parsing / content extraction for page snapshots
 PyYAML==6.0.3           # source registry + human-verified overrides (non-confidential)
-python-dotenv==1.2.1    # load ANTHROPIC_API_KEY from a local .env (never committed)
+python-dotenv==1.2.2    # load ANTHROPIC_API_KEY from a local .env (never committed)
 anthropic==0.116.0      # Claude API client for the structured extraction layer
 pypdf==6.14.2           # extract text from PDF-hosted documents (e.g. Microsoft MCA)
 openpyxl==3.1.5         # write the downloadable Excel (.xlsx) comparison export
