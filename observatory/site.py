@@ -8,8 +8,11 @@ change feed are added in the next step; the shell and nav already anticipate the
 
 from __future__ import annotations
 
+import base64
+import hashlib
 import html
 import json
+import re
 import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
@@ -229,6 +232,55 @@ _PURPOSE_LINE = ("One place to see what compute providers publish, side by side,
                  "as it changes.")
 
 
+# Marker replaced with the finished Content-Security-Policy once a page's inline
+# blocks are known. See _apply_csp.
+_CSP_SLOT = "<!--CSP-->"
+
+
+def _apply_csp(html: str) -> str:
+    """Insert a Content-Security-Policy meta tag computed from this page's own
+    inline script and style blocks.
+
+    The site's defining property is that it makes zero third-party requests. Until
+    now that was a convention: nothing enforced it, and any injected markup could
+    have pulled in an external script. `default-src 'none'` makes it a rule the
+    browser enforces, so even if the escaping boundary were ever breached, the
+    injected code could not load or exfiltrate anything.
+
+    Scripts and styles are allowed by SHA-256 hash rather than 'unsafe-inline', so
+    only the exact blocks this build emitted can run. That is why the print button
+    lost its inline onclick: an on* attribute cannot be hashed.
+
+    GitHub Pages cannot set HTTP headers, so this is delivered by meta. One
+    consequence: frame-ancestors is ignored in meta form, so clickjacking cannot be
+    blocked this way; the site has nothing to clickjack (no auth, no actions), so
+    that is acceptable rather than merely unavoidable.
+    """
+    def digest(body: str) -> str:
+        h = hashlib.sha256(body.encode("utf-8")).digest()
+        return "'sha256-" + base64.b64encode(h).decode("ascii") + "'"
+
+    scripts = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", html, re.S)
+    styles = re.findall(r"<style[^>]*>(.*?)</style>", html, re.S)
+    script_src = " ".join(sorted({digest(s) for s in scripts})) or "'none'"
+    style_src = " ".join(sorted({digest(s) for s in styles})) or "'none'"
+    policy = "; ".join([
+        "default-src 'none'",
+        f"script-src {script_src}",
+        f"style-src {style_src}",
+        # Self-hosted fonts; data: covers the inline favicon.
+        "img-src 'self' data:",
+        "font-src 'self'",
+        # Nothing here talks to a network at runtime.
+        "connect-src 'none'",
+        "object-src 'none'",
+        "base-uri 'none'",
+        "form-action 'none'",
+    ])
+    meta = f'<meta http-equiv="Content-Security-Policy" content="{policy}">'
+    return html.replace(_CSP_SLOT, meta, 1)
+
+
 def safe_url(url) -> str:
     """Escape a URL for an href, and refuse any scheme that can execute.
 
@@ -302,10 +354,13 @@ def _shell(title: str, body: str, active: str, subtitle: str = "",
             f'<nav class="nav">{nav}</nav></div></header>'
             f'<div class="deck"><div class="wrap">{_DECK_HTML}</div></div>'
         )
-    return f"""<!doctype html>
+    # The policy hashes this page's own inline blocks, so it is computed after the
+    # document is assembled and swapped into the slot below.
+    return _apply_csp(f"""<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<!--CSP-->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(title)} | {BRAND}</title>
 <link rel="icon" href="{_FAVICON}">
@@ -326,7 +381,7 @@ def _shell(title: str, body: str, active: str, subtitle: str = "",
 </div></footer>
 <script>{_JS}</script>
 </body>
-</html>"""
+</html>""")
 
 
 def _source_line(source: dict) -> str:
@@ -560,7 +615,9 @@ def render_matrix(dataset: dict) -> str:
         + '</div>'
         + '<details class="pill export-menu"><summary>Export</summary><div class="menu">'
         + f'<a href="{esc(EXPORT_XLSX)}" download>Full workbook (.xlsx)</a>'
-        + '<button type="button" onclick="window.print()">Print / save all as PDF</button>'
+        # No inline handler: the CSP allows only hashed scripts, and an on* attribute
+        # cannot be hashed. Wired up in the JS below via data-print-all.
+        + '<button type="button" data-print-all>Print / save all as PDF</button>'
         + '</div></details></div>'
     )
 
@@ -1697,6 +1754,7 @@ document.addEventListener('click',function(e){
   });
   document.addEventListener('click',function(e){
     var pb=e.target.closest('[data-print-sec]'); if(pb){ e.preventDefault(); printSection(pb.dataset.printSec); }
+    var pa=e.target.closest('[data-print-all]'); if(pa){ e.preventDefault(); window.print(); }
   });
 
   // The chooser owns which section(s) render (segment + openness selection).
