@@ -229,6 +229,28 @@ _PURPOSE_LINE = ("One place to see what compute providers publish, side by side,
                  "as it changes.")
 
 
+def safe_url(url) -> str:
+    """Escape a URL for an href, and refuse any scheme that can execute.
+
+    esc() makes a URL safe as *text* but does nothing about its scheme, so
+    `javascript:alert(1)` survives html-escaping intact and fires on click. Every
+    URL rendered today comes from committed config (registry.yaml,
+    commitment_programs.yaml) rather than from a provider's document, so this is
+    not reachable now. It becomes reachable the moment a URL arrives from anywhere
+    less trusted, including a merged pull request to the registry on this public
+    repo, which is exactly the kind of change nobody re-audits.
+
+    Relative links (the site's own pages and exports) are allowed through.
+    """
+    raw = str(url or "").strip()
+    if not raw:
+        return ""
+    scheme = raw.split(":", 1)[0].lower() if ":" in raw.split("/", 1)[0] else ""
+    if scheme and scheme not in ("http", "https", "mailto"):
+        return "#blocked-url"
+    return esc(raw)
+
+
 def _sic(citation: str) -> str:
     """Cohere's published Terms of Use genuinely contain the typo 'OFFERINfGS'
     (verified in the raw HTML capture, not a normalization artifact). Flag it with
@@ -238,7 +260,7 @@ def _sic(citation: str) -> str:
 
 def _mark_state(caption: str, link_href: str = "", link_text: str = "") -> str:
     """A character-free empty/404 state: the muted O. glyph + one serif-italic line."""
-    link = (f'<p class="ms-link"><a href="{esc(link_href)}">{esc(link_text)}</a></p>'
+    link = (f'<p class="ms-link"><a href="{safe_url(link_href)}">{esc(link_text)}</a></p>'
             if link_href else "")
     return f'<div class="mark-state">{_brand_mark()}<p>{esc(caption)}</p>{link}</div>'
 
@@ -313,7 +335,7 @@ def _source_line(source: dict) -> str:
     (in place of the fetch date) plus a note and, if the capture is stale, a badge."""
     if not source:
         return ""
-    link = (f'<a href="{esc(source["url"])}" target="_blank" rel="noopener">'
+    link = (f'<a href="{safe_url(source["url"])}" target="_blank" rel="noopener">'
             f'{esc(source["name"])}</a>')
     if source.get("fetch_method") == "wayback":
         cap = esc((source.get("capture_timestamp", "") or "")[:10])
@@ -377,7 +399,7 @@ def _cell(provider: str, dim_key: str, field: dict) -> str:
     if prog:
         prog_line = (
             f'<div class="prog"><strong>{esc(prog["program"])}:</strong> {esc(prog["value"])} '
-            f'(<a href="{esc(prog["citation_url"])}" target="_blank" rel="noopener">program</a>)</div>'
+            f'(<a href="{safe_url(prog["citation_url"])}" target="_blank" rel="noopener">program</a>)</div>'
         )
 
     short = value if len(value) <= 160 else value[:157] + "…"
@@ -832,7 +854,7 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
         else:
             when = f'fetched {esc(d["fetched_at"][:10])}'
         trunc = " · <em>truncated for length</em>" if d.get("truncated") else ""
-        return (f'<li><a href="{esc(d["url"])}" target="_blank" rel="noopener">{esc(d["name"])}</a> '
+        return (f'<li><a href="{safe_url(d["url"])}" target="_blank" rel="noopener">{esc(d["name"])}</a> '
                 f'<span class="tag">{esc(d["doc_type"])}</span> · {when} · '
                 f'<code>{esc(d["text_sha256"][:12])}</code>{trunc}</li>')
     docs = "".join(_doc_li(d) for d in pmeta.get("documents", []))
@@ -859,7 +881,7 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
         progline = ""
         if prog:
             progline = (f'<div class="prog"><strong>{esc(prog["program"])}:</strong> {esc(prog["value"])} '
-                        f'(<a href="{esc(prog["citation_url"])}" target="_blank" rel="noopener">program page</a>). {esc(prog.get("note",""))}</div>')
+                        f'(<a href="{safe_url(prog["citation_url"])}" target="_blank" rel="noopener">program page</a>). {esc(prog.get("note",""))}</div>')
         _dc, _t, badge_cls, badge_text = _status_meta(f)
         badge = f'<span class="badge {badge_cls}">{esc(badge_text)}</span>'
         rows.append(f"""
@@ -921,7 +943,7 @@ def render_comparison(c: dict) -> str:
 <p><a href="changes.html">&larr; Back to the change feed</a></p>
 <p class="page-standfirst">Every passage that changed in {esc(c["document"])}, shown whole.
 Unchanged text is not reproduced here; read the
-<a href="{esc(c["url"])}" target="_blank" rel="noopener">provider's document</a> for the
+<a href="{safe_url(c["url"])}" target="_blank" rel="noopener">provider's document</a> for the
 document in full.</p>
 <div class="cmp-meta">
   <span><strong>{esc(c["provider_name"])}</strong> &middot; {esc(c["document"])}
@@ -962,7 +984,7 @@ def _change_item(c: dict) -> str:
     redline = (f'<details class="redline"><summary>View redline</summary>'
                f'<div class="rl">{rl}</div>{full}</details>') if rl else ""
 
-    meta = f'<a class="csource" href="{esc(c["url"])}" target="_blank" rel="noopener">source</a>'
+    meta = f'<a class="csource" href="{safe_url(c["url"])}" target="_blank" rel="noopener">source</a>'
     dim_keys = " ".join(d["key"] for d in dims)
     substantive = c.get("substantive", True)
     cosmetic_tag = "" if substantive else '<span class="badge muted cosmetic-tag">cosmetic</span>'
