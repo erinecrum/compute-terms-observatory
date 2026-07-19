@@ -394,11 +394,15 @@ def _source_line(source: dict) -> str:
             f'{esc(source["name"])}</a>')
     if source.get("fetch_method") == "wayback":
         cap = esc((source.get("capture_timestamp", "") or "")[:10])
+        # Two separate signals. The archived-capture chip says where the text came
+        # from and as of when, and applies to every archived value. The stale badge
+        # is an additional age warning and applies only past the threshold.
         stale = ' <span class="badge stale">stale &middot; capture &gt;7 days old</span>' if source.get("stale") else ''
-        return (f'<div class="src wayback">Archived capture from <strong>{cap}</strong> '
-                f'via the Internet Archive{stale}'
+        return (f'<div class="src wayback">'
+                f'<span class="badge archived">archived capture &middot; {cap}</span>{stale}'
                 f'<div class="wb-note">This source blocks automated retrieval, so the observatory '
-                f'relies on Internet Archive captures, which may lag the live page.</div>'
+                f'relies on Internet Archive captures. The text is evidence of what the document '
+                f'said on that date, not necessarily what it says today.</div>'
                 f'Source: {link}</div>')
     return (f'<div class="src">Source: {link} &middot; fetched '
             f'{esc((source.get("fetched_at", "") or "")[:10])}</div>')
@@ -1699,6 +1703,9 @@ padding:1px 9px;font-size:11px;font-weight:600;font-family:var(--display);letter
 .badge.warn{background:#fbe9e3;color:#b23a1c;border-color:#f2c3b6}
 .badge.muted{background:var(--panel);color:var(--muted);border-color:var(--line-2)}
 .badge.stale{background:#fbf0dc;color:var(--medium);border-color:#ecd6a6}
+/* Provenance, not a warning: every archived value carries this, regardless of age.
+   Neutral so it reads as "where this came from", leaving .stale to carry alarm. */
+.badge.archived{background:var(--panel-2);color:var(--muted);border-color:var(--line-2)}
 .src.wayback{color:var(--muted)}
 .wb-note{font-size:11.5px;font-style:italic;color:var(--faint);margin:3px 0}
 .col-stale{display:block;margin-top:2px;font-size:10.5px;font-weight:700;color:var(--medium);letter-spacing:0;text-transform:none}
