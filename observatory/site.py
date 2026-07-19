@@ -428,7 +428,12 @@ def _matrix_table(dims: list, subset: list, matrix: dict, table_id: str) -> str:
             if cur is not None:
                 rows.append(expander(cur))
             cur = g
-            rows.append(f'<tr class="grouprow" data-group="{esc(g)}"><th scope="colgroup" class="groupcell" colspan="{ncols}">{esc(g)}</th></tr>')
+            rows.append(
+                f'<tr class="grouprow" data-group="{esc(g)}">'
+                f'<th scope="colgroup" class="groupcell" colspan="{ncols}">'
+                f'<button type="button" class="grpbtn" data-group-toggle="{esc(g)}" '
+                f'aria-expanded="true"><span class="chev" aria-hidden="true"></span>'
+                f'{esc(g)}</button></th></tr>')
         cells = "".join(
             (f'<td class="cell empty" data-provider="{esc(p["provider"])}" data-dim="{esc(d["key"])}">n/a</td>'
              if matrix.get(p["provider"], {}).get(d["key"]) is None
@@ -548,7 +553,12 @@ def render_matrix(dataset: dict) -> str:
         header = (
             f'<div class="sec-head"><h2 class="sec-h">{esc(name)} '
             f'<span class="sec-cnt" data-cnt="{group}">{len(subset)}</span></h2>'
-            f'<div class="sec-ctl">{fresh}{sort_select(table_id)}'
+            f'<div class="sec-ctl">{fresh}'
+            f'<span class="grp-all"><button type="button" class="sec-x" data-grp-all="open" '
+            f'data-target="{table_id}">Expand all</button>'
+            f'<button type="button" class="sec-x" data-grp-all="shut" '
+            f'data-target="{table_id}">Collapse all</button></span>'
+            f'{sort_select(table_id)}'
             f'<span class="sec-exports">{sec_exports(group, sec_id)}</span></div></div>'
         )
         return (f'<section id="{sec_id}" class="msec" data-sec="{sec_id}">{header}'
@@ -1248,7 +1258,12 @@ p{max-width:74ch}
 /* Matrix */
 .table-scroll{overflow:auto;max-height:80vh;border:1px solid var(--line-2);border-radius:13px;
 box-shadow:var(--shadow);background:var(--bg)}
-table.matrix{border-collapse:separate;border-spacing:0;width:100%;min-width:940px}
+/* One step down from the 15.5px body so more of the grid fits on screen. Colours
+   are unchanged, so contrast is unaffected; line-height stays open enough to read
+   multi-line cells. The detail drawer sets its own absolute sizes and does not
+   follow this down. */
+table.matrix{border-collapse:separate;border-spacing:0;width:100%;min-width:940px;
+font-size:14.25px;line-height:1.55}
 .matrix th,.matrix td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);
 vertical-align:top;text-align:left;padding:12px 14px}
 .matrix thead th{position:sticky;top:0;z-index:3;background:var(--panel-2);font-size:13.5px;font-weight:700;
@@ -1261,7 +1276,16 @@ font-size:13.5px;font-weight:600;color:var(--ink)}
 .matrix td.cell{min-width:236px;max-width:290px;background:var(--bg);transition:background .12s}
 .matrix tr.grouprow th.groupcell{position:sticky;left:0;background:var(--panel-2);color:var(--muted);
 font-family:var(--display);font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.09em;
-padding:8px 14px;border-bottom:1px solid var(--line-2);border-right:0}
+padding:0;border-bottom:1px solid var(--line-2);border-right:0}
+/* The whole group header is the control, so the hit area is the full row. */
+.grpbtn{display:flex;align-items:center;gap:9px;width:100%;padding:8px 14px;border:0;background:none;
+font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;text-align:left}
+.grpbtn:hover{color:var(--ink)}
+.grpbtn:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.chev{width:8px;height:8px;flex:0 0 8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;
+transform:rotate(45deg);margin-top:-3px;transition:transform .14s}
+.grpbtn.shut .chev{transform:rotate(-45deg);margin-top:1px}
+.grp-all{display:inline-flex;gap:6px}
 .cell-head{display:flex;gap:8px;align-items:flex-start}
 .toggle{border:0;background:none;text-align:left;font:inherit;color:var(--ink);cursor:pointer;padding:0;line-height:1.5}
 .toggle:hover{color:var(--accent-2)}
@@ -1599,57 +1623,109 @@ document.addEventListener('click',function(e){
     });
   }
 
-  // The view switcher owns which dimension ROWS render (the chooser owns which
-  // provider sections render). "key" shows the curated subset of every group with
-  // a per-group expander; every other view shows its group(s) in full.
+  // The view switcher owns which dimension ROWS are eligible (the chooser owns
+  // which provider sections render), and each dimension group inside a section is
+  // independently collapsible. One render() computes visibility from all three
+  // pieces of state so they cannot disagree:
+  //   view      - which groups, and in "key" which curated rows, are eligible
+  //   expanded  - per group, whether "key" has been expanded to the full group
+  //   shut      - per group, whether the reader has collapsed it
   var viewbar=document.getElementById('viewbar');
   if(viewbar){
-    var VIEW_GROUPS=window.CTO_VIEW_GROUPS||{}, view='key', expanded={};
-    function applyView(){
+    var VIEW_GROUPS=window.CTO_VIEW_GROUPS||{}, view='key', expanded={}, shut={};
+    var TABLES=['tbl-cloud','tbl-closed','tbl-open'], SKEY='cto.groups.v1';
+    function groupsIn(id){
+      var t=document.getElementById(id), out=[]; if(!t) return out;
+      t.querySelectorAll('tbody tr.grouprow').forEach(function(tr){
+        if(out.indexOf(tr.dataset.group)<0) out.push(tr.dataset.group); });
+      return out;
+    }
+    // Remembered for the session only, so a new visit starts from the default.
+    try{ shut=JSON.parse(sessionStorage.getItem(SKEY)||'{}')||{}; }catch(err){ shut={}; }
+    function persist(){ try{ sessionStorage.setItem(SKEY, JSON.stringify(shut)); }catch(err){} }
+    if(!Object.keys(shut).length){
+      // Default: first group open, the rest collapsed.
+      TABLES.forEach(function(id){
+        groupsIn(id).forEach(function(g,i){ shut[id+'||'+g] = i>0; });
+      });
+      persist();
+    }
+    function render(){
       var groups=VIEW_GROUPS[view]||null;  // null => "key": every group, curated rows
-      ['tbl-cloud','tbl-closed','tbl-open'].forEach(function(id){
+      TABLES.forEach(function(id){
         var t=document.getElementById(id); if(!t) return;
         t.querySelectorAll('tbody tr').forEach(function(tr){
-          var g=tr.dataset.group||'', inView=groups ? groups.indexOf(g)>=0 : true, show;
-          if(tr.classList.contains('exprow')){
-            show = inView && !groups && !expanded[id+'||'+g];
-          } else if(tr.classList.contains('grouprow')){
-            show = inView;
+          var g=tr.dataset.group||'', inView=groups ? groups.indexOf(g)>=0 : true;
+          var closed=!!shut[id+'||'+g], show;
+          if(tr.classList.contains('grouprow')){
+            show=inView;                       // header stays so the group can reopen
+          } else if(tr.classList.contains('exprow')){
+            show=inView && !closed && !groups && !expanded[id+'||'+g];
           } else {
-            show = inView && (groups || tr.dataset.key==='1' || expanded[id+'||'+g]);
+            show=inView && !closed && (groups || tr.dataset.key==='1' || expanded[id+'||'+g]);
           }
           tr.style.display = show ? '' : 'none';
         });
+        t.querySelectorAll('tbody tr.grouprow .grpbtn').forEach(function(b){
+          var closed=!!shut[id+'||'+b.dataset.groupToggle];
+          b.setAttribute('aria-expanded', closed ? 'false' : 'true');
+          b.classList.toggle('shut', closed);
+        });
       });
       viewbar.querySelectorAll('.vpill').forEach(function(b){ b.classList.toggle('selected', b.dataset.view===view); });
-      // Per-section .xlsx downloads follow the active view.
+      // Per-section .xlsx downloads follow the active view (never the collapse state).
       document.querySelectorAll('a.sec-x[data-xlsx]').forEach(function(a){
         var map; try{ map=JSON.parse(a.dataset.xlsx); }catch(err){ return; }
         if(map[view]) a.setAttribute('href', map[view]);
       });
-      // Reflect the view in the URL so a view is linkable and survives reload.
       try{
         var u=new URL(window.location.href);
         if(view==='key') u.searchParams.delete('view'); else u.searchParams.set('view', view);
         history.replaceState(null,'',u);
       }catch(err){}
     }
+    // Switching view must never land the reader on an empty section, so if the
+    // view's groups all happen to be collapsed, open the first one.
+    function ensureSomethingVisible(){
+      var groups=VIEW_GROUPS[view]||null;
+      TABLES.forEach(function(id){
+        var gs=groupsIn(id).filter(function(g){ return groups ? groups.indexOf(g)>=0 : true; });
+        if(gs.length && gs.every(function(g){ return shut[id+'||'+g]; })) shut[id+'||'+gs[0]]=false;
+      });
+      persist();
+    }
     viewbar.addEventListener('click',function(e){
       var b=e.target.closest('[data-view]'); if(!b) return;
-      view=b.dataset.view; expanded={};   // a fresh view starts collapsed
-      applyView();
+      view=b.dataset.view; expanded={};
+      ensureSomethingVisible(); render();
     });
     document.addEventListener('click',function(e){
-      var x=e.target.closest('[data-expand]'); if(!x) return;
-      var t=x.closest('table'); if(!t) return;
-      expanded[t.id+'||'+x.dataset.expand]=true;
-      applyView();
+      var x=e.target.closest('[data-expand]');
+      if(x){ var t=x.closest('table'); if(t){ expanded[t.id+'||'+x.dataset.expand]=true; render(); } return; }
+      var gb=e.target.closest('[data-group-toggle]');
+      if(gb){ var tb=gb.closest('table');
+        if(tb){ var k=tb.id+'||'+gb.dataset.groupToggle; shut[k]=!shut[k]; persist(); render(); } return; }
+      var ga=e.target.closest('[data-grp-all]');
+      if(ga){ var open=ga.dataset.grpAll==='open', tid=ga.dataset.target;
+        groupsIn(tid).forEach(function(g){ shut[tid+'||'+g]=!open; });
+        persist(); render(); }
     });
     try{
       var want=new URL(window.location.href).searchParams.get('view');
       if(want && (want==='key' || VIEW_GROUPS[want])) view=want;
     }catch(err){}
-    applyView();
+    ensureSomethingVisible();
+    render();
+    // Exports must not inherit the collapse state: a printed section carries every
+    // group in the active view. Open everything for the print, restore afterwards.
+    window.addEventListener('beforeprint',function(){
+      window.__ctoShut=JSON.stringify(shut);
+      Object.keys(shut).forEach(function(k){ shut[k]=false; });
+      render();
+    });
+    window.addEventListener('afterprint',function(){
+      if(window.__ctoShut){ try{ shut=JSON.parse(window.__ctoShut); }catch(err){} window.__ctoShut=null; render(); }
+    });
   }
 
   // Compare mode: pick 2-3 providers; dimensions render as stacked cards, reusing
