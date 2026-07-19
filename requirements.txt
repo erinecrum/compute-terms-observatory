@@ -1,10 +1,20 @@
 # Compute Terms Observatory — runtime dependencies (kept deliberately minimal,
 # matching the radar project's low-dependency posture).
-requests>=2.31        # HTTP fetching of public terms/SLA/AUP pages
-beautifulsoup4>=4.12  # HTML parsing / content extraction for page snapshots
-PyYAML>=6.0           # source registry + human-verified overrides (non-confidential)
-python-dotenv>=1.0    # load ANTHROPIC_API_KEY from a local .env (never committed)
-anthropic>=0.40       # Claude API client for the structured extraction layer
-pypdf>=4.0            # extract text from PDF-hosted documents (e.g. Microsoft MCA)
-openpyxl>=3.1         # write the downloadable Excel (.xlsx) comparison export
-python-docx>=1.1      # extract text from DOCX-hosted documents (e.g. Azure consolidated SLA)
+#
+# Versions are PINNED exactly, not floored with >=. CI installs these into a job
+# that holds ANTHROPIC_API_KEY and DATA_REPO_TOKEN, so a compromised release of
+# any package here would run arbitrary code with the API key and with write access
+# to the private corpus. Pinning makes an upgrade a reviewed commit rather than
+# something that happens silently on the next scheduled run.
+#
+# Dependabot is enabled and will open PRs for security updates: bump these
+# deliberately rather than loosening the pins back to >=.
+
+requests==2.32.5        # HTTP fetching of public terms/SLA/AUP pages
+beautifulsoup4==4.15.0  # HTML parsing / content extraction for page snapshots
+PyYAML==6.0.3           # source registry + human-verified overrides (non-confidential)
+python-dotenv==1.2.1    # load ANTHROPIC_API_KEY from a local .env (never committed)
+anthropic==0.116.0      # Claude API client for the structured extraction layer
+pypdf==6.14.2           # extract text from PDF-hosted documents (e.g. Microsoft MCA)
+openpyxl==3.1.5         # write the downloadable Excel (.xlsx) comparison export
+python-docx==1.2.0      # extract text from DOCX-hosted documents (e.g. Azure consolidated SLA)
