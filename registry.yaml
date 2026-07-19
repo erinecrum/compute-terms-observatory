@@ -708,8 +708,12 @@ providers:
       # not merely share a parent company.
         fetch_method: browser
         notes: JavaScript-rendered; direct fetch returns 0 chars.
+  # DeepSeek is split into two entries: the downloadable weights and the hosted
+  # platform are different artifacts governed by different documents. Naming follows
+  # the mistral-open / mistral-platform pattern already in this file, and both
+  # entries share a parent_company so the matrix column sub-label pairs them.
   - provider: deepseek
-    provider_name: DeepSeek
+    provider_name: DeepSeek open models
     segment: model_provider
     parent_company: DeepSeek
     openness: open_weight
@@ -719,20 +723,29 @@ providers:
         status: verified
         generation: DeepSeek-R1
         url: https://huggingface.co/deepseek-ai/DeepSeek-R1/raw/main/LICENSE
+      # FLAGGED, not moved: this is labelled a model card but points at the
+      # platform's terms of use, so it may belong on the platform entry. Left here
+      # pending a decision rather than moved silently.
+      - doc_type: ai_documentation
+        name: Model card / usage policy
+        status: unverified
+        url: https://cdn.deepseek.com/policies/en-US/deepseek-terms-of-use.html
+
+  - provider: deepseek-platform
+    provider_name: DeepSeek platform
+    segment: model_provider
+    parent_company: DeepSeek
+    openness: closed_api
+    provider_renamed_from: deepseek
+    documents:
       - doc_type: service_terms
         name: DeepSeek Open Platform Terms of Service
         status: unverified
         fetch_method: browser
         url: https://platform.deepseek.com/downloads/DeepSeek_Open_Platform_Terms_of_Service.html
         notes: 403 to direct archival bot; use browser tier (confirm URL in re-fetch).
-
-      # -- Data protection & accountability (Phase B) --
-      - doc_type: ai_documentation
-        name: Model card / usage policy
-        status: unverified
-        url: https://cdn.deepseek.com/policies/en-US/deepseek-terms-of-use.html
       - doc_type: privacy_policy
-        name: Host privacy policy
+        name: DeepSeek Privacy Policy
         status: unverified
         url: https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html
   - provider: qwen
@@ -766,31 +779,39 @@ providers:
           counters, like counts and "11 days ago" timestamps, which changed on
           every run and generated cosmetic change-feed entries with no relation to
           the model card's content.
+  # Kimi is split on the same basis as DeepSeek. The two entries carry different
+  # brand names (the weights are Kimi, the platform is Moonshot's), so the shared
+  # parent_company is what pairs them in the matrix column sub-label.
   - provider: kimi
-    provider_name: Kimi
+    provider_name: Kimi open models
     segment: model_provider
     parent_company: Moonshot AI
     openness: open_weight
     documents:
-      - doc_type: service_terms
-        name: Moonshot (Kimi) Platform model-use agreement
-        status: verified
-        url: https://platform.moonshot.ai/docs/agreement/modeluse
       - doc_type: model_license
         name: Kimi K2 model license (Modified MIT)
         status: verified
         generation: Kimi K2
         url: https://huggingface.co/moonshotai/Kimi-K2-Instruct/raw/main/LICENSE
 
-      # -- Data protection & accountability (Phase B) --
-      - doc_type: ai_documentation
-        name: Model card / usage policy
-        status: unverified
+  - provider: moonshot-platform
+    provider_name: Moonshot platform
+    segment: model_provider
+    parent_company: Moonshot AI
+    openness: closed_api
+    provider_renamed_from: kimi
+    documents:
+      - doc_type: service_terms
+        name: Moonshot (Kimi) Platform model-use agreement
+        status: verified
         url: https://platform.moonshot.ai/docs/agreement/modeluse
       - doc_type: privacy_policy
-        name: Host privacy policy
+        name: Moonshot (Kimi) Platform privacy policy
         status: unverified
         url: https://platform.kimi.ai/docs/agreement/userprivacy
+      # REMOVED in the split: an ai_documentation row pointed at exactly the same
+      # URL as service_terms above, so it was the same document counted twice and
+      # would have been extracted twice under two doc_type framings.
   - provider: glm
     provider_name: GLM
     segment: model_provider

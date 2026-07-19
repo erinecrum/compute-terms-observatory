@@ -584,11 +584,48 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
                 continue
             entries.append(entry)
     _write_non_text_report(non_text_rows)
+    # Standalone curation events. An entry split moves documents between providers
+    # while their URLs stay the same, so no snapshot comparison would ever surface
+    # it; without this the reorganization would be invisible in the feed.
+    for ev in _curation_events():
+        provider_name = next(
+            (d.provider_name for d in registry.documents() if d.provider == ev.get("provider")),
+            ev.get("provider", ""))
+        entries.append({
+            "provider": ev.get("provider", ""),
+            "provider_name": provider_name,
+            "doc_type": ev.get("doc_type", ""),
+            "slug": ev.get("doc_type", ""),
+            "document": ev.get("document", ""),
+            "url": ev.get("url", ""),
+            "detected_at": f"{ev.get('date')}T00:00:00+00:00",
+            "source_changed": False,
+            "non_text": False,
+            "substantive": False,
+            "curation": True,
+            "note": ev.get("note", ""),
+            "added_lines": 0, "removed_lines": 0, "blocks": [], "all_blocks": [],
+            "compare_id": "", "prev_stamp": "", "curr_stamp": "",
+        })
+
     entries.sort(key=lambda e: e["detected_at"], reverse=True)
     return entries
 
 
 _CURATION_NOTES_CACHE = None
+_CURATION_EVENTS_CACHE = None
+
+
+def _curation_events():
+    """Standalone curation events, not tied to any document diff."""
+    global _CURATION_EVENTS_CACHE
+    if _CURATION_EVENTS_CACHE is None:
+        try:
+            raw = yaml.safe_load(Path("curation_notes.yaml").read_text(encoding="utf-8")) or {}
+            _CURATION_EVENTS_CACHE = raw.get("events", []) or []
+        except (OSError, ValueError):
+            _CURATION_EVENTS_CACHE = []
+    return _CURATION_EVENTS_CACHE
 
 
 def _curation_note(provider: str, slug: str, to_url: str):

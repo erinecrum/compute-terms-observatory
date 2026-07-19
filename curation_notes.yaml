@@ -15,6 +15,35 @@
 # artifact is now tracked). `substantive: false` is a pure relocation where the
 # governing text is identical at a new address.
 
+# Standalone curation events. Unlike the source relocations below, these are not
+# triggered by a document's URL changing: an entry split moves documents between
+# providers while their URLs stay identical, so nothing in the snapshot history
+# would ever surface it. They are emitted on the stated date regardless.
+events:
+  - date: 2026-07-19
+    provider: deepseek-platform
+    document: DeepSeek platform entry
+    doc_type: service_terms
+    url: https://platform.deepseek.com/downloads/DeepSeek_Open_Platform_Terms_of_Service.html
+    note: >-
+      Observatory curation update: DeepSeek's hosted platform documents (service
+      terms, privacy policy) are now tracked as a separate Closed API entry,
+      DeepSeek platform, distinct from the DeepSeek open-weight entry. No provider
+      terms changed; the Observatory reorganized which entry these documents are
+      filed under.
+
+  - date: 2026-07-19
+    provider: moonshot-platform
+    document: Moonshot platform entry
+    doc_type: service_terms
+    url: https://platform.moonshot.ai/docs/agreement/modeluse
+    note: >-
+      Observatory curation update: Moonshot AI's hosted platform documents (service
+      terms, privacy policy) are now tracked as a separate Closed API entry,
+      Moonshot platform, distinct from the Kimi open-weight entry. No provider terms
+      changed; the Observatory reorganized which entry these documents are filed
+      under.
+
 notes:
   - provider: qwen
     slug: model_license
