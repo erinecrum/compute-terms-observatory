@@ -118,11 +118,28 @@ def _license_bucket(value: str) -> str:
 # rewritten; this derivation is deterministic and reversible.
 # ---------------------------------------------------------------------------
 
-STATUSES = ("quote_verified", "quote_unverified", "no_clause_found", "not_applicable")
+STATUSES = ("quote_verified", "quote_unverified", "no_clause_found", "not_applicable",
+            "access_restricted", "not_retrievable")
+
+# The last two describe why a document is absent from the corpus, not what a
+# provider's terms say, and they are deliberately kept apart:
+#
+#   access_restricted  the provider's own configuration blocks retrieval
+#                      (robots.txt, CAPTCHA, login wall). Reserved strictly for
+#                      that. Never applied to a technical failure on our side or
+#                      theirs.
+#   not_retrievable    a technical failure (JavaScript-rendered page yielding no
+#                      text, a broken provider link).
+#
+# Both count as absence of captured data for extraction, and both render neutrally
+# rather than as warnings: neither is a finding about the provider's terms.
+_CAPTURE_ABSENT = ("access_restricted", "not_retrievable")
 
 # Issue 3: absence is shown with exactly two display labels, regardless of the raw
 # vocabulary the model used ("not specified", "none", "no", "n/a", ...).
-_ABSENCE_DISPLAY = {"no_clause_found": "silent", "not_applicable": "not applicable"}
+_ABSENCE_DISPLAY = {"no_clause_found": "silent", "not_applicable": "not applicable",
+                    "access_restricted": "access restricted by provider",
+                    "not_retrievable": "not retrievable"}
 
 
 def display_value(field: dict) -> str:
@@ -148,6 +165,13 @@ def _derive_status(field: dict, dim_key: str, group: str, openness: str) -> str:
     model_license on a provider that distributes no weights, resolve to
     not_applicable (the status is kept in the data for compare mode even though the
     segment table does not render the row)."""
+    # Capture-absence states describe whether a document reached the corpus at all,
+    # which is not something that can be re-derived from the value: by the time a
+    # value is suppressed it is empty, and re-deriving would silently downgrade it
+    # to "silent", asserting the provider's terms say nothing when in fact we never
+    # read the right document. They are authoritative and pass through untouched.
+    if field.get("status") in _CAPTURE_ABSENT:
+        return field["status"]
     # A recorded commitment-program fact ("negotiated, not published") is a real
     # value, never an absence.
     substantive = bool(field.get("commitment_program")) or not _is_absence(field.get("value", ""))
@@ -201,6 +225,21 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
     store = SnapshotStore("snapshots")
     programs = load_commitment_programs()
 
+    # Generation-mismatch sweep, run once before the matrix is assembled. Documents
+    # naming an older generation than the entry tracks have their values suppressed;
+    # documents naming a NEWER one are a registry-update signal, not a data problem,
+    # so their values stand and the finding is reported instead.
+    from .generation import sweep as _generation_sweep
+
+    generation_findings = _generation_sweep(registry, store)
+    suppress_slugs: Dict[str, Dict[str, str]] = {}
+    for g in generation_findings:
+        if g.action == "suppress":
+            suppress_slugs.setdefault(g.provider, {})[g.slug] = (
+                f"source document names {g.found} ({g.mentions} mentions); "
+                f"this entry tracks {g.declared}")
+    _write_generation_report(generation_findings)
+
     provider_names = registry.provider_names()
     providers_meta: List[dict] = []
     matrix: Dict[str, Dict[str, dict]] = {}
@@ -238,6 +277,20 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
                     "capture_timestamp": cap,
                     "stale": fm == "wayback" and _capture_stale(cap),
                 }
+        # Values read out of a document that belongs to a superseded generation are
+        # withheld. The Llama case is the precedent: a quote-verified, high-confidence
+        # value describing Llama 2's policy under a Llama 4 entry. The quote was real
+        # and the extraction was correct; the document was the wrong one, which no
+        # confidence score can express.
+        for f in fields.values():
+            src = f.get("source") or {}
+            if src.get("slug") in suppress_slugs.get(provider, {}):
+                f["status"] = "not_retrievable"
+                f["capture_cause"] = "generation_mismatch"
+                f["value"] = ""
+                f["citation"] = ""
+                f["suppressed_note"] = suppress_slugs[provider][src["slug"]]
+
         has_stale = False
         for f in fields.values():
             src = f.get("source")
@@ -489,6 +542,31 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
     _write_non_text_report(non_text_rows)
     entries.sort(key=lambda e: e["detected_at"], reverse=True)
     return entries
+
+
+GENERATION_REPORT_PATH = Path("data/generation-mismatches.json")
+
+
+def _write_generation_report(findings) -> None:
+    """Internal record of every generation mismatch, in both directions.
+
+    Suppressions are visible on the site as withheld values, but the newer-generation
+    findings are not visible anywhere else: they mean the registry is behind and a
+    curation decision is due.
+    """
+    GENERATION_REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    GENERATION_REPORT_PATH.write_text(json.dumps({
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "count": len(findings),
+        "note": ("Documents whose text names a different model generation than the "
+                 "registry entry tracks. 'older' suppresses the values; 'newer' means "
+                 "the registry needs updating and is not a data defect."),
+        "findings": [{
+            "provider": f.provider, "slug": f.slug, "declared": f.declared,
+            "found_in_text": f.found, "direction": f.direction,
+            "mentions": f.mentions, "action": f.action,
+        } for f in findings],
+    }, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
 NON_TEXT_REPORT_PATH = Path("data/non-text-fetches.json")

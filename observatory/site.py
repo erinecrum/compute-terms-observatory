@@ -413,12 +413,37 @@ _STATUS_META = {
     "quote_unverified": ("warn",   "no supporting quote could be matched to the source",     "warn",  "unverified — supporting quote not matched"),
     "no_clause_found":  ("absent", "the provider's terms are silent on this point",          "muted", "silent — no clause found"),
     "not_applicable":   ("na",     "this dimension does not apply to this offering",         "muted", "not applicable"),
+    # Absence of a captured document, not a finding about the terms. Muted, never
+    # a warning: nothing has gone wrong with the provider's drafting.
+    "access_restricted": ("na",    "the provider's configuration blocks automated retrieval", "muted", "access restricted by provider"),
+    "not_retrievable":   ("na",    "the document could not be retrieved",                     "muted", "not retrievable"),
 }
 _DEFAULT_STATUS = "quote_unverified"
 
+# Mechanism shown in parentheses after the label. Kept separate from the label so
+# the two states read consistently however the cause is recorded.
+_CAPTURE_CAUSE = {
+    "robots":      "robots.txt",
+    "captcha":     "CAPTCHA",
+    "login":       "login required",
+    "javascript":  "JavaScript-rendered",
+    "broken_link": "broken provider link",
+    # Third cause, added beyond the two specified: a value withheld because its
+    # source document belongs to a superseded generation. Without it the cell reads
+    # a bare "not retrievable", which implies a fetch failure when the document was
+    # in fact retrieved and simply governs a different artifact.
+    "generation_mismatch": "superseded generation",
+}
+
 
 def _status_meta(field: dict):
-    return _STATUS_META.get(field.get("status", _DEFAULT_STATUS), _STATUS_META[_DEFAULT_STATUS])
+    dot, title, badge_cls, label = _STATUS_META.get(
+        field.get("status", _DEFAULT_STATUS), _STATUS_META[_DEFAULT_STATUS])
+    cause = _CAPTURE_CAUSE.get(field.get("capture_cause") or "")
+    if cause and field.get("status") in ("access_restricted", "not_retrievable"):
+        label = f"{label} ({cause})"
+        title = f"{title}: {cause}"
+    return dot, title, badge_cls, label
 
 
 def _status_dot(field: dict) -> str:
@@ -442,7 +467,8 @@ def _cell(provider: str, dim_key: str, field: dict) -> str:
     source = field.get("source")
     conf = field.get("confidence", "low")
     status = field.get("status", _DEFAULT_STATUS)
-    absent = status in ("no_clause_found", "not_applicable")
+    absent = status in ("no_clause_found", "not_applicable",
+                        "access_restricted", "not_retrievable")
     unverified = status == "quote_unverified"
     prog = field.get("commitment_program")
 
@@ -830,7 +856,47 @@ license rather than a hosted service.</li>
 </ul>
 <p>The distinction matters when reading across a row. A silent cell means the provider
 could have addressed the point and did not. A not-applicable cell means the point could
-not arise for that kind of offering.</p>"""),
+not arise for that kind of offering.</p>
+<p>Two further labels describe a document that is not in the corpus at all, rather than
+anything the terms say. Neither is a finding about the provider's drafting.</p>
+<ul>
+<li><strong>Access restricted by provider.</strong> Some providers block automated
+retrieval via robots.txt, CAPTCHAs, or login walls. The Observatory honors these
+boundaries and does not bypass them; affected documents are marked &ldquo;Access
+restricted by provider&rdquo; rather than captured through workarounds. The mechanism is
+shown in parentheses.</li>
+<li><strong>Not retrievable.</strong> The document could not be retrieved for a technical
+reason, shown in parentheses: JavaScript-rendered (the page returns no text to an
+automated fetch) or a broken provider link.</li>
+</ul>"""),
+
+        ("sources-and-mirrors", "Which copy of a document is authoritative", """
+<p>Some documents exist in more than one place. Which copy the Observatory tracks
+follows one rule, applied by document type.</p>
+<ul>
+<li><strong>Open-weight model licenses and use policies:</strong> the provider's official
+repository copy (their GitHub or Hugging Face organization) is the operative document,
+and is preferred over a website copy. It is the license attached to the distributed
+artifact, which is what a reader of an open-weight license is bound by.</li>
+<li><strong>Service terms, privacy policies, data processing addenda, and any other
+hosted-platform document:</strong> the provider's website is canonical. A repository copy
+is never an acceptable substitute for these.</li>
+</ul>
+<p>A document is never substituted across types. A model license is not a platform's
+service terms, and one is not evidence of the other.</p>
+<p>Where a license text is generic and names no generation (a bare MIT or Apache-2.0
+file, for example), the binding between document and model generation is the repository
+path it sits at, not the words in the file.</p>
+<p>Every document in a provider's entry must govern the tracked artifact or
+relationship. Sharing a parent company is not enough: a consumer platform's privacy
+policy does not govern a set of downloadable model weights, because running the weights
+creates no data-processing relationship with the publisher.</p>
+<p><strong>Archived captures.</strong> Where a provider blocks direct retrieval, the
+Observatory falls back to the most recent Internet Archive capture. Values from an
+archived capture are marked with the capture date, because the archived text may lag the
+provider's live page: it is evidence of what the document said on that date, not
+necessarily what it says today. Where the capture is more than seven days old the entry
+also carries a staleness flag.</p>"""),
 
         ("dimension-sets", "Dimension sets by segment", "{_segment_dims_body}"),
 
