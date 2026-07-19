@@ -33,6 +33,56 @@ NON_TEXT_MESSAGE = "Source returned non-text content. Diff suppressed pending re
 
 _ALLOWED_CONTROL = {"\t", "\n", "\r"}
 
+# ---------------------------------------------------------------------------
+# Minimum meaningful content, by document type.
+#
+# `looks_like_text` catches captures that are not text. This catches captures that
+# ARE text but are not the document: a trust-centre landing page, a teaser
+# paragraph with a "Learn more" link, a cookie-consent shell.
+#
+# The failure such a capture causes is the same one the status-derivation guard
+# exists to prevent. A 234-character stub extracts as near-silent, and the matrix
+# then asserts the provider's terms say nothing on a dimension, on the basis of a
+# document nobody ever read. That is worse than an honest gap, because it looks
+# like coverage.
+#
+# Thresholds are per doc_type because the floor differs by genre: a sub-processor
+# list can legitimately be a short table, while a DPA or a set of service terms
+# running to a few hundred characters is certainly a stub. They are deliberately
+# conservative, set to catch obvious stubs rather than to judge completeness.
+# ---------------------------------------------------------------------------
+
+MIN_CONTENT_CHARS = {
+    "service_terms": 2000,
+    "dpa": 2000,
+    "model_license": 1000,
+    "privacy_policy": 2500,
+    "aup": 1000,
+    "sla": 1000,
+    "ai_terms": 1000,
+    "subprocessor_list": 400,      # legitimately short: often just a table
+    "transparency_report": 1500,
+    "ai_documentation": 500,
+    "deprecation": 500,
+}
+DEFAULT_MIN_CONTENT_CHARS = 500
+
+
+def min_content_chars(doc_type: str) -> int:
+    return MIN_CONTENT_CHARS.get(doc_type or "", DEFAULT_MIN_CONTENT_CHARS)
+
+
+def sufficient_content(text: str, doc_type: str) -> Tuple[bool, Dict[str, float]]:
+    """Return (is_sufficient, stats) for a decoded capture of a given doc_type.
+
+    Separate from `looks_like_text` on purpose: "this is not text" and "this is
+    text, but it is not the document" are different failures with different fixes,
+    and collapsing them would hide which one occurred.
+    """
+    n = len(text or "")
+    threshold = min_content_chars(doc_type)
+    return n >= threshold, {"chars": n, "threshold": threshold}
+
 
 def looks_like_text(s: str) -> Tuple[bool, Dict[str, float]]:
     """Return (is_text, stats) for a decoded string.

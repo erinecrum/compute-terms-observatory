@@ -437,6 +437,8 @@ _CAPTURE_CAUSE = {
     # a bare "not retrievable", which implies a fetch failure when the document was
     # in fact retrieved and simply governs a different artifact.
     "generation_mismatch": "superseded generation",
+    # Text, but not the document: below the per-doc_type content floor.
+    "insufficient_capture": "insufficient capture",
 }
 
 
@@ -1114,10 +1116,20 @@ def _change_item(c: dict) -> str:
     meta = f'<a class="csource" href="{safe_url(c["url"])}" target="_blank" rel="noopener">source</a>'
     dim_keys = " ".join(d["key"] for d in dims)
     substantive = c.get("substantive", True)
-    cosmetic_tag = "" if substantive else '<span class="badge muted cosmetic-tag">cosmetic</span>'
+    # "Cosmetic" and "curation" are both non-substantive, but they are not the same
+    # claim. Cosmetic means the provider's text did not meaningfully change.
+    # Curation means the Observatory changed what it tracks or where it reads it
+    # from, and the provider did not act at all. Labelling a relocation that
+    # corrected a wrong-generation document as "cosmetic" would badly understate it.
+    if substantive:
+        cosmetic_tag = ""
+    elif c.get("curation"):
+        cosmetic_tag = '<span class="badge muted curation-tag">curation</span>'
+    else:
+        cosmetic_tag = '<span class="badge muted cosmetic-tag">cosmetic</span>'
     return f"""
 <article class="change" data-provider="{esc(c["provider"])}" data-pname="{esc(c["provider_name"])}"
-  data-date="{esc(c["detected_at"][:10])}" data-dims="{esc(dim_keys)}" data-substantive="{'1' if substantive else '0'}">
+  data-date="{esc(c["detected_at"][:10])}" data-dims="{esc(dim_keys)}" data-substantive="{'1' if substantive else '0'}" data-curation="{'1' if c.get('curation') else '0'}">
   <div class="chead"><strong>{esc(c["provider_name"])}</strong>: {esc(c["document"])}
     <span class="tag">{esc(c["doc_type"])}</span>{cosmetic_tag}
     <span class="cdate">{esc(c["detected_at"][:10])}</span></div>
@@ -2047,7 +2059,7 @@ document.addEventListener('click',function(e){
     var dimsNarrowed=dims.length<totalDim, visible=0;
     items.forEach(function(a){
       var show=true;
-      if(!showCosmetic && a.dataset.substantive==='0') show=false;
+      if(!showCosmetic && a.dataset.substantive==='0' && a.dataset.curation!=='1') show=false;
       if(provs.indexOf(a.dataset.provider)<0) show=false;
       if(from && a.dataset.date<from) show=false;
       if(to && a.dataset.date>to) show=false;

@@ -31,7 +31,7 @@ from .overrides import apply_overrides, load_overrides
 from .registry import Registry, load_registry
 from .schema import DIMENSIONS, dimension_group, is_applicable, segment_group
 from .snapshot import SnapshotStore
-from .textcheck import NON_TEXT_MESSAGE, looks_like_text
+from .textcheck import NON_TEXT_MESSAGE, looks_like_text, sufficient_content
 
 # Which dimensions are SLA-specific (grouped at the bottom of the matrix).
 _SLA_DIMS = {"availability_definition", "credit_regime", "claim_mechanics", "sla_exclusions"}
@@ -277,6 +277,41 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
                     "capture_timestamp": cap,
                     "stale": fm == "wayback" and _capture_stale(cap),
                 }
+        # Documents the provider blocks. Declared in the registry rather than
+        # inferred from a failure, so the state is a decision on the record instead
+        # of a side effect of the last run's luck.
+        for doc in registry.for_provider(provider):
+            if doc.capture_state != "access_restricted":
+                continue
+            for f in fields.values():
+                if (f.get("source") or {}).get("slug") != doc.slug:
+                    continue
+                f["status"] = "access_restricted"
+                f["capture_cause"] = doc.capture_cause or ""
+                f["value"] = ""
+                f["citation"] = ""
+
+        # Captures already in the corpus that fall below the per-doc_type content
+        # floor. The fetcher now refuses these outright, but snapshots taken before
+        # the guard existed are still here, and a stub extracts as near-silent.
+        for doc in registry.for_provider(provider):
+            snap = store.latest(provider, doc.slug)
+            if not snap or not snap.text:
+                continue
+            enough, size = sufficient_content(snap.text, doc.doc_type)
+            if enough:
+                continue
+            for f in fields.values():
+                if (f.get("source") or {}).get("slug") != doc.slug:
+                    continue
+                f["status"] = "not_retrievable"
+                f["capture_cause"] = "insufficient_capture"
+                f["value"] = ""
+                f["citation"] = ""
+                f["suppressed_note"] = (
+                    f"capture is {size['chars']} chars, below the {size['threshold']}-char "
+                    f"floor for {doc.doc_type}; likely a landing page rather than the document")
+
         # Values read out of a document that belongs to a superseded generation are
         # withheld. The Llama case is the precedent: a quote-verified, high-confidence
         # value describing Llama 2's policy under a Llama 4 entry. The quote was real

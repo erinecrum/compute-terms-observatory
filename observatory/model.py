@@ -61,7 +61,12 @@ class Document:
     segment: str = "hyperscaler"   # one of SEGMENTS
     parent_company: str = ""       # for model families, e.g. "Anthropic", "Google"
     openness: str = ""             # for model families: closed_api | open_weight
-    generation: str = ""           # model generation a license/doc pins to, e.g. "GLM-5.2"
+    generation: str = ""
+    # Set when a provider's own configuration blocks retrieval, so the
+    # document is never fetched and its values render as absent-by-access
+    # rather than as a repeated failure.
+    capture_state: str = ""
+    capture_cause: str = ""           # model generation a license/doc pins to, e.g. "GLM-5.2"
     # Fetch tier for THIS source: direct (default), browser (Playwright), or
     # wayback (Internet Archive fallback). See observatory/fetcher.py.
     fetch_method: str = "direct"
@@ -83,6 +88,12 @@ class Document:
 
     @property
     def is_fetchable(self) -> bool:
+        # A document the provider's own configuration blocks is not a fetch target.
+        # Retrying it every twelve hours would generate a permanent failure in the
+        # log for a boundary we have decided to respect, and would bury the
+        # failures that are actually actionable.
+        if self.capture_state == "access_restricted":
+            return False
         return bool(self.url) and self.status in ("verified", "unverified")
 
     @property

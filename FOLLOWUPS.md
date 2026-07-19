@@ -27,3 +27,24 @@ tracked generation again when a newer flagship license resolves. Each move is an
 Observatory curation update, not a provider relicensing.
 
 Raised 2026-07-19.
+
+## Per-host fetch tuning candidates (expansion scoping)
+
+Sources failing for host-specific reasons rather than policy ones. Each needs a
+decision during the corpus expansion, not a blanket retry:
+
+- **grok/service_terms, grok/dpa** - browser-tier timeouts at the 45s `networkidle`
+  wait against x.ai. Candidates for per-host wait tuning (a content selector rather
+  than network idle). grok/aup and grok/privacy_policy currently succeed, so the
+  host is reachable and the wait strategy is the variable.
+- **coreweave/privacy_policy** - the provider's own redirect is broken:
+  `coreweave.com/privacy-policy/` 301s to `http://www.coreweave.com:8080/privacy-policy`,
+  plain HTTP on a port that does not answer. No URL substitution fixes it; needs a
+  different source or a note to CoreWeave.
+- **deepseek/service_terms** - CAPTCHA-gated, no archive available. Access
+  restricted by provider; not pursued.
+- **gemini/transparency_report, crusoe/privacy_policy** - captured, but below the
+  content floor (234 and 2231 chars): landing pages rather than documents. Deeper
+  URLs to be hunted during expansion scoping.
+
+Raised 2026-07-19.

@@ -25,7 +25,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from .model import Document, FetchResult, sha256_bytes, sha256_text
-from .textcheck import looks_like_text
+from .textcheck import looks_like_text, sufficient_content
 
 # We identify honestly as an archival bot (not a spoofed browser) and link back to
 # the project, so any site owner can see exactly who we are. We are archivists,
@@ -262,6 +262,22 @@ def _finalize(result: FetchResult, url: str, content: bytes, content_type: str,
         raise RuntimeError(
             f"content suspiciously short ({len(text)} chars) — likely blocked or the "
             "page layout changed; refusing to snapshot"
+        )
+    # Text, but not the document: a trust-centre landing page, a teaser paragraph,
+    # a consent shell. Refused here so it never reaches extraction, because a stub
+    # extracts as near-silent and the matrix would then assert the provider is
+    # silent on a dimension nobody ever read a document for. The size and the
+    # threshold are both recorded so the decision is auditable and the threshold
+    # can be re-tuned against evidence rather than guessed at again.
+    enough, size_stats = sufficient_content(text, result.doc_type)
+    if not enough:
+        result.meta["reject_reason"] = "insufficient_capture"
+        result.meta["char_count_seen"] = size_stats["chars"]
+        result.meta["char_count_required"] = size_stats["threshold"]
+        raise RuntimeError(
+            f"insufficient capture for {result.doc_type}: {size_stats['chars']} chars, "
+            f"below the {size_stats['threshold']}-char floor for this document type "
+            "(looks like a landing page or teaser, not the document); refusing to snapshot"
         )
     result.text = text
     result.text_sha256 = sha256_text(text)

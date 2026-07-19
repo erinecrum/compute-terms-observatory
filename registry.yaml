@@ -693,6 +693,13 @@ providers:
         name: Model card / usage policy
         status: unverified
         url: https://www.llama.com/llama4/use-policy/
+        capture_state: access_restricted
+        capture_cause: captcha
+        notes: >-
+          CAPTCHA-gated. It was added to the browser tier as a JavaScript-rendered
+          candidate and failed on an interactive challenge instead, so by the rule
+          it leaves the browser tier: the Observatory does not bypass a provider's
+          access controls. Marked access-restricted rather than retried.
       # The Meta/Facebook consumer privacy policy was removed here, not marked
       # restricted: it governs Meta's platforms, not the Llama weights. Running
       # downloaded weights creates no data-processing relationship with Meta, so it
@@ -752,8 +759,13 @@ providers:
       - doc_type: ai_documentation
         name: Model card / usage policy
         status: unverified
-        url: https://huggingface.co/Qwen
-        notes: HF model cards; confirm license/usage.
+        url: https://huggingface.co/Qwen/Qwen3-235B-A22B/raw/main/README.md
+        notes: >-
+          Raw model-card file rather than the rendered Hugging Face page, same
+          pattern as the Llama mirrors. The rendered page carries download
+          counters, like counts and "11 days ago" timestamps, which changed on
+          every run and generated cosmetic change-feed entries with no relation to
+          the model card's content.
   - provider: kimi
     provider_name: Kimi
     segment: model_provider
