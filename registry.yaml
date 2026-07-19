@@ -559,10 +559,6 @@ providers:
         name: Model card / usage policy
         status: unverified
         url: https://openai.com/index/gpt-oss-model-card/
-      - doc_type: privacy_policy
-        name: Host privacy policy
-        status: unverified
-        url: https://openai.com/policies/privacy-policy/
   - provider: gemini
     provider_name: Gemini
     segment: model_provider
@@ -621,10 +617,6 @@ providers:
         name: Model card / usage policy
         status: unverified
         url: https://ai.google.dev/gemma/prohibited_use_policy
-      - doc_type: privacy_policy
-        name: Host privacy policy
-        status: unverified
-        url: https://policies.google.com/privacy
   - provider: grok
     provider_name: Grok
     segment: model_provider
@@ -733,11 +725,18 @@ providers:
     openness: open_weight
     documents:
       - doc_type: model_license
-        name: Qwen2.5-72B model license
+        name: Qwen3-235B-A22B model license (Apache-2.0)
         status: verified
-        generation: Qwen2.5-72B
-        url: https://huggingface.co/Qwen/Qwen2.5-72B-Instruct/raw/main/LICENSE
-        notes: Per-generation; Qwen mixes Apache-2.0 and the Qwen license across releases.
+        generation: Qwen3-235B-A22B
+        url: https://huggingface.co/Qwen/Qwen3-235B-A22B/raw/main/LICENSE
+        notes: >-
+          Tracked generation moved from Qwen2.5-72B to Qwen3-235B-A22B on
+          2026-07-19. This is an Observatory curation update, not a provider
+          relicensing: Qwen did not change the Qwen2.5 license, it released newer
+          generations under Apache-2.0. Per-generation; Qwen mixes Apache-2.0 and
+          the bespoke Qwen license across releases, so the license type follows the
+          generation tracked. Qwen's own docs name Qwen3.5/3.6, but no license
+          resolves at those paths yet; recheck and move again when one does.
 
       # -- Data protection & accountability (Phase B) --
       - doc_type: ai_documentation
@@ -745,10 +744,6 @@ providers:
         status: unverified
         url: https://huggingface.co/Qwen
         notes: HF model cards; confirm license/usage.
-      - doc_type: privacy_policy
-        name: Host privacy policy
-        status: not_published
-        notes: Host privacy URL unconfirmed; confirm during capture.
   - provider: kimi
     provider_name: Kimi
     segment: model_provider
@@ -792,10 +787,6 @@ providers:
         status: unverified
         url: https://huggingface.co/zai-org/GLM-4.5
         notes: HF model card; MIT license in corpus.
-      - doc_type: privacy_policy
-        name: Host privacy policy
-        status: not_published
-        notes: Host privacy URL unconfirmed; confirm during capture.
   - provider: minimax
     provider_name: MiniMax
     segment: model_provider
@@ -813,10 +804,6 @@ providers:
         name: Model card / usage policy
         status: unverified
         url: https://minimax-m2.com/terms
-      - doc_type: privacy_policy
-        name: Host privacy policy
-        status: unverified
-        url: https://www.minimax.io/privacy-policy-v2.html
   - provider: mistral-platform
     provider_name: Mistral platform
     segment: model_provider
@@ -868,10 +855,6 @@ providers:
         name: Model card / usage policy
         status: unverified
         url: https://legal.mistral.ai/terms
-      - doc_type: privacy_policy
-        name: Host privacy policy
-        status: unverified
-        url: https://legal.mistral.ai/terms/privacy-policy
   - provider: inkling
     provider_name: Inkling
     segment: model_provider
@@ -888,10 +871,6 @@ providers:
         name: Model/system card
         status: not_published
         notes: No published model/system card confirmed; dims 7/8 silent unless found.
-      - doc_type: privacy_policy
-        name: Host privacy policy
-        status: not_published
-        notes: Host privacy URL unconfirmed; confirm during capture.
   - provider: command
     provider_name: Command
     segment: model_provider

@@ -14,3 +14,16 @@ open-weight entry**. Revisit the segment assignment (and whether to split Kimi i
 registry entries) after the per-segment dimension-set migration is complete.
 
 Raised 2026-07-18.
+
+## Qwen tracked generation lags the provider's own documentation
+
+The registry now tracks **Qwen3-235B-A22B** (Apache-2.0), moved from Qwen2.5-72B on
+2026-07-19. Qwen's own `ai_documentation` names **Qwen3.5 and Qwen3.6**, but no
+license resolves at those Hugging Face paths yet (401), so the flagship with a
+resolvable license is as far as the tracked generation can move today.
+
+Recheck `huggingface.co/Qwen/Qwen3.5-*` and `Qwen3.6-*` at the next run and move the
+tracked generation again when a newer flagship license resolves. Each move is an
+Observatory curation update, not a provider relicensing.
+
+Raised 2026-07-19.
