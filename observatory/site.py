@@ -1146,14 +1146,14 @@ a:hover{text-decoration:underline}
    as one logo. Baloo 2 ships at 800 only, so match that weight rather than let the
    browser synthesize a lighter one; the smaller size and --faint keep it
    subordinate to O.bservatory. Baloo runs wide, so the tracking comes in a little. */
-.wm-eyebrow{font-family:var(--wordmark);color:var(--faint);font-size:11px;font-weight:800;
-letter-spacing:.14em;text-transform:uppercase;line-height:1}
+.wm-eyebrow{font-family:var(--wordmark);color:var(--faint);font-size:13px;font-weight:800;
+letter-spacing:.12em;text-transform:uppercase;line-height:1}
 /* One rule governs the eyebrow-to-word gap in both lockups: pull the word up by
    .06em of its own size, which cancels the O glyph's internal top padding and the
    line box's ascender room at any clamped size. Keeps the ink gap at or under the
    eyebrow's cap height so the two lines read as one locked-up mark. */
 .wm-word{display:flex;align-items:flex-end;line-height:.85;color:var(--ink);font-size:31px;
-margin-top:-.06em}
+margin-top:-.085em}
 /* The mark canvas is 116x100 (dot + bowl), so width tracks height at 1.16:1 to keep
    the bowl the same optical size as before. The bowl now ends 7 units short of the
    box edge instead of 14, so the pull into "bservatory" halves to keep the same
@@ -1188,7 +1188,7 @@ color:var(--muted);font-size:13.5px}
 .hero{padding:40px 24px 26px;text-align:center}
 .hero-in{max-width:1040px;margin:0 auto}
 .hero-wm{display:inline-flex;flex-direction:column;align-items:center}
-.hero-wm .wm-eyebrow{font-size:clamp(12px,1.6vw,17px);letter-spacing:.2em;margin-bottom:0}
+.hero-wm .wm-eyebrow{font-size:clamp(14px,2vw,21px);letter-spacing:.17em;margin-bottom:0}
 .hero-wm .wm-word{font-size:clamp(52px,11vw,116px);justify-content:center;line-height:.9}
 .hero-deck{margin:20px auto 0;max-width:620px;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;
 font-style:italic;color:var(--muted);font-size:clamp(14px,1.5vw,17px)}
