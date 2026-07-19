@@ -231,6 +231,7 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
     # so their values stand and the finding is reported instead.
     from .generation import sweep as _generation_sweep
 
+    stale_extractions: List[dict] = []
     generation_findings = _generation_sweep(registry, store)
     suppress_slugs: Dict[str, Dict[str, str]] = {}
     for g in generation_findings:
@@ -268,7 +269,7 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
         # the site can show it without re-classifying.
         prov = {}
         for doc in registry.for_provider(provider):
-            snap = store.latest(provider, doc.slug)
+            snap = store.current(provider, doc.slug)
             if snap:
                 fm = snap.meta.get("fetch_method", "direct")
                 cap = snap.meta.get("capture_timestamp", "")
@@ -277,6 +278,33 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
                     "capture_timestamp": cap,
                     "stale": fm == "wayback" and _capture_stale(cap),
                 }
+                # Consistency: are the extracted values reading the current text?
+                # The extraction records which capture it used; if the document has
+                # since acquired newer TEXT, the matrix is behind the corpus and can
+                # contradict the change feed until the provider is re-extracted.
+                used = next((d for d in record.get("documents_used", [])
+                             if d.get("slug") == doc.slug), None)
+                if used:
+                    # Identify the capture the values were read from by fetch time,
+                    # which is stable, rather than by content hash, which changes
+                    # whenever the corpus is renormalized and would flag every
+                    # document rather than the ones actually behind.
+                    read = next((s for s in store.history(provider, doc.slug)
+                                 if s.fetched_at == used.get("fetched_at")), None)
+                    read_date = read.content_date if read else used.get("fetched_at", "")
+                    # Recency, not equality: only flag when the document's current
+                    # text genuinely post-dates what the values were read from.
+                    if read_date and snap.content_date > read_date:
+                        stale_extractions.append({
+                            "provider": provider,
+                            "slug": doc.slug,
+                            "document": doc.name,
+                            "extracted_at": record.get("extracted_at", ""),
+                            "values_read_from_content_date": read_date,
+                            "current_content_date": snap.content_date,
+                            "current_capture": snap.stamp,
+                            "current_is_archived": snap.is_archived,
+                        })
         # Documents the provider blocks. Declared in the registry rather than
         # inferred from a failure, so the state is a decision on the record instead
         # of a side effect of the last run's luck.
@@ -295,7 +323,7 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
         # floor. The fetcher now refuses these outright, but snapshots taken before
         # the guard existed are still here, and a stub extracts as near-silent.
         for doc in registry.for_provider(provider):
-            snap = store.latest(provider, doc.slug)
+            snap = store.current(provider, doc.slug)
             if not snap or not snap.text:
                 continue
             enough, size = sufficient_content(snap.text, doc.doc_type)
@@ -381,6 +409,7 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
         )
 
     _write_status_report(status_report)
+    _write_stale_extraction_report(stale_extractions)
     _write_warning_report(warn_rows)
 
     data_current_as_of = max(
@@ -488,8 +517,21 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
     entries: List[dict] = []
     non_text_rows: List[dict] = []
     for doc in registry.documents():
-        history = store.history(doc.provider, doc.slug)
+        # Walk the document's own timeline, not our retrieval order. Ordered by
+        # fetch time, an archive fallback that re-serves older text reads as a
+        # change back to that text, and the feed narrates a fetch event as though
+        # the provider had rewritten their terms. That is what produced the
+        # reverse-direction OpenAI Business Terms entry.
+        history = store.lineage(doc.provider, doc.slug)
         for prev, curr in zip(history, history[1:]):
+            # Belt and braces: even within the lineage, never report a transition
+            # that moves backwards in content date, and never treat an archive
+            # fallback superseding newer live text as a terms change. It is a fetch
+            # event, and it belongs in the fetch report rather than the feed.
+            if curr.content_date < prev.content_date:
+                continue
+            if curr.is_archived and not prev.is_archived and curr.content_date <= prev.content_date:
+                continue
             # If the tracked source URL changed between snapshots, this is a source
             # swap, not a provider edit of the same document. A text diff across two
             # different documents is meaningless as an "edit", so we flag it and
@@ -647,6 +689,28 @@ def _curation_note(provider: str, slug: str, to_url: str):
                 and n.get("to_url") == to_url):
             return n
     return None
+
+
+STALE_EXTRACTION_REPORT_PATH = Path("data/stale-extractions.json")
+
+
+def _write_stale_extraction_report(rows: List[dict]) -> None:
+    """Documents whose current text is newer than the text their values were read
+    from, so the matrix is lagging the corpus.
+
+    Compares CONTENT recency, not fetch recency. A check on fetch time would fire
+    on the opposite case (an archive fallback retrieved after a live capture) and
+    would have pointed the wrong way on the OpenAI Business Terms.
+    """
+    STALE_EXTRACTION_REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    STALE_EXTRACTION_REPORT_PATH.write_text(json.dumps({
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "count": len(rows),
+        "note": ("Extracted values cite a capture older than the document's current "
+                 "text. Re-extract the provider to bring the matrix in step; until "
+                 "then the matrix can disagree with the change feed."),
+        "rows": rows,
+    }, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
 GENERATION_REPORT_PATH = Path("data/generation-mismatches.json")

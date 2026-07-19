@@ -127,7 +127,7 @@ def sweep(registry, store) -> List[GenerationFinding]:
         declared = getattr(d, "generation", None) or declared_by_provider.get(d.provider)
         if not declared:
             continue
-        snap = store.latest(d.provider, d.slug)
+        snap = store.current(d.provider, d.slug)
         if not snap or not snap.text:
             continue
         finding = check(d.provider, d.slug, declared, snap.text)

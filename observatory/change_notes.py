@@ -142,11 +142,20 @@ def generate_missing(registry: Registry, store: SnapshotStore) -> int:
     client = None
     generated = 0
     for doc in registry.documents():
-        history = store.history(doc.provider, doc.slug)
+        # Content order, matching the change feed. Walking fetch order would
+        # describe an archive fallback re-serving older text as an edit, and would
+        # key the note to a pair the feed never asks about.
+        history = store.lineage(doc.provider, doc.slug)
         for prev, curr in zip(history, history[1:]):
             # Skip source swaps (different URL) — a text diff across two different
             # documents is not a meaningful "edit" to describe.
             if prev.meta.get("url") != curr.meta.get("url"):
+                continue
+            # Never describe a backwards transition, or an archive fallback
+            # superseding newer live text: those are fetch events, not edits.
+            if curr.content_date < prev.content_date:
+                continue
+            if curr.is_archived and not prev.is_archived and curr.content_date <= prev.content_date:
                 continue
             # Skip non-text snapshots (binary/mojibake): the model can only describe
             # noise, and the change feed suppresses the diff anyway.

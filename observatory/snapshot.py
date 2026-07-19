@@ -48,6 +48,27 @@ class Snapshot:
     def text_sha256(self) -> str:
         return self.meta.get("text_sha256", "")
 
+    @property
+    def content_date(self) -> str:
+        """When the TEXT dates from, as opposed to when we fetched it.
+
+        For a live fetch those coincide. For an Internet Archive fallback they do
+        not: a capture pulled today can carry text from years ago. Ordering by
+        fetch time therefore lets an archive fallback silently supersede newer live
+        text, which is exactly what happened to the OpenAI Business Terms: a
+        browser fetch pulled the Services Agreement effective 2026-01-01, and a
+        later run fell back to the archive and re-served the 2023 text, which then
+        became "latest" for both the matrix and the change feed.
+        """
+        cap = (self.meta.get("capture_timestamp") or "").strip()
+        if self.meta.get("fetch_method") == "wayback" and cap:
+            return cap
+        return self.fetched_at
+
+    @property
+    def is_archived(self) -> bool:
+        return self.meta.get("fetch_method") == "wayback"
+
 
 class SnapshotStore:
     def __init__(self, root: str | Path = "snapshots"):
@@ -63,13 +84,40 @@ class SnapshotStore:
         return sorted(p.stem for p in d.glob("*.json"))
 
     def latest(self, provider: str, slug: str) -> Optional[Snapshot]:
+        """The most recently FETCHED snapshot. Retained for callers that genuinely
+        mean "the last thing we pulled"; anything that means "the current text of
+        this document" wants `current` instead."""
         stamps = self._stamps(provider, slug)
         if not stamps:
             return None
         return self._load(provider, slug, stamps[-1])
 
+    def current(self, provider: str, slug: str) -> Optional[Snapshot]:
+        """The snapshot holding the most recent TEXT, by content date.
+
+        This is the extraction and display source. An archive fallback can never
+        displace newer live text here, because the ordering is on when the document
+        dates from rather than when we happened to retrieve it. Ties fall back to
+        fetch order, so repeated live fetches behave exactly as before.
+        """
+        snaps = self.history(provider, slug)
+        if not snaps:
+            return None
+        return max(enumerate(snaps), key=lambda pair: (pair[1].content_date, pair[0]))[1]
+
+    def lineage(self, provider: str, slug: str) -> List[Snapshot]:
+        """Snapshots ordered by CONTENT date, for change detection.
+
+        The feed compares consecutive pairs, so it must walk the document's own
+        timeline. Ordered by fetch time, an archive fallback re-serving older text
+        appears as a change back to that older text, and the feed narrates a fetch
+        event as if the provider had rewritten their terms.
+        """
+        snaps = self.history(provider, slug)
+        return [s for _, s in sorted(enumerate(snaps), key=lambda p: (p[1].content_date, p[0]))]
+
     def history(self, provider: str, slug: str) -> List[Snapshot]:
-        """All snapshots oldest→newest (for a document's change history page)."""
+        """All snapshots oldest→newest by fetch time (the raw archival order)."""
         return [
             self._load(provider, slug, s)
             for s in self._stamps(provider, slug)

@@ -87,7 +87,7 @@ def _gather_sources(provider: str, registry: Registry, store: SnapshotStore) -> 
     sources: List[DocSource] = []
     remaining = MAX_TOTAL_CHARS
     for doc in ordered:
-        snap = store.latest(provider, doc.slug)
+        snap = store.current(provider, doc.slug)
         if snap is None or not snap.text:
             continue
         full = snap.text
