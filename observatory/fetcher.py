@@ -97,7 +97,41 @@ _CONTENT_SELECTORS = [
 ]
 
 # Elements that are never legal content but often sit inside the main container.
-_NOISE = "script, style, noscript, svg, nav, header, footer, form, iframe"
+#
+# Page chrome that survives into the snapshot pollutes every downstream diff: a
+# provider re-rendering its language picker reads as a change to its terms. The
+# OpenAI Business Terms page is the worked example. Its language selector sits
+# INSIDE <main>, wrapped in a <label> with a screen-reader-only span, so stripping
+# nav/header/footer alone never reached it and a full list of language names
+# (English, العربية, አማርኛ, ...) landed in the redline.
+#
+# Selectors are grouped by what they are, and kept to things that cannot carry
+# contract text. Note that <aside> is deliberately NOT stripped: providers do put
+# substantive notes in asides.
+_NOISE = ", ".join([
+    # Never rendered as document text.
+    "script", "style", "noscript", "svg", "iframe", "template", "form",
+    # Structural page chrome, by element and by ARIA role.
+    "nav", "header", "footer",
+    "[role=navigation]", "[role=banner]", "[role=contentinfo]",
+    "[role=dialog]", "[role=alertdialog]",
+    # Form controls that survive inside the content container. Language pickers
+    # are almost always a <label> wrapping a <select> of language names.
+    "select", "option", "optgroup", "datalist", "label",
+    # Visually hidden text: screen-reader labels are not document text, and they
+    # change between renders without the terms changing.
+    ".sr-only", ".visually-hidden", ".screen-reader-text", "[hidden]",
+    # Cookie and consent banners, matched loosely and case-insensitively.
+    '[id*="cookie" i]', '[class*="cookie" i]',
+    '[id*="consent" i]', '[class*="consent" i]',
+    '[aria-label*="cookie" i]', '[aria-label*="consent" i]',
+    # Language switchers.
+    '[id*="language-select" i]', '[class*="language-select" i]',
+    '[class*="lang-select" i]', '[class*="language-picker" i]',
+    '[aria-label*="select language" i]',
+    # Skip links.
+    '[class*="skip-to" i]', '[class*="skip-link" i]',
+])
 
 # Below this many characters we assume we were blocked or the layout broke, and
 # refuse to record the snapshot — a near-empty snapshot would read as "the

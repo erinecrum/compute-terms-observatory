@@ -13,6 +13,8 @@ from __future__ import annotations
 
 import argparse
 import sys
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import List
 
 from dotenv import load_dotenv
@@ -179,6 +181,63 @@ def cmd_run(skip_extract: bool) -> int:
     return 0 if extract_failed == 0 else 2
 
 
+def cmd_renormalize(apply_changes: bool) -> int:
+    """Re-derive every snapshot's normalized text from its archived HTML.
+
+    The raw HTML is the archive and is never touched; the .txt beside it is a
+    derived rendering, so when the normalizer improves (for example when it learns
+    to strip a language picker that sits inside <main>) the stored renderings can
+    be regenerated. Without this, chrome captured before the fix keeps polluting
+    diffs forever.
+
+    Snapshots whose text does not look like text are left alone: those are failed
+    or binary fetches, and re-deriving them would only produce different garbage.
+    Defaults to a dry run; pass --apply to write.
+    """
+    import glob
+    import json as _json
+
+    from observatory.fetcher import _normalize
+    from observatory.model import sha256_text
+    from observatory.textcheck import looks_like_text
+
+    changed, skipped, unchanged = [], [], 0
+    for html_path in sorted(glob.glob("snapshots/*/*/*.html")):
+        base = html_path[:-5]
+        txt_path, meta_path = Path(base + ".txt"), Path(base + ".json")
+        if not txt_path.exists() or not meta_path.exists():
+            continue
+        old = txt_path.read_text(encoding="utf-8")
+        new = _normalize(Path(html_path).read_text(encoding="utf-8"))
+        if new == old:
+            unchanged += 1
+            continue
+        rel = base.replace("snapshots/", "")
+        # looks_like_text returns (is_text, stats); a bare tuple is always truthy.
+        if not looks_like_text(old)[0] or not looks_like_text(new)[0]:
+            skipped.append(rel)
+            continue
+        changed.append((rel, len(old), len(new)))
+        if apply_changes:
+            txt_path.write_text(new, encoding="utf-8")
+            meta = _json.loads(meta_path.read_text(encoding="utf-8"))
+            meta["text_sha256"] = sha256_text(new)
+            meta["char_count"] = len(new)
+            meta["renormalized_at"] = datetime.now(timezone.utc).isoformat()
+            meta_path.write_text(_json.dumps(meta, indent=2, ensure_ascii=False),
+                                 encoding="utf-8")
+
+    for rel, o, n in changed:
+        print(f"  {'rewrote' if apply_changes else 'would rewrite'}  {rel:58} {o:>7} -> {n:>7} ({n-o:+7})")
+    for rel in skipped:
+        print(f"  skipped (not text)  {rel}")
+    print(f"\n{len(changed)} snapshot(s) {'rewritten' if apply_changes else 'to rewrite'}, "
+          f"{unchanged} already current, {len(skipped)} skipped as non-text.")
+    if not apply_changes and changed:
+        print("Dry run. Re-run with --apply to write, then rebuild.")
+    return 0
+
+
 def cmd_build() -> int:
     """Assemble the comparison dataset from extractions + overrides + programs."""
     dataset = build_dataset()
@@ -223,6 +282,12 @@ def main() -> int:
     )
     p_extract.add_argument("--provider", action="append", default=[])
 
+    p_renorm = sub.add_parser(
+        "renormalize",
+        help="re-derive snapshot text from archived HTML with the current normalizer")
+    p_renorm.add_argument("--apply", action="store_true",
+                          help="write the changes (default is a dry run)")
+
     sub.add_parser("build", help="assemble the comparison dataset (data/dataset.json)")
     sub.add_parser("site", help="build the dataset and render the static site into site/")
     p_run = sub.add_parser("run", help="full pipeline: fetch -> re-extract changed -> build -> site")
@@ -236,6 +301,8 @@ def main() -> int:
         return cmd_changes(args.provider)
     if args.command == "extract":
         return cmd_extract(args.provider)
+    if args.command == "renormalize":
+        return cmd_renormalize(args.apply)
     if args.command == "build":
         return cmd_build()
     if args.command == "site":

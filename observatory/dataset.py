@@ -436,6 +436,16 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
                 "blocks": []
                 if suppressed
                 else [{"old": b.old_focus, "new": b.new_focus} for b in d.blocks[:5]],
+                # Identity of the comparison, and the complete set of changed
+                # passages in full. The inline redline shows the first five,
+                # windowed; the comparison page shows every changed passage whole,
+                # which is what "view the full comparison" needs.
+                "compare_id": f"{doc.provider}-{doc.slug}-{curr.stamp}",
+                "prev_stamp": prev.stamp,
+                "curr_stamp": curr.stamp,
+                "all_blocks": []
+                if suppressed
+                else [{"old": b.old, "new": b.new} for b in d.blocks],
             }
             if source_changed:
                 entry["note"] = (

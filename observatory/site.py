@@ -769,6 +769,12 @@ AI-reviewed; there is no human-verified tier. A correction can adjust a value or
 citation, but the corrected quote is then re-checked against the archived source exactly
 like any other value, and carries no special badge. If you spot an error, open an issue in
 the <a href="https://github.com/erinecrum/compute-terms-observatory">source repository</a>.</p>
+<p><strong>Language.</strong> The Observatory tracks the English-language versions of
+provider documents. Where a provider publishes the same terms in other languages,
+those versions are not captured, and the English version is treated as the reference
+text. Where a provider's own document states that another language governs in the
+event of a conflict, that statement is part of the terms and is read like any other
+clause, but the non-English text behind it is not archived here.</p>
 <p><strong>Code and data.</strong> The code is open source (MIT). The change history is
 published here as the change feed; the archived snapshot corpus is maintained in the
 project's data repository. See the <a href="about.html">About</a> page for the full
@@ -883,6 +889,44 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
 """
 
 
+def render_comparison(c: dict) -> str:
+    """One change, every changed passage shown whole, before and after.
+
+    The inline redline in the feed is windowed for scanning; this is the page a
+    reader lands on when the window is not enough. It shows the changed passages
+    in full, not the entire document: the unchanged bulk of a provider's terms is
+    theirs to publish, and reproducing it here would serve no reader.
+    """
+    rows = "".join(
+        '<div class="cmp-block">'
+        + (f'<div class="cmp-side old"><h3>Before</h3><p>{esc(b["old"])}</p></div>'
+           if b.get("old") else '<div class="cmp-side old empty"><h3>Before</h3>'
+                                '<p class="none">Not present</p></div>')
+        + (f'<div class="cmp-side new"><h3>After</h3><p>{esc(b["new"])}</p></div>'
+           if b.get("new") else '<div class="cmp-side new empty"><h3>After</h3>'
+                                '<p class="none">Removed</p></div>')
+        + '</div>'
+        for b in c.get("all_blocks", [])
+    )
+    n = len(c.get("all_blocks", []))
+    return f"""
+<p><a href="changes.html">&larr; Back to the change feed</a></p>
+<p class="page-standfirst">Every passage that changed in {esc(c["document"])}, shown whole.
+Unchanged text is not reproduced here; read the
+<a href="{esc(c["url"])}" target="_blank" rel="noopener">provider's document</a> for the
+document in full.</p>
+<div class="cmp-meta">
+  <span><strong>{esc(c["provider_name"])}</strong> &middot; {esc(c["document"])}
+  <span class="tag">{esc(c["doc_type"])}</span></span>
+  <span>Detected {esc(c["detected_at"][:10])} &middot; {n} changed passage{'' if n == 1 else 's'}
+  &middot; +{c.get("added_lines", 0)}/-{c.get("removed_lines", 0)} lines</span>
+  <span class="cmp-stamps">Comparing archived captures
+  <code>{esc(c.get("prev_stamp", ""))}</code> and <code>{esc(c.get("curr_stamp", ""))}</code></span>
+</div>
+{rows}
+"""
+
+
 def _change_item(c: dict) -> str:
     dims = c.get("dimensions", [])
     chips = ("".join(f'<span class="chip">{esc(d["label"])}</span>' for d in dims))
@@ -905,8 +949,10 @@ def _change_item(c: dict) -> str:
         + (f'<ins>{esc(b["new"])}</ins> ' if b.get("new") else "")
         for b in c.get("blocks", [])
     ).strip()
+    full = (f'<p class="rl-full"><a href="compare-{esc(c["compare_id"])}.html">'
+            'View full document comparison</a></p>') if c.get("all_blocks") else ""
     redline = (f'<details class="redline"><summary>View redline</summary>'
-               f'<div class="rl">{rl}</div></details>') if rl else ""
+               f'<div class="rl">{rl}</div>{full}</details>') if rl else ""
 
     meta = f'<a class="csource" href="{esc(c["url"])}" target="_blank" rel="noopener">source</a>'
     dim_keys = " ".join(d["key"] for d in dims)
@@ -1003,6 +1049,17 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
                    "Published terms, citations, and change history."),
             encoding="utf-8",
         )
+        written.append(out_dir / fname)
+
+    # One comparison page per change that has a readable diff.
+    for c in dataset.get("change_log", []):
+        if not c.get("all_blocks"):
+            continue
+        fname = f"compare-{c['compare_id']}.html"
+        (out_dir / fname).write_text(
+            _shell(f"{c['provider_name']}: {c['document']}", render_comparison(c),
+                   "changes", "Full comparison of the changed passages."),
+            encoding="utf-8")
         written.append(out_dir / fname)
 
     # 404 page (GitHub Pages serves /404.html for unknown paths).
@@ -1286,6 +1343,25 @@ font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;cursor:
 transform:rotate(45deg);margin-top:-3px;transition:transform .14s}
 .grpbtn.shut .chev{transform:rotate(-45deg);margin-top:1px}
 .grp-all{display:inline-flex;gap:6px}
+
+/* Full comparison page: changed passages side by side, before and after. */
+.cmp-meta{display:flex;flex-direction:column;gap:4px;margin:0 0 22px;padding-bottom:16px;
+border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.cmp-stamps code{font-family:var(--mono);font-size:11.5px}
+.cmp-block{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 14px}
+.cmp-side{border:1px solid var(--line-2);border-radius:11px;padding:12px 14px;background:var(--bg)}
+.cmp-side h3{margin:0 0 7px;font-family:var(--display);font-size:10.5px;font-weight:600;
+text-transform:uppercase;letter-spacing:.11em;color:var(--faint)}
+.cmp-side p{margin:0;font-size:14px;line-height:1.6}
+.cmp-side.old{background:var(--old-bg)}
+.cmp-side.old h3{color:var(--old-fg)}
+.cmp-side.new{background:var(--new-bg)}
+.cmp-side.new h3{color:var(--new-fg)}
+.cmp-side .none{color:var(--faint);font-style:italic}
+.rl-full{margin:12px 0 0}
+.rl-full a{font-family:var(--display);font-size:11px;font-weight:600;text-transform:uppercase;
+letter-spacing:.09em}
+@media(max-width:720px){.cmp-block{grid-template-columns:1fr}}
 .cell-head{display:flex;gap:8px;align-items:flex-start}
 .toggle{border:0;background:none;text-align:left;font:inherit;color:var(--ink);cursor:pointer;padding:0;line-height:1.5}
 .toggle:hover{color:var(--accent-2)}

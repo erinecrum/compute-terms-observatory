@@ -44,26 +44,45 @@ def _lines(text: Optional[str]) -> List[str]:
     return text.splitlines() if text else []
 
 
-# Hard rule: quoted excerpts from provider documents stay UNDER 15 words
-# everywhere they are shown. Excerpts are word-limited and centered on the change.
+# Excerpt budgets, in whole words.
+#
+# _MAX_WORDS is the original tight budget: quoted excerpts from provider documents
+# stay well under 15 words. It is still the default everywhere a bare quote is
+# shown.
+#
+# _CONTEXT_WORDS is the redline budget. A 12-word window centred on the changed
+# span is often too small to read: it lands mid-clause, so the reader sees that
+# something moved but not what it means. The redline therefore gets a larger
+# budget and snaps to sentence boundaries where it can.
+#
+# NOTE: this deliberately relaxes the under-15-words rule for the redline view
+# only. Raising _CONTEXT_WORDS reproduces more of each provider's document, so it
+# is a copyright-posture decision, not a formatting one. It is a named constant so
+# the posture is set in one place and is auditable.
 _MAX_WORDS = 12
+_CONTEXT_WORDS = 30
+
+_SENT_END = re.compile(r"[.!?][\"')\]]?$")
 
 
-def focused_excerpt(old: str, new: str):
+def focused_excerpt(old: str, new: str, budget: int = _MAX_WORDS):
     """Return (old_excerpt, new_excerpt) centered on the FIRST place the two
-    strings differ, each kept under 15 words so a reader sees what moved without
-    reproducing a long passage."""
+    strings differ, each held to `budget` whole words so a reader sees what moved
+    without reproducing a long passage."""
     sm = difflib.SequenceMatcher(a=old, b=new, autojunk=False)
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
         if tag != "equal":
-            return _word_window(old, i1, i2), _word_window(new, j1, j2)
-    return _word_window(old, 0, len(old)), _word_window(new, 0, len(new))
+            return _word_window(old, i1, i2, budget), _word_window(new, j1, j2, budget)
+    return (_word_window(old, 0, len(old), budget),
+            _word_window(new, 0, len(new), budget))
 
 
-def _word_window(s: str, start: int, end: int) -> str:
+def _word_window(s: str, start: int, end: int, budget: int = _MAX_WORDS) -> str:
     """A short excerpt of `s` around the changed span [start:end], budgeted to
-    _MAX_WORDS whole words and centered on the change, with ellipses marking any
-    trimming. Works on whole tokens so numbers like '99.99%' stay intact."""
+    `budget` whole words and centered on the change, with ellipses marking any
+    trimming. Works on whole tokens so numbers like '99.99%' stay intact. Within
+    the budget the window is pulled out to sentence boundaries, so the excerpt
+    reads as a sentence rather than starting mid-clause."""
     tokens = [(m.group(), m.start(), m.end()) for m in re.finditer(r"\S+", s)]
     if not tokens:
         return s.strip()
@@ -74,13 +93,27 @@ def _word_window(s: str, start: int, end: int) -> str:
     lo, hi = changed[0], changed[-1]
 
     span = hi - lo + 1
-    if span >= _MAX_WORDS:
-        return " ".join(w for w, _, _ in tokens[lo : lo + _MAX_WORDS]) + "…"
+    if span >= budget:
+        return " ".join(w for w, _, _ in tokens[lo : lo + budget]) + "…"
 
-    remaining = _MAX_WORDS - span
+    remaining = budget - span
     lead, trail = remaining // 2, remaining - remaining // 2
     a = max(0, lo - lead)
     b = min(len(tokens), hi + 1 + trail)
+
+    # Pull back to the start of the sentence the change sits in, and forward to
+    # its end, as long as the budget allows. Falling back to the plain window when
+    # no boundary is in range keeps this from ever exceeding `budget`.
+    for i in range(a, lo + 1):
+        if i == 0 or _SENT_END.search(tokens[i - 1][0]):
+            if hi - i + 1 <= budget:
+                a = i
+            break
+    for j in range(b - 1, hi - 1, -1):
+        if _SENT_END.search(tokens[j][0]):
+            if j - a + 1 <= budget:
+                b = j + 1
+            break
 
     out = " ".join(w for w, _, _ in tokens[a:b])
     if a > 0:
@@ -119,7 +152,8 @@ def diff_text(old: Optional[str], new: Optional[str]) -> TextDiff:
         if tag in ("replace", "insert"):
             added += j2 - j1
         if old_chunk or new_chunk:
-            of, nf = focused_excerpt(old_chunk, new_chunk)
+            # The redline is the reading surface, so it gets the wider budget.
+            of, nf = focused_excerpt(old_chunk, new_chunk, _CONTEXT_WORDS)
             blocks.append(
                 ChangedBlock(old=old_chunk, new=new_chunk, old_focus=of, new_focus=nf)
             )
