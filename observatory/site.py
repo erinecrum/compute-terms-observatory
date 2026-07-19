@@ -132,7 +132,7 @@ def seg_xlsx_name(group: str, view: str) -> str:
 # GitHub Pages serves exactly ONE custom domain. Any other domain pointed at the
 # site can only redirect to this one, which is configured at the registrar rather
 # than in this repo.
-CUSTOM_DOMAIN = "www.termsobservatory.ai"
+CUSTOM_DOMAIN = "www.termsobservatory.org"
 
 _CONF_LABEL = {"high": "high", "medium": "medium", "low": "low", "verified": "verified"}
 
