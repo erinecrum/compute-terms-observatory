@@ -16,16 +16,6 @@ Crusoe Recruiting Privacy Notice
 Confidential Information and Assignment Agreement
 TOS for OpenRouter Customers
 Crusoe Cloud Platform Terms of Service
-Version
-Version 1.8 (Current)
-Version 1.7
-Version 1.6
-Version 1.5
-Version 1.4
-Version 1.3
-Version 1.2
-Version 1.1
-Version 1.0
 Effective March 12th 2026
 Download
 Table of Contents
@@ -3648,8 +3638,6 @@ If there is a conflict between the documents that make up this Agreement, the do
 Headers
 Headings and captions used in the Agreement are for reference purposes only and will not have any effect on the interpretation of the Agreement.
 Acceptable Use Policy
-Version
-Version 1.0 (Current)
 Effective August 1st 2023
 Download
 Table of Contents
@@ -3663,11 +3651,6 @@ to interfere with the use of the Services, or the equipment used to provide the 
 to generate, distribute, publish or facilitate unsolicited mass email, promotions, advertisements or other solicitations (“spam”); or
 to use the Services, or any interfaces provided with the Services, to access any other Crusoe product or service in a manner that violates the terms of service of such other Crusoe product or service.
 Crusoe Cloud Platform Privacy Notice
-Version
-Version 1.3 (Current)
-Version 1.2
-Version 1.1
-Version 1.0
 Effective March 12th 2026
 Download
 Table of Contents
@@ -4361,11 +4344,6 @@ Protect against harm to the rights, property or safety of Crusoe, our customers,
 Updates to this Privacy Notice
 We may update this Privacy Notice from time to time. We will not make any significant changes without notifying you in advance by posting a prominent notice on this page describing the changes or by sending you a direct communication. We encourage you to regularly review this Privacy Notice, and we will always indicate the date the last changes were published.
 Data Processing and Security Terms
-Version
-Version 1.3 (Current)
-Version 1.2
-Version 1.1
-Version 1.0
 Effective July 14th 2026
 Download
 Summary of changes
@@ -5638,9 +5616,6 @@ Crusoe personnel are required to conduct themselves in a manner consistent with 
 Subprocessors
 Before onboarding Subprocessors, Crusoe ensures Subprocessors provide a level of security and privacy appropriate to their access to data and the scope of the services they are engaged to provide. Once Crusoe has assessed the risks presented by the Subprocessor, the Subprocessor is required to enter into appropriate security, confidentiality and privacy contract terms.
 Digital Millennium Copyright Act
-Version
-Version 1.1 (Current)
-Version 1.0
 Effective March 12th 2026
 Download
 Table of Contents
@@ -5702,8 +5677,6 @@ Please note that you will be liable for damages (including costs and attorneys' 
 Account Termination
 For Crusoe Services that have account holders or subscribers, Crusoe will, in appropriate circumstances, terminate repeat infringers. If you believe that an account holder or subscriber is a repeat infringer, please follow the instructions above to contact Crusoe and provide information sufficient for us to verify that the account holder or subscriber is a repeat infringer.
 NVIDIA Third Party Terms
-Version
-Version 1.0 (Current)
 Effective July 31st 2024
 Download
 Table of Contents
@@ -5805,16 +5778,6 @@ h. “Licensed Software” means Software, Documentation and all modifications t
 i. “Open Source License” includes, without limitation, a software license that requires as a condition of use, modification, and/or distribution of such software that the Software be (i) disclosed or distributed in source code form; (ii) be licensed for the purpose of making derivative works; or (iii) be redistributable at no charge.
 j. “Software” means the NVIDIA software programs licensed to you under this EULA including, without limitation, libraries, sample code, utility programs and programming code.
 Service Level Agreements
-Version
-Version 7.0 (Current)
-Version 6.0
-Version 5.0
-Version 4.0
-Version 3.0
-Version 2.0
-Version 1.2
-Version 1.1
-Version 1.0
 Effective December 23rd 2025
 Download
 Table of Contents
@@ -7206,12 +7169,6 @@ The aggregate maximum number of Financial Credits to be issued by Crusoe to Cust
 SLA Exclusions
 The SLA does not apply to any: (a) features designated pre-general availability (unless otherwise set forth in the associated Documentation), (b) features excluded from the SLA (in the associated Documentation), or (c) errors: (i) caused by factors outside of Crusoe’s reasonable control; (ii) that resulted from Customer's software or hardware or third-party software or hardware, or both; (iii) that resulted from abuses or other behaviors that violate the Agreement; or (iv) that resulted from quotas applied by the system or listed in the Admin Console.
 Service Specific Terms
-Version
-Version 5.0 (Current)
-Version 4.0
-Version 3.0
-Version 2.0
-Version 1.0
 Effective July 14th 2026
 Download
 Summary of changes
@@ -7831,10 +7788,6 @@ https://crusoe.ai/cloud/pricing
 “Order Form” means an order form executed by Customer and Crusoe or an order placed by Customer via a Crusoe website, in either case specifying the Services Crusoe will provide to Customer.
 “Scope of Use” means any limits on installation or usage of Services or Software described at the Fees URL, Admin Console, order form, or otherwise presented by Crusoe.
 Technical Support Services Guidelines
-Version
-Version 2.1 (Current)
-Version 2.0
-Version 1.0
 Effective November 7th 2025
 Download
 Table of Contents
@@ -8096,8 +8049,6 @@ All support provided by Crusoe pursuant to these Guidelines will be provided in 
 Support Data Processing Activities
 Crusoe collects and processes Support Data for the purpose of providing TSS under these Guidelines and maintaining the Services.
 Trademark Guidelines
-Version
-Version 1.0 (Current)
 Effective August 1st 2023
 Download
 Table of Contents
@@ -8122,8 +8073,6 @@ If you have questions about these Guidelines or proper use of the Crusoe Brand F
 legal@crusoeenergy.com
 .
 Crusoe Website Terms of Use
-Version
-Version 1.0 (Current)
 Effective August 12th 2024
 Download
 Table of Contents
@@ -8200,13 +8149,6 @@ Our failure to enforce the provisions of this agreement do not constitute a waiv
 If any term or provision of this agreement will be held to be invalid, illegal, or unenforceable, the remaining terms and provisions of this agreement will remain in full force and effect, and such invalid, illegal, or unenforceable term or provision will be deemed not to be part of this agreement.
 We reserve the right to investigate and prosecute violations of any of the above to the fullest extent of the law. We may involve and cooperate with law enforcement in prosecuting users who violate this agreement.
 Crusoe Website Privacy Notice
-Version
-Version 2.3 (Current)
-Version 2.2
-Version 2.1
-Version 2.0
-Version 1.1
-Version 1.0
 Effective October 23rd 2025
 Download
 Table of Contents
@@ -8319,7 +8261,6 @@ Unsubscribe From Our Communications
 You may unsubscribe from our marketing communications by clicking on the "unsubscribe" link located on the bottom of our emails. Crusoe customers cannot opt out of receiving transactional emails related to their account with us, contracts they may have with us, or the Crusoe Cloud Platform.
 Data Retention
 We retain personal information for as long as necessary to provide you the information you requested, maintain a customer relationship with you, comply with our legal obligations, resolve disputes, enforce our agreements, and carry out other legitimate and lawful business purposes. Because these needs can vary for different data types in the context of different services, actual retention periods can vary significantly based on criteria such as your consent, the sensitivity of the data, and our legal obligations.
-Cookies and Tracking Technologies
 Crusoe uses common information-gathering tools such as cookies, web beacons, pixels and other similar tracking technologies to automatically collect information as you navigate our Websites, or when you interact with emails we send you. A cookie is a small piece of data, which often includes an anonymous unique identifier, that is sent from a website and stored on your computer’s hard drive. Cookies allow Crusoe to identify your device as you navigate our Websites, to remember your preferences, to identify your device for security purposes, and to maintain statistical reports. They also help you navigate and interact with our Websites more efficiently.
 The cookies on our website fall into three categories:
 necessary cookies
@@ -8500,7 +8441,6 @@ Unsubscribe From Our Communications
 You may unsubscribe from our marketing communications by clicking on the "unsubscribe" link located on the bottom of our emails. Crusoe customers cannot opt out of receiving transactional emails related to their account with us, contracts they may have with us, or the Crusoe Cloud Platform.
 Data Retention
 We retain personal information for as long as necessary to provide you the information you requested, maintain a customer relationship with you, comply with our legal obligations, resolve disputes, enforce our agreements, and carry out other legitimate and lawful business purposes. Because these needs can vary for different data types in the context of different services, actual retention periods can vary significantly based on criteria such as your consent, the sensitivity of the data, and our legal obligations.
-Cookies and Tracking Technologies
 Crusoe uses common information-gathering tools such as cookies, web beacons, pixels and other similar tracking technologies to automatically collect information as you navigate our Websites, or when you interact with emails we send you. A cookie is a small piece of data, which often includes an anonymous unique identifier, that is sent from a website and stored on your computer’s hard drive. Cookies allow Crusoe to identify your device as you navigate our Websites, to remember your preferences, to identify your device for security purposes, and to maintain statistical reports. They also help you navigate and interact with our Websites more efficiently.
 The cookies on our website fall into three categories:
 necessary cookies
@@ -8681,7 +8621,6 @@ Unsubscribe From Our Communications
 You may unsubscribe from our marketing communications by clicking on the "unsubscribe" link located on the bottom of our emails. Crusoe customers cannot opt out of receiving transactional emails related to their account with us, contracts they may have with us, or the Crusoe Cloud Platform.
 Data Retention
 We retain personal information for as long as necessary to provide you the information you requested, maintain a customer relationship with you, comply with our legal obligations, resolve disputes, enforce our agreements, and carry out other legitimate and lawful business purposes. Because these needs can vary for different data types in the context of different services, actual retention periods can vary significantly based on criteria such as your consent, the sensitivity of the data, and our legal obligations.
-Cookies and Tracking Technologies
 Crusoe uses common information-gathering tools such as cookies, web beacons, pixels and other similar tracking technologies to automatically collect information as you navigate our Websites, or when you interact with emails we send you. A cookie is a small piece of data, which often includes an anonymous unique identifier, that is sent from a website and stored on your computer’s hard drive. Cookies allow Crusoe to identify your device as you navigate our Websites, to remember your preferences, to identify your device for security purposes, and to maintain statistical reports. They also help you navigate and interact with our Websites more efficiently.
 The cookies on our website fall into three categories:
 necessary cookies
@@ -8862,7 +8801,6 @@ Unsubscribe From Our Communications
 You may unsubscribe from our marketing communications by clicking on the "unsubscribe" link located on the bottom of our emails. Crusoe customers cannot opt out of receiving transactional emails related to their account with us, contracts they may have with us, or the Crusoe Cloud Platform.
 Data Retention
 We retain personal information for as long as necessary to provide you the information you requested, maintain a customer relationship with you, comply with our legal obligations, resolve disputes, enforce our agreements, and carry out other legitimate and lawful business purposes. Because these needs can vary for different data types in the context of different services, actual retention periods can vary significantly based on criteria such as your consent, the sensitivity of the data, and our legal obligations.
-Cookies and Tracking Technologies
 Crusoe uses common information-gathering tools such as cookies, web beacons, pixels and other similar tracking technologies to automatically collect information as you navigate our Websites, or when you interact with emails we send you. A cookie is a small piece of data, which often includes an anonymous unique identifier, that is sent from a website and stored on your computer’s hard drive. Cookies allow Crusoe to identify your device as you navigate our Websites, to remember your preferences, to identify your device for security purposes, and to maintain statistical reports. They also help you navigate and interact with our Websites more efficiently.
 The cookies on our website fall into three categories:
 necessary cookies
@@ -9035,7 +8973,6 @@ Unsubscribe From Our Communications
 You may unsubscribe from our marketing communications by clicking on the "unsubscribe" link located on the bottom of our emails. Crusoe customers cannot opt out of receiving transactional emails related to their account with us, contracts they may have with us, or the Crusoe Cloud Platform.
 Data Retention
 We retain personal information for as long as necessary to provide you the information you requested, maintain a customer relationship with you, comply with our legal obligations, resolve disputes, enforce our agreements, and carry out other legitimate and lawful business purposes. Because these needs can vary for different data types in the context of different services, actual retention periods can vary significantly based on criteria such as your consent, the sensitivity of the data, and our legal obligations.
-Cookies and Tracking Technologies
 Crusoe uses common information-gathering tools such as cookies, web beacons, pixels and other similar tracking technologies to automatically collect information as you navigate our Websites, or when you interact with emails we send you. A cookie is a small piece of data, which often includes an anonymous unique identifier, that is sent from a website and stored on your computer’s hard drive. Cookies allow Crusoe to identify your device as you navigate our Websites, to remember your preferences, to identify your device for security purposes, and to maintain statistical reports. They also help you navigate and interact with our Websites more efficiently.
 The cookies on our website fall into three categories:
 necessary cookies
@@ -9195,7 +9132,6 @@ Unsubscribe From Our Communications
 You may unsubscribe from our marketing communications by clicking on the "unsubscribe" link located on the bottom of our emails. Crusoe customers cannot opt out of receiving transactional emails related to their account with us, contracts they may have with us, or the Crusoe Cloud Platform.
 Data Retention
 We retain personal information for as long as necessary to provide you the information you requested, maintain a customer relationship with you, comply with our legal obligations, resolve disputes, enforce our agreements, and carry out other legitimate and lawful business purposes. Because these needs can vary for different data types in the context of different services, actual retention periods can vary significantly based on criteria such as your consent, the sensitivity of the data, and our legal obligations.
-Cookies and Tracking Technologies
 Crusoe uses common information-gathering tools such as cookies, web beacons, pixels and other similar tracking technologies to automatically collect information as you navigate our Websites, or when you interact with emails we send you. A cookie is a small piece of data, which often includes an anonymous unique identifier, that is sent from a website and stored on your computer’s hard drive. Cookies allow Crusoe to identify your device as you navigate our Websites, to remember your preferences, to identify your device for security purposes, and to maintain statistical reports. They also help you navigate and interact with our Websites more efficiently.
 The cookies on our website fall into three categories:
 necessary cookies
@@ -9250,11 +9186,6 @@ We aim to resolve any disputes over our data protection practices by working wit
 EDPB’s website
 . Crusoe is subject to the investigatory and enforcement powers of the U.S. Federal Trade Commission. In the event that you have a dispute over an agreement you have with us, please see that agreement regarding how those disputes will be resolved.
 Privacy Options
-Version
-Version 2.2 (Current)
-Version 2.1
-Version 2.0
-Version 1.0
 Effective October 23rd 2025
 Download
 Table of Contents
@@ -9367,12 +9298,6 @@ Digital Advertising Alliance
 European Interactive Digital Advertising Alliance
 . These opt-out tools are not provided by Crusoe and we cannot assist with them.
 Crusoe Recruiting Privacy Notice
-Version
-Version 1.4 (Current)
-Version 1.3
-Version 1.2
-Version 1.1
-Version 1.0
 Effective March 12th 2026
 Download
 Table of Contents
@@ -10146,16 +10071,6 @@ privacy@crusoe.ai
 10. Modification and status of this Notice
 This notice does not form part of your contract of employment and does not create contractual rights or obligations. It may be amended by us at any time. The date at the top of this notice indicates when it was last revised. Any changes will become effective when we post the revised Privacy Notice on this page.
 Confidential Information and Assignment Agreement
-Version
-Version 2.4 (Current)
-Version 2.3
-Version 2.2
-Version 2.1
-Version 2.0
-Version 1.3
-Version 1.2
-Version 1.1
-Version 1.0
 Effective March 12th 2026
 Download
 Table of Contents
@@ -12354,17 +12269,6 @@ EMPLOYEE:
 Signature:
 Date:
 TOS for OpenRouter Customers
-Version
-Version 4.4 (Current)
-Version 4.3
-Version 4.2
-Version 4.1
-Version 4.0
-Version 3.0
-Version 2.0
-Version 1.2
-Version 1.1
-Version 1.0
 Effective June 30th 2026
 Download
 Table of Contents
