@@ -29,7 +29,8 @@ from .differ import diff_text
 from .extractor import load_extraction
 from .overrides import apply_overrides, load_overrides
 from .registry import Registry, load_registry
-from .schema import DIMENSIONS, dimension_group, is_applicable, segment_group
+from .schema import (DIMENSIONS, dimension_group, is_applicable, section_of,
+                     segment_config, segment_group)
 from .snapshot import SnapshotStore
 from .textcheck import NON_TEXT_MESSAGE, looks_like_text, sufficient_content
 
@@ -369,7 +370,12 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
         pd = pdocs[0] if pdocs else None
         openness_val = pd.openness if pd else ""
         segment_val = pd.segment if pd else "hyperscaler"
-        group = segment_group(segment_val, openness_val)
+        # `group` is the DIMENSION-SET group; `section` is where the entry renders.
+        # They differ for hosted platforms serving open-weight models, which sit
+        # under Open Model Providers but take the hosted-platform term set.
+        group = segment_group(segment_val, openness_val, provider)
+        section = section_of(provider, segment_val, openness_val)
+        seg_cfg = segment_config(provider)
 
         # Derive the honest four-state display status for every field, overwriting
         # the extractor's binary verified/unverified, and flag any cell whose real
@@ -396,6 +402,10 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
                 "provider_name": provider_names.get(provider, provider),
                 "segment": pd.segment if pd else "hyperscaler",
                 "group": group,
+                "section": section,
+                "section_badge": seg_cfg.get("badge", ""),
+                "section_basis": " ".join((seg_cfg.get("basis") or "").split()),
+                "cross_link": seg_cfg.get("cross_link", ""),
                 "parent_company": pd.parent_company if pd else "",
                 "openness": pd.openness if pd else "",
                 "license_type": _license_bucket(lic_field.get("value", "")),

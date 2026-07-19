@@ -44,6 +44,17 @@ events:
       changed; the Observatory reorganized which entry these documents are filed
       under.
 
+  - date: 2026-07-19
+    provider: openai
+    document: AI model provider sections
+    doc_type: service_terms
+    url: https://www.termsobservatory.org/
+    note: >-
+      Observatory curation update: AI model provider sections are now organized by
+      model openness: Closed Model Providers, and Open Model Providers with hosted
+      platforms and weights licenses as subgroups. No provider terms changed and no
+      entries moved between the Observatory's underlying datasets.
+
 notes:
   - provider: qwen
     slug: model_license

@@ -24,15 +24,19 @@ SITE_DIR = Path("site")
 BRAND = "Compute Terms Observatory"
 EXPORT_XLSX = "compute-terms-observatory.xlsx"
 # Per-section workbooks (one segment each, respecting the per-segment dimension sets).
+# Keyed by display SECTION, not dimension group: Closed and Hosted platforms share
+# a dimension set but are separate tables and need separate sheets.
 EXPORT_XLSX_SEG = {
     "cloud": "compute-terms-cloud-infrastructure.xlsx",
-    "closed": "compute-terms-closed-api.xlsx",
-    "open": "compute-terms-open-weight.xlsx",
+    "closed": "compute-terms-closed-model-providers.xlsx",
+    "open_hosted": "compute-terms-open-hosted-platforms.xlsx",
+    "open_weights": "compute-terms-open-weights-licenses.xlsx",
 }
 EXPORT_XLSX_SEG_TITLE = {
     "cloud": "Cloud Infrastructure Providers",
-    "closed": "Closed API AI Model Providers",
-    "open": "Open Weight AI Model Providers",
+    "closed": "Closed Model Providers",
+    "open_hosted": "Open - Hosted platforms",
+    "open_weights": "Open - Weights & licenses",
 }
 # Column order for the Cloud Infrastructure table: hyperscalers first (contiguous),
 # then neoclouds by prominence. EDIT THIS LIST to re-order. Any cloud provider not
@@ -515,6 +519,10 @@ def _matrix_table(dims: list, subset: list, matrix: dict, table_id: str) -> str:
         # provider's capture is stale relative to the corpus.
         + ('<span class="col-stale" title="Some documents are archived via the Internet Archive; the latest capture is over 7 days old">&#9888; stale</span>'
            if p.get("has_stale_capture") else "")
+        # Classification badge, with the sourced basis as its tooltip so the reason
+        # travels with the claim rather than living only in the config file.
+        + (f'<span class="col-badge" title="{esc(p.get("section_basis",""))}">'
+           f'{esc(p["section_badge"])}</span>' if p.get("section_badge") else "")
         + '</th>'
         for p in subset
     )
@@ -579,8 +587,12 @@ def render_matrix(dataset: dict) -> str:
     # Curated column order: hyperscalers first, then neoclouds by prominence.
     _rank = {pid: i for i, pid in enumerate(CLOUD_COLUMN_ORDER)}
     cloud.sort(key=lambda p: (_rank.get(p["provider"], len(_rank)), p["provider_name"]))
-    closed = [p for p in providers if p["segment"] == "model_provider" and p.get("openness") == "closed_api"]
-    openw = [p for p in providers if p["segment"] == "model_provider" and p.get("openness") == "open_weight"]
+    # Sections come from the curated classification, not from registry openness:
+    # a hosted platform serving open-weight models belongs under Open even though
+    # the entry itself distributes no weights.
+    closed = [p for p in providers if p.get("section") == "closed"]
+    open_hosted = [p for p in providers if p.get("section") == "open_hosted"]
+    openw = [p for p in providers if p.get("section") == "open_weights"]
 
     # Per-segment dimension sets: each table renders only its applicable dimensions.
     def dims_for(group):
@@ -616,13 +628,14 @@ def render_matrix(dataset: dict) -> str:
         '<div class="chooser" id="chooser">'
         '<div class="chooser-main">'
         '<button type="button" class="cpill" data-choose="cloud">Cloud Infrastructure</button>'
-        '<button type="button" class="cpill" data-choose="model">AI Model Providers</button>'
+        '<button type="button" class="cpill" data-choose="closed">Closed</button>'
+        '<button type="button" class="cpill" data-choose="open">Open</button>'
         '<button type="button" class="cpill selected" data-choose="all">All</button>'
         '</div>'
         '<div class="chooser-sub" id="chooser-sub" hidden>'
-        '<button type="button" class="spill selected" data-sub="all">All model providers</button>'
-        '<button type="button" class="spill" data-sub="closed">Closed API</button>'
-        '<button type="button" class="spill" data-sub="open">Open weight</button>'
+        '<button type="button" class="spill selected" data-sub="all">All open</button>'
+        '<button type="button" class="spill" data-sub="hosted">Hosted platforms</button>'
+        '<button type="button" class="spill" data-sub="weights">Weights &amp; licenses</button>'
         '</div></div>'
     )
     # The view switcher: which terms are shown, independent of which providers.
@@ -666,29 +679,47 @@ def render_matrix(dataset: dict) -> str:
                 f"data-xlsx='{esc(names)}' title=\"Download this section as .xlsx\">.xlsx</a>"
                 f'<button class="sec-x" type="button" data-print-sec="{sec_id}" title="Print this section">PDF</button>')
 
-    def section(name, group, subset, table_id, sec_id):
+    def section(name, group, subset, table_id, sec_id, sub=False, xsec=None):
+        xsec = xsec or group
         # One-row section header: name + count left; freshness + per-section sort +
-        # scoped export right.
+        # scoped export right. `sub` renders it as a subgroup inside an umbrella,
+        # so the heading level and weight step down rather than competing with it.
+        h = "h3" if sub else "h2"
         header = (
-            f'<div class="sec-head"><h2 class="sec-h">{esc(name)} '
-            f'<span class="sec-cnt" data-cnt="{group}">{len(subset)}</span></h2>'
+            f'<div class="sec-head{" sec-sub" if sub else ""}">'
+            f'<{h} class="sec-h">{name} '
+            f'<span class="sec-cnt" data-cnt="{sec_id}">{len(subset)}</span></{h}>'
             f'<div class="sec-ctl">{fresh}'
             f'<span class="grp-all"><button type="button" class="sec-x" data-grp-all="open" '
             f'data-target="{table_id}">Expand all</button>'
             f'<button type="button" class="sec-x" data-grp-all="shut" '
             f'data-target="{table_id}">Collapse all</button></span>'
             f'{sort_select(table_id)}'
-            f'<span class="sec-exports">{sec_exports(group, sec_id)}</span></div></div>'
+            f'<span class="sec-exports">{sec_exports(xsec, sec_id)}</span></div></div>'
         )
         return (f'<section id="{sec_id}" class="msec" data-sec="{sec_id}">{header}'
                 f'{_matrix_table(dims_for(group), subset, matrix, table_id)}</section>')
 
+    # Sections are organized by model openness, which is the distinction a reader is
+    # looking for. Within Open, the two subgroups differ by governing instrument:
+    # a hosted-service contract, or a licence attached to distributed weights. The
+    # dimension set follows the instrument, so Hosted platforms takes the same term
+    # set as Closed even though it sits under Open.
     grouped = (
         '<div id="grouped-view">'
-        + section("Cloud Infrastructure Providers", "cloud", cloud, "tbl-cloud", "cloud-infrastructure")
-        + '<div class="mgroup" id="ai-model-providers"><h2 class="mgroup-h">AI Model Providers</h2>'
-        + section("Closed API AI Model Providers", "closed", closed, "tbl-closed", "closed-api")
-        + section("Open Weight AI Model Providers", "open", openw, "tbl-open", "open-weight")
+        + section("Cloud Infrastructure Providers", "cloud", cloud, "tbl-cloud", "cloud-infrastructure", xsec="cloud")
+        + '<div class="mgroup" id="closed-model-providers-group">'
+        + section("Closed Model Providers", "closed", closed, "tbl-closed", "closed-model-providers", xsec="closed")
+        + '</div>'
+        + '<div class="mgroup" id="open-model-providers">'
+        + '<h2 class="mgroup-h">Open Model Providers</h2>'
+        + '<p class="mgroup-note">Providers whose tracked terms govern open-weight '
+          'model families, split by what the terms are: a hosted-service contract, '
+          'or the licence attached to the distributed weights.</p>'
+        + section("Hosted platforms", "closed", open_hosted, "tbl-open-hosted",
+                  "open-hosted-platforms", sub=True, xsec="open_hosted")
+        + section("Weights &amp; licenses", "open", openw, "tbl-open-weights",
+                  "open-weights-licenses", sub=True, xsec="open_weights")
         + '</div>'
         + '</div><div id="flat-view" hidden></div>'
     )
@@ -1512,6 +1543,15 @@ font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;cursor:
 transform:rotate(45deg);margin-top:-3px;transition:transform .14s}
 .grpbtn.shut .chev{transform:rotate(-45deg);margin-top:1px}
 .grp-all{display:inline-flex;gap:6px}
+/* Classification badge on a provider column: a fact about which section the entry
+   sits in, not a warning. Muted, with the sourced basis as its tooltip. */
+.col-badge{display:block;margin-top:3px;font-family:var(--display);font-size:9px;font-weight:600;
+text-transform:uppercase;letter-spacing:.05em;color:var(--faint);line-height:1.3;
+border-top:1px solid var(--line);padding-top:3px;cursor:help}
+/* Open umbrella and its subgroups. */
+.mgroup-note{margin:2px 0 16px;max-width:70ch;font-size:14px;color:var(--muted)}
+.sec-head.sec-sub .sec-h{font-size:17px}
+.mgroup .msec{margin-left:0}
 
 /* Full comparison page: changed passages side by side, before and after. */
 .cmp-meta{display:flex;flex-direction:column;gap:4px;margin:0 0 22px;padding-bottom:16px;
@@ -1845,16 +1885,26 @@ document.addEventListener('click',function(e){
   // The chooser owns which section(s) render (segment + openness selection).
   function setSec(id, on){ var el=document.getElementById(id); if(el) el.style.display = on ? '' : 'none'; }
   function applyChooser(choose, sub){
-    var s={cloud:false, closed:false, open:false};
-    if(choose==='all'){ s.cloud=s.closed=s.open=true; }
+    // Sections are Cloud, Closed, and the Open umbrella with two subgroups.
+    var s={cloud:false, closed:false, hosted:false, weights:false};
+    if(choose==='all'){ s.cloud=s.closed=s.hosted=s.weights=true; }
     else if(choose==='cloud'){ s.cloud=true; }
-    else if(choose==='model'){
-      if(sub==='closed'){ s.closed=true; }
-      else if(sub==='open'){ s.open=true; }
-      else { s.closed=s.open=true; }
+    else if(choose==='closed'){ s.closed=true; }
+    else if(choose==='open'){
+      if(sub==='hosted'){ s.hosted=true; }
+      else if(sub==='weights'){ s.weights=true; }
+      else { s.hosted=s.weights=true; }
     }
-    setSec('cloud-infrastructure', s.cloud); setSec('closed-api', s.closed); setSec('open-weight', s.open);
-    var subEl=document.getElementById('chooser-sub'); if(subEl) subEl.hidden = (choose!=='model');
+    setSec('cloud-infrastructure', s.cloud);
+    setSec('closed-model-providers', s.closed);
+    setSec('open-hosted-platforms', s.hosted);
+    setSec('open-weights-licenses', s.weights);
+    // The umbrella heading only makes sense when something under it is showing.
+    var um=document.getElementById('open-model-providers');
+    if(um) um.style.display = (s.hosted||s.weights) ? '' : 'none';
+    var cg=document.getElementById('closed-model-providers-group');
+    if(cg) cg.style.display = s.closed ? '' : 'none';
+    var subEl=document.getElementById('chooser-sub'); if(subEl) subEl.hidden = (choose!=='open');
   }
   var chooser=document.getElementById('chooser');
   if(chooser){
@@ -1863,7 +1913,7 @@ document.addEventListener('click',function(e){
       var m=e.target.closest('[data-choose]'), sp=e.target.closest('[data-sub]');
       if(m){ choose=m.dataset.choose;
         chooser.querySelectorAll('.cpill').forEach(function(b){ b.classList.toggle('selected', b===m); });
-        if(choose!=='model'){ sub='all'; chooser.querySelectorAll('.spill').forEach(function(b){ b.classList.toggle('selected', b.dataset.sub==='all'); }); }
+        if(choose!=='open'){ sub='all'; chooser.querySelectorAll('.spill').forEach(function(b){ b.classList.toggle('selected', b.dataset.sub==='all'); }); }
         applyChooser(choose, sub);
       } else if(sp){ sub=sp.dataset.sub;
         chooser.querySelectorAll('.spill').forEach(function(b){ b.classList.toggle('selected', b===sp); });
@@ -1882,7 +1932,7 @@ document.addEventListener('click',function(e){
   var viewbar=document.getElementById('viewbar');
   if(viewbar){
     var VIEW_GROUPS=window.CTO_VIEW_GROUPS||{}, view='key', expanded={}, shut={};
-    var TABLES=['tbl-cloud','tbl-closed','tbl-open'], SKEY='cto.groups.v1';
+    var TABLES=['tbl-cloud','tbl-closed','tbl-open-hosted','tbl-open-weights'], SKEY='cto.groups.v1';
     function groupsIn(id){
       var t=document.getElementById(id), out=[]; if(!t) return out;
       t.querySelectorAll('tbody tr.grouprow').forEach(function(tr){
@@ -1985,7 +2035,7 @@ document.addEventListener('click',function(e){
     var cmpEmpty=document.getElementById('cmp-empty'), cmpOut=document.getElementById('cmp-out');
     var cesc=function(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;};
     var selected=[], cellMap=null;
-    function buildMap(){ cellMap={}; ['tbl-cloud','tbl-closed','tbl-open'].forEach(function(id){
+    function buildMap(){ cellMap={}; ['tbl-cloud','tbl-closed','tbl-open-hosted','tbl-open-weights'].forEach(function(id){
       var t=document.getElementById(id); if(!t) return;
       t.querySelectorAll('tbody td.cell').forEach(function(td){ if(td.dataset.provider) cellMap[td.dataset.provider+'||'+td.dataset.dim]=td; }); }); }
     function renderCompare(){
@@ -2024,6 +2074,30 @@ document.addEventListener('click',function(e){
   // Do not auto-sort on load: the server-rendered order (curated for Cloud
   // Infrastructure) is the default; per-section sort is applied on demand.
   apply();
+})();
+
+// Section anchors that predate the Closed/Open restructure. Anything that linked
+// to the old section ids must still land on the right table rather than scrolling
+// to nothing, so old anchors are rewritten to their new target on arrival and on
+// hashchange. Query-string segment values are aliased the same way.
+(function(){
+  var MAP={'closed-api':'closed-model-providers',
+           'open-weight':'open-weights-licenses',
+           'ai-model-providers':'open-model-providers'};
+  var SEG={'closed_api':'closed','open_weight':'weights'};
+  function go(){
+    var h=(location.hash||'').replace(/^#/,'');
+    if(h && MAP[h]){
+      var el=document.getElementById(MAP[h]);
+      if(el){ history.replaceState(null,'','#'+MAP[h]); el.scrollIntoView({block:'start'}); }
+    }
+    try{
+      var u=new URL(location.href), seg=u.searchParams.get('segment');
+      if(seg && SEG[seg]){ u.searchParams.set('segment', SEG[seg]); history.replaceState(null,'',u); }
+    }catch(err){}
+  }
+  window.addEventListener('hashchange', go);
+  go();
 })();
 
 // Methodology accordion: open the section an inbound anchor points at (and scroll

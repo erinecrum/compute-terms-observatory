@@ -354,11 +354,45 @@ def dimension(key: str) -> Dimension:
 # and stays. Reviewed and approved 2026-07-18.
 # ---------------------------------------------------------------------------
 
+# Dimension-set groups. These decide WHICH TERMS can meaningfully exist for an
+# entry, and are unchanged by how the site groups entries into sections: a hosted
+# platform has hosted-service terms whether the models it serves are open or not.
 SEGMENT_GROUPS = ("cloud", "closed", "open")
 SEGMENT_GROUP_LABEL = {
     "cloud": "Cloud Infrastructure Providers",
-    "closed": "Closed API AI Model Providers",
-    "open": "Open Weight AI Model Providers",
+    "closed": "Hosted platform terms",
+    "open": "Weights licence terms",
+}
+
+# Display sections. These decide WHERE an entry appears, and are organized by model
+# openness rather than by governing instrument, because that is the distinction a
+# reader is actually looking for. The two are deliberately separate: open_hosted
+# sits under Open Model Providers but takes the hosted-platform dimension set.
+SECTIONS = ("cloud", "closed", "open_hosted", "open_weights")
+SECTION_LABEL = {
+    "cloud": "Cloud Infrastructure Providers",
+    "closed": "Closed Model Providers",
+    "open_hosted": "Hosted platforms",
+    "open_weights": "Weights & licenses",
+}
+SECTION_DIM_GROUP = {
+    "cloud": "cloud",
+    "closed": "closed",
+    "open_hosted": "closed",   # hosted service, so the hosted-platform term set
+    "open_weights": "open",    # a distribution licence, so the licence term set
+}
+# Anchors, including the pre-restructure names, so nothing that previously linked
+# in can 404 or scroll to nothing.
+SECTION_ANCHOR = {
+    "cloud": "cloud-infrastructure",
+    "closed": "closed-model-providers",
+    "open_hosted": "open-hosted-platforms",
+    "open_weights": "open-weights-licenses",
+}
+LEGACY_SECTION_ANCHOR = {
+    "closed-api": "closed-model-providers",
+    "open-weight": "open-weights-licenses",
+    "ai-model-providers": "open-model-providers",
 }
 
 # Dimensions removed from each group's table, with the one-line rationale that
@@ -394,13 +428,48 @@ SEGMENT_REMOVED = {
 }
 
 
-def segment_group(segment: str, openness: str) -> str:
-    """Map a provider's (segment, openness) to its matrix table group."""
+_SEGMENT_CONFIG_CACHE = None
+
+
+def _segment_config() -> dict:
+    """Curated section assignments, keyed by provider. See model_segments.yaml."""
+    global _SEGMENT_CONFIG_CACHE
+    if _SEGMENT_CONFIG_CACHE is None:
+        try:
+            import yaml
+            from pathlib import Path
+            raw = yaml.safe_load(Path("model_segments.yaml").read_text(encoding="utf-8")) or {}
+            _SEGMENT_CONFIG_CACHE = {e["provider"]: e for e in raw.get("entries", [])}
+        except (OSError, ValueError, ImportError, KeyError):
+            _SEGMENT_CONFIG_CACHE = {}
+    return _SEGMENT_CONFIG_CACHE
+
+
+def segment_config(provider: str) -> dict:
+    """Basis line, badge and cross-link for a provider, or an empty dict."""
+    return _segment_config().get(provider, {})
+
+
+def section_of(provider: str, segment: str, openness: str) -> str:
+    """Which display section an entry appears in.
+
+    Cloud is structural. For model providers the curated config decides, because
+    the question ("are the models this platform serves open?") is not answerable
+    from the registry: openness there records what the ENTRY distributes, not what
+    a platform serves. Anything not in the config falls back to the registry, so a
+    new open-weight entry lands correctly without needing a config line.
+    """
     if segment in ("hyperscaler", "neocloud"):
         return "cloud"
-    if openness == "open_weight":
-        return "open"
-    return "closed"
+    cfg = segment_config(provider)
+    if cfg.get("section") in SECTIONS:
+        return cfg["section"]
+    return "open_weights" if openness == "open_weight" else "closed"
+
+
+def segment_group(segment: str, openness: str, provider: str = "") -> str:
+    """Map a provider to its DIMENSION-SET group (not its display section)."""
+    return SECTION_DIM_GROUP[section_of(provider, segment, openness)]
 
 
 def is_applicable(group: str, dim_key: str) -> bool:

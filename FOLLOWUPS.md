@@ -48,3 +48,11 @@ decision during the corpus expansion, not a blanket retry:
   URLs to be hunted during expansion scoping.
 
 Raised 2026-07-19.
+
+## Substack sequencing
+
+License-divergence article is post one; OpenAI Business Terms -> Services Agreement
+transition is a candidate later post, framed as document restructure analysis,
+arbitration retained.
+
+Raised 2026-07-19.

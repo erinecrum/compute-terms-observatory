@@ -70,8 +70,13 @@ def _comparison_sheet(ws, dataset: dict, group: str, title: str, view: str = "al
     from .schema import is_applicable
     from .site import view_dims
 
-    providers = [p for p in dataset["providers"] if p.get("group") == group]
-    dims = [d for d in _visible_dims(dataset["dimensions"]) if is_applicable(group, d["key"])]
+    # `group` here is the display SECTION. Providers are selected by section, but
+    # the dimension set follows the section's governing instrument, so Hosted
+    # platforms takes the hosted-platform term set while sitting under Open.
+    from .schema import SECTION_DIM_GROUP
+    dim_group = SECTION_DIM_GROUP.get(group, group)
+    providers = [p for p in dataset["providers"] if p.get("section") == group]
+    dims = [d for d in _visible_dims(dataset["dimensions"]) if is_applicable(dim_group, d["key"])]
     dims = view_dims(dims, view)
     matrix = dataset["matrix"]
 
@@ -193,8 +198,10 @@ def write_workbook(dataset: dict, path: str | Path) -> Path:
     # sheet for provenance.
     wb = Workbook()
     first = True
-    for group, title in (("cloud", "Cloud Infrastructure"), ("closed", "Closed API"),
-                         ("open", "Open Weight")):
+    for group, title in (("cloud", "Cloud Infrastructure"),
+                         ("closed", "Closed Model Providers"),
+                         ("open_hosted", "Open - Hosted platforms"),
+                         ("open_weights", "Open - Weights & licenses")):
         ws = wb.active if first else wb.create_sheet()
         first = False
         _comparison_sheet(ws, dataset, group, title)

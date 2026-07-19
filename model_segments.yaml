@@ -1,0 +1,77 @@
+# Model-provider classification: which section each entry appears in, and why.
+#
+# The Observatory's model sections are organized by MODEL OPENNESS, and within the
+# open side by governing instrument:
+#
+#   closed          hosted platforms serving proprietary models
+#   open_hosted     hosted platforms serving open-weight model families
+#   open_weights    the weights themselves, governed by a distribution licence
+#
+# A hosted platform is Open if the model families its tracked terms govern are
+# published under open-weight licences, Closed if proprietary only. Platforms
+# serving both are Open, with a badge.
+#
+# This is editorial judgment anchored to reader recognition, not a mechanical rule
+# that survives every edge case. Each entry therefore carries a sourced one-line
+# basis, and where a classification turned on a check of the captured terms, the
+# basis records the date of that check so it can be re-run rather than re-argued.
+#
+# Reviewed and approved 2026-07-19.
+
+entries:
+  # ---- Closed Model Providers -------------------------------------------------
+  - provider: openai
+    section: closed
+    basis: >-
+      Tracked platform terms govern the GPT API; OpenAI's open-weight release
+      (gpt-oss, Apache-2.0) is a separate downloadable artifact not governed by
+      these terms.
+    cross_link: gpt-oss
+
+  - provider: claude
+    section: closed
+    basis: >-
+      Anthropic publishes no open-weight models; tracked terms govern proprietary
+      Claude models only.
+
+  - provider: gemini
+    section: closed
+    basis: >-
+      Tracked terms govern the proprietary Gemini API. Checked 2026-07-19: no Gemma
+      reference appears in any of the seven tracked Gemini documents, so these terms
+      do not govern Gemma serving.
+
+  - provider: grok
+    section: closed
+    basis: >-
+      Tracked terms govern the proprietary Grok API. Checked 2026-07-19: the only
+      open-source reference is a boilerplate third-party-software clause, not a
+      weights release.
+
+  - provider: command
+    section: closed
+    badge: publishes weights (non-commercial license)
+    basis: >-
+      Cohere publishes Command weights under CC-BY-NC, a non-commercial licence;
+      the tracked hosted terms are the sole route for commercial use.
+
+  # ---- Open Model Providers / Hosted platforms --------------------------------
+  - provider: deepseek-platform
+    section: open_hosted
+    basis: >-
+      Tracked terms govern a platform serving DeepSeek models published under MIT.
+
+  - provider: moonshot-platform
+    section: open_hosted
+    basis: >-
+      Tracked terms govern a platform serving Kimi models published under a
+      Modified MIT licence.
+
+  - provider: mistral-platform
+    section: open_hosted
+    badge: also serves proprietary models
+    basis: >-
+      Serves open-weight Mistral families alongside proprietary models.
+
+# Everything else with openness: open_weight falls into open_weights without an
+# entry here. Listing them would duplicate the registry without adding judgment.
