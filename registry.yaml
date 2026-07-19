@@ -670,29 +670,35 @@ providers:
     parent_company: Meta
     openness: open_weight
     documents:
+      # Source relocation (non-substantive): both moved from llama.com to Meta's
+      # official meta-llama repo, per the mirror rule. For an open-weight family the
+      # repo copy is the license attached to the distributed artifact, so it is the
+      # operative document. The website copies were CAPTCHA-blocked, served only from
+      # a stale archive, and the archived AUP was the Llama 2 text under a Llama 4
+      # entry. The repo copies are plain text and name Llama 4 throughout.
       - doc_type: model_license
         name: Llama 4 Community License
         status: verified
         generation: Llama 4
-        url: https://www.llama.com/llama4/license/
-        fetch_method: browser
+        url: https://raw.githubusercontent.com/meta-llama/llama-models/main/models/llama4/LICENSE
         notes: Per-generation; earlier Llama versions carry different community licenses.
       - doc_type: aup
-        name: Llama Acceptable Use Policy
+        name: Llama 4 Acceptable Use Policy
         status: verified
-        url: https://www.llama.com/use-policy/
-        fetch_method: browser
+        generation: Llama 4
+        url: https://raw.githubusercontent.com/meta-llama/llama-models/main/models/llama4/USE_POLICY.md
 
       # -- Data protection & accountability (Phase B) --
       - doc_type: ai_documentation
         name: Model card / usage policy
         status: unverified
         url: https://www.llama.com/llama4/use-policy/
-      - doc_type: privacy_policy
-        name: Host privacy policy
-        status: unverified
-        url: https://www.facebook.com/privacy/policy/
-        notes: Meta host privacy; confirm.
+      # The Meta/Facebook consumer privacy policy was removed here, not marked
+      # restricted: it governs Meta's platforms, not the Llama weights. Running
+      # downloaded weights creates no data-processing relationship with Meta, so it
+      # never governed the tracked artifact. Governing-document rule: every document
+      # in a provider's registry must govern the tracked artifact or relationship,
+      # not merely share a parent company.
   - provider: deepseek
     provider_name: DeepSeek
     segment: model_provider
