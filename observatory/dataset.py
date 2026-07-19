@@ -398,6 +398,7 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
     notes = load_notes()
     dim_label = {d.key: d.label for d in DIMENSIONS}
     entries: List[dict] = []
+    non_text_rows: List[dict] = []
     for doc in registry.documents():
         history = store.history(doc.provider, doc.slug)
         for prev, curr in zip(history, history[1:]):
@@ -464,9 +465,52 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
                     ]
                     entry["substantive"] = note.get(
                         "substantive", _backfill_substantive(note.get("explanation", "")))
+            # A non-text diff is a fetch defect, not a change to anyone's terms. It
+            # tells a reader nothing, so it never reaches the public feed. It is
+            # recorded in an internal report instead, and the change re-enters the
+            # feed normally once a clean re-fetch produces a readable diff.
+            if non_text:
+                non_text_rows.append({
+                    "provider": doc.provider,
+                    "provider_name": doc.provider_name,
+                    "document": doc.name,
+                    "doc_type": doc.doc_type,
+                    "slug": doc.slug,
+                    "url": curr.meta.get("url", doc.url),
+                    "prev_stamp": prev.stamp,
+                    "curr_stamp": curr.stamp,
+                    "detected_at": curr.fetched_at,
+                    "fetch_method": curr.meta.get("fetch_method", ""),
+                    "prev_stats": looks_like_text(prev.text or "")[1],
+                    "curr_stats": looks_like_text(curr.text or "")[1],
+                })
+                continue
             entries.append(entry)
+    _write_non_text_report(non_text_rows)
     entries.sort(key=lambda e: e["detected_at"], reverse=True)
     return entries
+
+
+NON_TEXT_REPORT_PATH = Path("data/non-text-fetches.json")
+
+
+def _write_non_text_report(rows: List[dict]) -> None:
+    """Internal report of captures that decoded as non-text.
+
+    These are withheld from the public change feed (they describe a broken fetch,
+    not a change to a provider's terms). The report is the record that they
+    happened, and the input to the GitHub issue raised in the private data repo:
+    see `python main.py report-fetch-issues`.
+    """
+    NON_TEXT_REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    NON_TEXT_REPORT_PATH.write_text(json.dumps({
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "count": len(rows),
+        "note": ("Captures that decoded as non-text (binary, compressed, or wrong "
+                 "charset). Withheld from the public change feed; each needs a clean "
+                 "re-fetch before its change can be reported."),
+        "rows": rows,
+    }, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
 def save_dataset(dataset: dict, path: str | Path = "data/dataset.json") -> Path:

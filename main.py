@@ -238,6 +238,94 @@ def cmd_renormalize(apply_changes: bool) -> int:
     return 0
 
 
+DATA_REPO = "erinecrum/compute-terms-observatory-data"
+_ISSUE_MARKER = "<!-- compute-terms-observatory:non-text-fetches -->"
+
+
+def cmd_report_fetch_issues(dry_run: bool) -> int:
+    """Raise (or update) one GitHub issue in the PRIVATE data repo listing captures
+    that decoded as non-text.
+
+    These are withheld from the public change feed, so without this they would be
+    invisible. One issue is reused rather than a new one per run: it is found by a
+    marker in the body, and its body is rewritten to the current list. When the list
+    is empty the issue is closed.
+    """
+    import json as _json
+    import subprocess
+
+    from observatory.dataset import NON_TEXT_REPORT_PATH
+
+    if not NON_TEXT_REPORT_PATH.exists():
+        print(f"No report at {NON_TEXT_REPORT_PATH}. Run `python main.py build` first.")
+        return 1
+    report = _json.loads(NON_TEXT_REPORT_PATH.read_text(encoding="utf-8"))
+    rows = report.get("rows", [])
+
+    def gh(*args, check=True):
+        return subprocess.run(["gh", *args], capture_output=True, text=True, check=check)
+
+    title = "Non-text captures withheld from the change feed"
+    if rows:
+        lines = [
+            _ISSUE_MARKER,
+            "",
+            "These captures decoded as non-text (binary, compressed, or served under "
+            "the wrong charset). Their diffs are withheld from the public change feed "
+            "because they describe a broken fetch rather than a change to a provider's "
+            "terms. Each needs a clean re-fetch; once one lands, the change enters the "
+            "feed normally.",
+            "",
+            f"Last build: {report.get('generated_at','')}",
+            "",
+            "| Provider | Document | Fetch tier | Captures | Replacement / non-print ratio |",
+            "|---|---|---|---|---|",
+        ]
+        for r in rows:
+            cs = r.get("curr_stats", {})
+            lines.append(
+                f"| {r['provider_name']} | {r['document']} (`{r['doc_type']}`) | "
+                f"{r.get('fetch_method','?')} | `{r['prev_stamp']}` -> `{r['curr_stamp']}` | "
+                f"{cs.get('replacement_ratio','?')} / {cs.get('nonprint_ratio','?')} |")
+        lines += ["", "Source URLs:", ""]
+        lines += [f"- {r['provider']}/{r['slug']}: {r['url']}" for r in rows]
+        body = "\n".join(lines)
+    else:
+        body = _ISSUE_MARKER + "\n\nNo non-text captures in the latest build."
+
+    found = gh("issue", "list", "--repo", DATA_REPO, "--state", "all",
+               "--search", "non-text in:title", "--json", "number,title,state",
+               check=False)
+    existing = None
+    if found.returncode == 0 and found.stdout.strip():
+        for it in _json.loads(found.stdout):
+            if it["title"] == title:
+                existing = it
+                break
+
+    if dry_run:
+        print(f"[dry run] {len(rows)} non-text capture(s).")
+        print(f"[dry run] would {'update issue #' + str(existing['number']) if existing else 'create an issue'} "
+              f"in {DATA_REPO}")
+        print("---\n" + body)
+        return 0
+
+    if existing:
+        gh("issue", "edit", str(existing["number"]), "--repo", DATA_REPO, "--body", body)
+        if rows and existing["state"] == "CLOSED":
+            gh("issue", "reopen", str(existing["number"]), "--repo", DATA_REPO)
+        elif not rows and existing["state"] == "OPEN":
+            gh("issue", "close", str(existing["number"]), "--repo", DATA_REPO,
+               "--comment", "No non-text captures in the latest build.")
+        print(f"Updated issue #{existing['number']} in {DATA_REPO} ({len(rows)} row(s)).")
+    elif rows:
+        r = gh("issue", "create", "--repo", DATA_REPO, "--title", title, "--body", body)
+        print(f"Created issue in {DATA_REPO}: {r.stdout.strip()}")
+    else:
+        print("No non-text captures and no existing issue; nothing to do.")
+    return 0
+
+
 def cmd_build() -> int:
     """Assemble the comparison dataset from extractions + overrides + programs."""
     dataset = build_dataset()
@@ -288,6 +376,12 @@ def main() -> int:
     p_renorm.add_argument("--apply", action="store_true",
                           help="write the changes (default is a dry run)")
 
+    p_issues = sub.add_parser(
+        "report-fetch-issues",
+        help="raise/update the private-repo issue listing non-text captures")
+    p_issues.add_argument("--dry-run", action="store_true",
+                          help="print what would be filed without touching GitHub")
+
     sub.add_parser("build", help="assemble the comparison dataset (data/dataset.json)")
     sub.add_parser("site", help="build the dataset and render the static site into site/")
     p_run = sub.add_parser("run", help="full pipeline: fetch -> re-extract changed -> build -> site")
@@ -301,6 +395,8 @@ def main() -> int:
         return cmd_changes(args.provider)
     if args.command == "extract":
         return cmd_extract(args.provider)
+    if args.command == "report-fetch-issues":
+        return cmd_report_fetch_issues(args.dry_run)
     if args.command == "renormalize":
         return cmd_renormalize(args.apply)
     if args.command == "build":
