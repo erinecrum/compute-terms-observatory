@@ -1310,6 +1310,59 @@ def _version_provenance(meta: dict, role_label: str) -> str:
             f'<span><strong>Hash</strong> <code>{esc(sha)}</code></span>{banner}</div>')
 
 
+def _crossdoc_col(meta: dict, doc_name: str, role_label: str, text: str) -> str:
+    """One column of the clean cross-document view: identity, provenance, then the
+    full document, scrolling on its own."""
+    method = meta.get("fetch_method") or "direct"
+    archived = method == "wayback"
+    when = (meta.get("capture_timestamp") or meta.get("fetched_at") or "")[:10]
+    sha = (meta.get("text_sha256") or "")[:16]
+    chip = ('<span class="badge archived">archived capture</span>' if archived
+            else '<span class="badge muted">direct capture</span>')
+    cap = _display_strings().get("comparison", {}).get("captured", "captured")
+    return (f'<div class="xd-col"><div class="xd-head">'
+            f'<span class="xd-role">{esc(role_label)}</span>'
+            f'<strong class="xd-doc">{esc(doc_name)}</strong>'
+            f'<span class="xd-meta">{chip} &middot; {esc(cap)} {esc(when)} '
+            f'&middot; <code>{esc(sha)}</code></span></div>'
+            f'<pre class="xd-text">{esc(text)}</pre></div>')
+
+
+def _render_crossdoc(c: dict, old_text: str, new_text: str,
+                     old_meta: dict, new_meta: dict, cmp_strings: dict) -> str:
+    """Two different documents, side by side, in full, with NO diff marking. Each
+    column is headed with its own identity and provenance and scrolls
+    independently, because the documents are not versions of each other."""
+    prev_name = old_meta.get("name") or c.get("document", "the earlier document")
+    curr_name = new_meta.get("name") or c.get("document", "the current document")
+    note = (f'<div class="bl-notice">{esc(cmp_strings.get("crossdoc_note", ""))}</div>')
+    cols = (f'<div class="xd-wrap">'
+            f'{_crossdoc_col(old_meta, prev_name, cmp_strings.get("col_previous", "Previously tracked"), old_text)}'
+            f'{_crossdoc_col(new_meta, curr_name, cmp_strings.get("col_now", "Now tracked"), new_text)}'
+            f'</div>')
+    vlinks = []
+    if c.get("prev_stamp"):
+        vlinks.append('<a href="' + esc(version_page_id(c["provider"], c["slug"], c["prev_stamp"]))
+                      + '.html">raw earlier</a>')
+    if c.get("curr_stamp"):
+        vlinks.append('<a href="' + esc(version_page_id(c["provider"], c["slug"], c["curr_stamp"]))
+                      + '.html">raw current</a>')
+    vlinks.append(f'<a href="{safe_url(c["url"])}" target="_blank" rel="noopener">'
+                  'provider&rsquo;s live document</a>')
+    links = '<p class="bl-links">' + " &middot; ".join(vlinks) + '</p>'
+    return f"""
+<p><a href="changes.html">&larr; Back to the change feed</a></p>
+{note}
+<div class="cmp-meta">
+  <span><strong>{esc(c["provider_name"])}</strong> &middot; {esc(c["document"])}
+  <span class="tag">{esc(c["doc_type"])}</span></span>
+  <span>Detected {esc(c["detected_at"][:10])}</span>
+</div>
+{links}
+{cols}
+"""
+
+
 def render_comparison(c: dict, old_text: str, new_text: str,
                       old_meta: dict, new_meta: dict) -> tuple[str, bool]:
     """Both complete captured documents, side by side, as a legal blackline.
@@ -1323,28 +1376,26 @@ def render_comparison(c: dict, old_text: str, new_text: str,
     """
     from .blackline import build as _bl_build
 
-    paired = bool(c.get("substantive", True)) and not c.get("curation")
-    bl = _bl_build(old_text, new_text, paired=paired)
+    cmp_strings = _display_strings().get("comparison", {})
+    # The mode is chosen from the entry KIND, never by the reader. Only a
+    # same-document lineage edit is a blackline; every cross-document entry
+    # (relocation, generation move, curation) shows both documents clean, because a
+    # blackline between two unrelated documents marks differences that are not
+    # versions of each other and is meaningless by construction.
+    lineage = c.get("kind", "lineage_edit") == "lineage_edit"
 
-    if paired:
-        head = (f'<p class="page-standfirst">Both captured versions of '
-                f'{esc(c["document"])}, in full. Deleted text is struck through on '
-                f'the left; inserted text is underlined on the right.</p>')
-        nav = (f'<div class="bl-nav" id="bl-nav"><span class="bl-count">'
-               f'<strong id="bl-n">{bl.change_count}</strong> '
-               f'change{"" if bl.change_count == 1 else "s"}</span>'
-               '<button type="button" id="bl-prev" aria-label="Previous change">'
-               '&uarr; Prev</button>'
-               '<button type="button" id="bl-next" aria-label="Next change">'
-               'Next &darr;</button></div>')
-    else:
-        # Source-change / curation: two different documents. State it plainly and
-        # force no alignment between unrelated structures.
-        head = ('<div class="bl-notice"><strong>These are two different documents, '
-                'not edits to one document.</strong> The tracked source changed, so '
-                'the two are shown side by side without pairing passages between '
-                'them.</div>')
-        nav = ""
+    if not lineage:
+        return _render_crossdoc(c, old_text, new_text, old_meta, new_meta, cmp_strings), False
+
+    bl = _bl_build(old_text, new_text, paired=True)
+    head = f'<p class="page-standfirst">{esc(cmp_strings.get("lineage_note", ""))}</p>'
+    nav = (f'<div class="bl-nav" id="bl-nav"><span class="bl-count">'
+           f'<strong id="bl-n">{bl.change_count}</strong> '
+           f'change{"" if bl.change_count == 1 else "s"}</span>'
+           '<button type="button" id="bl-prev" aria-label="Previous change">'
+           '&uarr; Prev</button>'
+           '<button type="button" id="bl-next" aria-label="Next change">'
+           'Next &darr;</button></div>')
 
     prov = (f'<div class="bl-provs">'
             f'{_version_provenance(old_meta, "Before")}'
@@ -1412,18 +1463,51 @@ _BLACKLINE_JS = """
 """
 
 
+_DISPLAY_STRINGS = None
+
+
+def _display_strings() -> dict:
+    """Reader-facing feed and comparison strings. The pipeline emits kinds and
+    facts; every word a reader sees is composed from this file."""
+    global _DISPLAY_STRINGS
+    if _DISPLAY_STRINGS is None:
+        try:
+            import yaml
+            _DISPLAY_STRINGS = yaml.safe_load(
+                Path("display_strings.yaml").read_text(encoding="utf-8")) or {}
+        except (OSError, ValueError):
+            _DISPLAY_STRINGS = {}
+    return _DISPLAY_STRINGS
+
+
 def _change_item(c: dict) -> str:
     dims = c.get("dimensions", [])
     chips = ("".join(f'<span class="chip">{esc(d["label"])}</span>' for d in dims))
     chips = f'<div class="chips">{chips}</div>' if chips else ""
 
-    # The AI summary is the primary readable content.
-    if c.get("ai_explanation"):
+    # Reader-facing wording is composed from the entry KIND plus display_strings,
+    # never from a prose field the pipeline wrote. Relocation and curation entries
+    # lead with plain language and carry an unmissable second line making clear the
+    # provider did not act.
+    fs = _display_strings().get("feed", {})
+    kind = c.get("kind", "lineage_edit")
+    subject = esc(c.get("provider_subject") or c.get("provider_name", "The provider"))
+
+    if kind in ("source_relocation", "curation"):
+        spec = fs.get(kind, {})
+        lead = esc(spec.get("lead", ""))
+        reason = esc(c.get("curation_reason", "")) if kind == "curation" else ""
+        reason_html = f'<p class="csummary">{reason}</p>' if reason else ""
+        unchanged = esc((spec.get("unchanged", "")).format(provider=subject))
+        summary = (f'<p class="csummary reloc-lead">{lead}</p>{reason_html}'
+                   f'<p class="reloc-unchanged"><strong>{unchanged}</strong></p>')
+    elif c.get("ai_explanation"):
         summary = (f'<p class="csummary">{esc(c["ai_explanation"])}</p>{chips}'
                    '<p class="ai-verify">AI-generated description; verify against the source '
                    'before relying on it.</p>')
-    elif c.get("note"):
-        summary = f'<p class="csummary muted-note">{esc(c["note"])}</p>'
+    elif kind in ("cosmetic", "capture_issue"):
+        summary = (f'<p class="csummary muted-note">'
+                   f'{esc(fs.get(kind, {}).get("lead", ""))}</p>')
     else:
         summary = ""
 
@@ -2115,6 +2199,20 @@ background:none;border:0;cursor:pointer;padding:2px 6px}
   .bl-hidden{display:block!important}  /* paper carries the full text */
   .bl-expand{display:none}
 }
+/* Cross-document view: two unrelated documents, clean, independently scrolling.
+   No diff marking anywhere, because they are not versions of each other. */
+.xd-wrap{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+.xd-col{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--bg)}
+.xd-head{padding:11px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+.xd-role{display:block;font-family:var(--display);font-size:10px;font-weight:600;
+text-transform:uppercase;letter-spacing:.07em;color:var(--faint)}
+.xd-doc{display:block;font-size:14px;margin:3px 0}
+.xd-meta{font-size:11.5px;color:var(--muted)}
+.xd-meta code{font-family:var(--mono);font-size:10.5px}
+.xd-text{margin:0;max-height:70vh;overflow:auto;padding:12px 14px;white-space:pre-wrap;
+word-break:break-word;font-family:var(--sans);font-size:12.5px;line-height:1.6}
+@media(max-width:640px){.xd-wrap{grid-template-columns:1fr}.xd-text{max-height:none}}
+@media print{.xd-text{max-height:none;overflow:visible}}
 .chips{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 2px}
 .chip{background:var(--bg);border:1px solid var(--line-2);border-radius:20px;padding:1px 10px;
 font-size:11.5px;color:var(--accent-2);font-weight:600}

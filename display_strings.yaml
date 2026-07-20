@@ -1,0 +1,52 @@
+# Every reader-facing string in the change feed and comparison view.
+#
+# The pipeline (dataset.py) classifies each entry into a `kind` and emits
+# structured facts. It emits NO prose. All wording a reader sees is composed here,
+# so pipeline phrasing like "Tracked source document changed; not an edit of the
+# same document" can never reach the page unreviewed. That string was internal
+# vocabulary and shipped verbatim; this file exists so that cannot recur.
+#
+# {provider} is the company or offering name; {reason} is the hand-written
+# curation reason from curation_notes.yaml (itself a reviewed config), shown only
+# when present.
+
+feed:
+  # A genuine edit to the same document over time. Gets the full blackline.
+  lineage_edit:
+    # No lead line: the AI explanation of the edit is the content.
+    pass_through: true
+
+  # The Observatory changed WHICH document it tracks for this entry (a newer
+  # generation, a first-party source replacing a mirror, a relocation). The
+  # provider did nothing.
+  source_relocation:
+    lead: "Observatory update: we changed which document we track for this entry."
+    unchanged: "{provider} did not change its terms."
+
+  # A curation decision with a specific stated reason (generation move, section
+  # reorganization, an entry split). Same shape, reason shown.
+  curation:
+    lead: "Observatory update: we changed which document we track for this entry."
+    reason_prefix: ""      # the reason is shown verbatim after the lead
+    unchanged: "{provider} did not change its terms."
+
+  # The provider's text is unchanged bar timestamps or counters.
+  cosmetic:
+    lead: "No change to the terms: only timestamps or counters moved."
+
+  # A capture that did not decode as readable text.
+  capture_issue:
+    lead: "This capture could not be read as text, so no change is reported."
+
+comparison:
+  # Header note above the two documents, by mode.
+  lineage_note: >-
+    Both captured versions of this document, in full. Deleted text is struck
+    through on the left; inserted text is underlined on the right.
+  crossdoc_note: >-
+    These are two different documents. This view shows both in full; differences
+    are not marked, because the documents are not versions of each other.
+  # Column identity headers for the cross-document (clean) mode.
+  col_previous: "Previously tracked"
+  col_now: "Now tracked"
+  captured: "captured"

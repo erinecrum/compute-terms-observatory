@@ -637,6 +637,8 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
                 "detected_at": curr.fetched_at,
                 "source_changed": source_changed,
                 "non_text": non_text,
+                "kind": "lineage_edit",
+                "provider_subject": doc.parent_company or doc.provider_name,
                 "substantive": True,
                 "added_lines": 0 if suppressed else d.added_lines,
                 "removed_lines": 0 if suppressed else d.removed_lines,
@@ -665,20 +667,21 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
                     curr.meta.get("url", doc.url), curr.content_date, "after"),
             }
             if source_changed:
-                # A hand-written curation note takes precedence over the generic
-                # wording, because for a curation decision the generic phrasing can
-                # be misread as the provider having changed their terms.
+                # The pipeline emits a KIND, never prose. A hand-written curation
+                # note (from curation_notes.yaml, a reviewed config) carries a
+                # specific reason; without one this is a plain source relocation.
+                # The reader-facing wording is composed in the renderer from
+                # display_strings.yaml, so internal phrasing cannot reach the page.
                 cur_note = _curation_note(doc.provider, doc.slug, curr.meta.get("url", ""))
                 if cur_note:
-                    entry["note"] = cur_note["note"]
+                    entry["kind"] = "curation"
+                    entry["curation_reason"] = cur_note["note"]
                     entry["curation"] = True
                     entry["substantive"] = bool(cur_note.get("substantive"))
                 else:
-                    entry["note"] = (
-                        "Tracked source document changed; not an edit of the same document."
-                    )
+                    entry["kind"] = "source_relocation"
             elif non_text:
-                entry["note"] = NON_TEXT_MESSAGE
+                entry["kind"] = "capture_issue"
             else:
                 note = notes.get(change_key(doc.provider, doc.slug, prev.stamp, curr.stamp))
                 if note:
@@ -690,6 +693,11 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
                     ]
                     entry["substantive"] = note.get(
                         "substantive", _backfill_substantive(note.get("explanation", "")))
+            # A same-document edit: lineage if it meaningfully changed, else
+            # cosmetic. Only lineage edits get the blackline comparison. Set outside
+            # the note branch so an edit with no AI explanation is still classified.
+            if not source_changed and not non_text:
+                entry["kind"] = "lineage_edit" if entry.get("substantive", True) else "cosmetic"
             # A non-text diff is a fetch defect, not a change to anyone's terms. It
             # tells a reader nothing, so it never reaches the public feed. It is
             # recorded in an internal report instead, and the change re-enters the
@@ -731,7 +739,11 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
             "non_text": False,
             "substantive": False,
             "curation": True,
-            "note": ev.get("note", ""),
+            "kind": "curation",
+            "provider_subject": next(
+                (d.parent_company or d.provider_name for d in registry.documents()
+                 if d.provider == ev.get("provider")), provider_name),
+            "curation_reason": ev.get("note", ""),
             "added_lines": 0, "removed_lines": 0, "blocks": [], "all_blocks": [],
             "compare_id": "", "prev_stamp": "", "curr_stamp": "",
         })
