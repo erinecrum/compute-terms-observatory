@@ -931,16 +931,25 @@ providers:
     parent_company: Mistral
     openness: open_weight
     documents:
+      # This entry currently has NO captured governing document, and renders that
+      # way rather than borrowing one.
+      #
+      # https://legal.mistral.ai/terms was removed on 2026-07-20. It was filed here
+      # as a model card but is Mistral's legal INDEX page: a table of contents
+      # listing consumer and commercial terms, a DPA, privacy and cookie policies.
+      # An index governs nothing. Nothing on it binds a downloader of the weights,
+      # and most instruments it lists govern hosted platform use instead.
+      #
+      # The replacement is a curation call awaiting decision: Mistral publishes
+      # across both Apache-2.0 and its own research licence, so which family this
+      # entry tracks determines the licence. See FOLLOWUPS.
       - doc_type: model_license
         name: Mistral open-model license
         status: not_published
-        notes: TODO — confirm canonical license URL (Apache-2.0 models vs Mistral Research/Non-Production License) per generation.
-
-      # -- Data protection & accountability (Phase B) --
-      - doc_type: ai_documentation
-        name: Model card / usage policy
-        status: unverified
-        url: https://legal.mistral.ai/terms
+        notes: >-
+          No governing capture. Mistral ships no LICENSE file in its Hugging Face
+          repos; the licence is declared in the model card front matter and the
+          repo tag. Pending the tracked-flagship decision.
   - provider: inkling
     provider_name: Inkling
     segment: model_provider

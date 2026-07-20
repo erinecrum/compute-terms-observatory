@@ -1,0 +1,983 @@
+[
+ {
+  "provider": "aws",
+  "doc_type": "service_terms",
+  "name": "AWS Customer Agreement",
+  "url": "https://aws.amazon.com/agreement/",
+  "entry_class": "infrastructure",
+  "slug": "customer_agreement",
+  "draft": "The contract between Amazon Web Services and a customer of its compute service; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "aws",
+  "doc_type": "service_terms",
+  "name": "AWS Service Terms",
+  "url": "https://aws.amazon.com/service-terms/",
+  "entry_class": "infrastructure",
+  "slug": "service_terms",
+  "draft": "The contract between Amazon Web Services and a customer of its compute service; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "aws",
+  "doc_type": "sla",
+  "name": "Amazon Compute Service Level Agreement (EC2/ECS/Fargate)",
+  "url": "https://aws.amazon.com/compute/sla/",
+  "entry_class": "infrastructure",
+  "slug": "sla",
+  "draft": "The availability and service-credit commitment Amazon Web Services makes for its compute service, governing the service this entry tracks."
+ },
+ {
+  "provider": "aws",
+  "doc_type": "aup",
+  "name": "AWS Acceptable Use Policy",
+  "url": "https://aws.amazon.com/aup/",
+  "entry_class": "infrastructure",
+  "slug": "aup",
+  "draft": "The acceptable-use restrictions Amazon Web Services imposes on customers of its compute service, forming part of the terms governing the service this entry tracks."
+ },
+ {
+  "provider": "aws",
+  "doc_type": "ai_terms",
+  "name": "AWS Responsible AI Policy",
+  "url": "https://aws.amazon.com/ai/responsible-ai/policy/",
+  "entry_class": "infrastructure",
+  "slug": "ai_terms",
+  "draft": "Service-specific terms Amazon Web Services applies to its AI and ML offerings, supplementing the master agreement for the compute service this entry tracks."
+ },
+ {
+  "provider": "aws",
+  "doc_type": "dpa",
+  "name": "AWS GDPR Center (DPA)",
+  "url": "https://aws.amazon.com/compliance/gdpr-center/",
+  "entry_class": "infrastructure",
+  "slug": "dpa",
+  "draft": "The data-processing terms Amazon Web Services offers customers of its compute service; they govern its processing of customer personal data in the service this entry tracks."
+ },
+ {
+  "provider": "aws",
+  "doc_type": "subprocessor_list",
+  "name": "AWS Sub-processors",
+  "url": "https://aws.amazon.com/compliance/sub-processors/",
+  "entry_class": "infrastructure",
+  "slug": "subprocessor_list",
+  "draft": "The sub-processors Amazon Web Services engages to deliver its compute service, disclosed under the data-processing terms for the service this entry tracks."
+ },
+ {
+  "provider": "aws",
+  "doc_type": "privacy_policy",
+  "name": "AWS Privacy Notice",
+  "url": "https://aws.amazon.com/privacy/",
+  "entry_class": "infrastructure",
+  "slug": "privacy_policy",
+  "draft": "How Amazon Web Services handles personal data of users of its compute service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "aws",
+  "doc_type": "ai_documentation",
+  "name": "AWS AI Service Cards",
+  "url": "https://aws.amazon.com/machine-learning/responsible-machine-learning/",
+  "entry_class": "infrastructure",
+  "slug": "ai_documentation",
+  "draft": "The documentation Amazon Web Services publishes for its AI and ML services, describing part of the compute service this entry tracks."
+ },
+ {
+  "provider": "azure",
+  "doc_type": "service_terms",
+  "name": "Microsoft Customer Agreement (published)",
+  "url": "https://www.microsoft.com/licensing/docs/documents/download/Microsoft%20Customer%20Agreement.pdf",
+  "entry_class": "infrastructure",
+  "slug": "service_terms",
+  "draft": "The contract between Microsoft Azure and a customer of its compute service; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "azure",
+  "doc_type": "sla",
+  "name": "SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU)",
+  "url": "https://www.microsoft.com/licensing/docs/documents/download/OnlineSvcsConsolidatedSLA(WW)(English)(July_15_2026)(CR).docx",
+  "entry_class": "infrastructure",
+  "slug": "sla",
+  "draft": "The availability and service-credit commitment Microsoft Azure makes for its compute service, governing the service this entry tracks."
+ },
+ {
+  "provider": "azure",
+  "doc_type": "aup",
+  "name": "Microsoft Acceptable Use Policy (Online Services)",
+  "url": "https://www.microsoft.com/en-us/microsoft-365/legal/docid12",
+  "entry_class": "infrastructure",
+  "slug": "aup",
+  "draft": "The acceptable-use restrictions Microsoft Azure imposes on customers of its compute service, forming part of the terms governing the service this entry tracks."
+ },
+ {
+  "provider": "azure",
+  "doc_type": "ai_terms",
+  "name": "Microsoft Product Terms for Online Services",
+  "url": "https://www.microsoft.com/licensing/terms/product/ForOnlineServices/all",
+  "entry_class": "infrastructure",
+  "slug": "ai_terms",
+  "draft": "Service-specific terms Microsoft Azure applies to its AI and ML offerings, supplementing the master agreement for the compute service this entry tracks."
+ },
+ {
+  "provider": "azure",
+  "doc_type": "dpa",
+  "name": "Microsoft Products and Services Data Protection Addendum (DPA)",
+  "url": "https://www.microsoft.com/licensing/docs/view/Microsoft-Products-and-Services-Data-Protection-Addendum-DPA",
+  "entry_class": "infrastructure",
+  "slug": "dpa",
+  "draft": "The data-processing terms Microsoft Azure offers customers of its compute service; they govern its processing of customer personal data in the service this entry tracks."
+ },
+ {
+  "provider": "azure",
+  "doc_type": "subprocessor_list",
+  "name": "Microsoft Online Services Subprocessor List",
+  "url": "https://www.microsoft.com/en-us/trust-center/privacy/data-access",
+  "entry_class": "infrastructure",
+  "slug": "subprocessor_list",
+  "draft": "The sub-processors Microsoft Azure engages to deliver its compute service, disclosed under the data-processing terms for the service this entry tracks."
+ },
+ {
+  "provider": "azure",
+  "doc_type": "privacy_policy",
+  "name": "Microsoft Privacy Statement",
+  "url": "https://privacy.microsoft.com/en-us/privacystatement",
+  "entry_class": "infrastructure",
+  "slug": "privacy_policy",
+  "draft": "How Microsoft Azure handles personal data of users of its compute service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "azure",
+  "doc_type": "transparency_report",
+  "name": "Microsoft Law Enforcement Requests Report",
+  "url": "https://www.microsoft.com/corporate-responsibility/law-enforcement-requests-report",
+  "entry_class": "infrastructure",
+  "slug": "transparency_report",
+  "draft": "How Microsoft Azure responds to government and law-enforcement requests for customer data held in its compute service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "azure",
+  "doc_type": "ai_documentation",
+  "name": "Microsoft Responsible AI / Transparency Notes",
+  "url": "https://www.microsoft.com/ai/responsible-ai",
+  "entry_class": "infrastructure",
+  "slug": "ai_documentation",
+  "draft": "The documentation Microsoft Azure publishes for its AI and ML services, describing part of the compute service this entry tracks."
+ },
+ {
+  "provider": "gcp",
+  "doc_type": "service_terms",
+  "name": "Google Cloud Platform Terms of Service",
+  "url": "https://cloud.google.com/terms",
+  "entry_class": "infrastructure",
+  "slug": "service_terms",
+  "draft": "The contract between Google Cloud and a customer of its compute service; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "gcp",
+  "doc_type": "sla",
+  "name": "Compute Engine Service Level Agreement",
+  "url": "https://cloud.google.com/compute/sla",
+  "entry_class": "infrastructure",
+  "slug": "sla",
+  "draft": "The availability and service-credit commitment Google Cloud makes for its compute service, governing the service this entry tracks."
+ },
+ {
+  "provider": "gcp",
+  "doc_type": "aup",
+  "name": "Google Cloud Platform Acceptable Use Policy",
+  "url": "https://cloud.google.com/terms/aup",
+  "entry_class": "infrastructure",
+  "slug": "aup",
+  "draft": "The acceptable-use restrictions Google Cloud imposes on customers of its compute service, forming part of the terms governing the service this entry tracks."
+ },
+ {
+  "provider": "gcp",
+  "doc_type": "ai_terms",
+  "name": "Google Cloud Service Specific Terms (AI/ML data use)",
+  "url": "https://cloud.google.com/terms/service-terms",
+  "entry_class": "infrastructure",
+  "slug": "ai_terms",
+  "draft": "Service-specific terms Google Cloud applies to its AI and ML offerings, supplementing the master agreement for the compute service this entry tracks."
+ },
+ {
+  "provider": "gcp",
+  "doc_type": "dpa",
+  "name": "Cloud Data Processing Addendum (CDPA)",
+  "url": "https://cloud.google.com/terms/data-processing-addendum",
+  "entry_class": "infrastructure",
+  "slug": "dpa",
+  "draft": "The data-processing terms Google Cloud offers customers of its compute service; they govern its processing of customer personal data in the service this entry tracks."
+ },
+ {
+  "provider": "gcp",
+  "doc_type": "subprocessor_list",
+  "name": "Google Cloud Third Party Subprocessors",
+  "url": "https://cloud.google.com/terms/sccs/3p-subprocessors",
+  "entry_class": "infrastructure",
+  "slug": "subprocessor_list",
+  "draft": "The sub-processors Google Cloud engages to deliver its compute service, disclosed under the data-processing terms for the service this entry tracks."
+ },
+ {
+  "provider": "gcp",
+  "doc_type": "privacy_policy",
+  "name": "Google Cloud Privacy Notice",
+  "url": "https://cloud.google.com/terms/cloud-privacy-notice",
+  "entry_class": "infrastructure",
+  "slug": "privacy_policy",
+  "draft": "How Google Cloud handles personal data of users of its compute service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "gcp",
+  "doc_type": "transparency_report",
+  "name": "Google Cloud Transparency & Data Protection",
+  "url": "https://cloud.google.com/transparency",
+  "entry_class": "infrastructure",
+  "slug": "transparency_report",
+  "draft": "How Google Cloud responds to government and law-enforcement requests for customer data held in its compute service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "gcp",
+  "doc_type": "ai_documentation",
+  "name": "Google Generative AI Prohibited Use Policy",
+  "url": "https://policies.google.com/terms/generative-ai",
+  "entry_class": "infrastructure",
+  "slug": "ai_documentation",
+  "draft": "The documentation Google Cloud publishes for its AI and ML services, describing part of the compute service this entry tracks."
+ },
+ {
+  "provider": "coreweave",
+  "doc_type": "service_terms",
+  "name": "CoreWeave Terms of Use",
+  "url": "https://docs.coreweave.com/policies/terms-of-service/terms-of-use",
+  "entry_class": "infrastructure",
+  "slug": "service_terms",
+  "draft": "The contract between CoreWeave and a customer of its compute service; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "coreweave",
+  "doc_type": "aup",
+  "name": "CoreWeave Acceptable Use Policy",
+  "url": "https://docs.coreweave.com/policies/terms-of-service/acceptable-use-policy",
+  "entry_class": "infrastructure",
+  "slug": "aup",
+  "draft": "The acceptable-use restrictions CoreWeave imposes on customers of its compute service, forming part of the terms governing the service this entry tracks."
+ },
+ {
+  "provider": "coreweave",
+  "doc_type": "dpa",
+  "name": "CoreWeave Data Processing Agreement",
+  "url": "https://docs.coreweave.com/docs/policies/terms-of-service/data-processing-agreement",
+  "entry_class": "infrastructure",
+  "slug": "dpa",
+  "draft": "The data-processing terms CoreWeave offers customers of its compute service; they govern its processing of customer personal data in the service this entry tracks."
+ },
+ {
+  "provider": "coreweave",
+  "doc_type": "subprocessor_list",
+  "name": "CoreWeave Sub-processors",
+  "url": "https://docs.coreweave.com/docs/policies/terms-of-service/sub-processors",
+  "entry_class": "infrastructure",
+  "slug": "subprocessor_list",
+  "draft": "The sub-processors CoreWeave engages to deliver its compute service, disclosed under the data-processing terms for the service this entry tracks."
+ },
+ {
+  "provider": "coreweave",
+  "doc_type": "privacy_policy",
+  "name": "CoreWeave Privacy Policy",
+  "url": "https://www.coreweave.com/privacy-policy",
+  "entry_class": "infrastructure",
+  "slug": "privacy_policy",
+  "draft": "How CoreWeave handles personal data of users of its compute service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "lambda",
+  "doc_type": "service_terms",
+  "name": "Lambda Terms of Service",
+  "url": "https://lambda.ai/legal/terms-of-service",
+  "entry_class": "infrastructure",
+  "slug": "service_terms",
+  "draft": "The contract between Lambda and a customer of its compute service; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "lambda",
+  "doc_type": "privacy_policy",
+  "name": "Lambda Privacy Policy",
+  "url": "https://lambda.ai/legal/privacy-policy",
+  "entry_class": "infrastructure",
+  "slug": "privacy_policy",
+  "draft": "How Lambda handles personal data of users of its compute service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "crusoe",
+  "doc_type": "service_terms",
+  "name": "Crusoe Legal Center (Cloud Platform Terms of Service)",
+  "url": "https://legal.crusoe.ai/",
+  "entry_class": "infrastructure",
+  "slug": "service_terms",
+  "draft": "The contract between Crusoe and a customer of its compute service; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "crusoe",
+  "doc_type": "dpa",
+  "name": "Crusoe Data Processing and Security Terms",
+  "url": "https://legal.crusoe.ai/",
+  "entry_class": "infrastructure",
+  "slug": "dpa",
+  "draft": "The data-processing terms Crusoe offers customers of its compute service; they govern its processing of customer personal data in the service this entry tracks."
+ },
+ {
+  "provider": "crusoe",
+  "doc_type": "subprocessor_list",
+  "name": "Crusoe Cloud Subprocessors",
+  "url": "https://trust.crusoe.ai/",
+  "entry_class": "infrastructure",
+  "slug": "subprocessor_list",
+  "draft": "The sub-processors Crusoe engages to deliver its compute service, disclosed under the data-processing terms for the service this entry tracks."
+ },
+ {
+  "provider": "crusoe",
+  "doc_type": "privacy_policy",
+  "name": "Crusoe Privacy Notice",
+  "url": "https://privacy.crusoe.ai/",
+  "entry_class": "infrastructure",
+  "slug": "privacy_policy",
+  "draft": "How Crusoe handles personal data of users of its compute service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "runpod",
+  "doc_type": "service_terms",
+  "name": "Runpod Terms of Service",
+  "url": "https://www.runpod.io/legal/terms-of-service",
+  "entry_class": "infrastructure",
+  "slug": "service_terms",
+  "draft": "The contract between Runpod and a customer of its compute service; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "runpod",
+  "doc_type": "dpa",
+  "name": "Runpod Data Processing Agreement",
+  "url": "https://www.runpod.io/legal/data-processing-agreement",
+  "entry_class": "infrastructure",
+  "slug": "dpa",
+  "draft": "The data-processing terms Runpod offers customers of its compute service; they govern its processing of customer personal data in the service this entry tracks."
+ },
+ {
+  "provider": "runpod",
+  "doc_type": "privacy_policy",
+  "name": "Runpod Privacy Policy",
+  "url": "https://www.runpod.io/legal/privacy-policy",
+  "entry_class": "infrastructure",
+  "slug": "privacy_policy",
+  "draft": "How Runpod handles personal data of users of its compute service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "vast",
+  "doc_type": "service_terms",
+  "name": "Vast.ai Terms of Service",
+  "url": "https://vast.ai/terms",
+  "entry_class": "infrastructure",
+  "slug": "service_terms",
+  "draft": "The contract between Vast.ai and a customer of its compute service; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "vast",
+  "doc_type": "dpa",
+  "name": "Vast.ai Data Processing Agreement",
+  "url": "https://vast.ai/data-processing-agreement",
+  "entry_class": "infrastructure",
+  "slug": "dpa",
+  "draft": "The data-processing terms Vast.ai offers customers of its compute service; they govern its processing of customer personal data in the service this entry tracks."
+ },
+ {
+  "provider": "vast",
+  "doc_type": "privacy_policy",
+  "name": "Vast.ai Privacy Policy",
+  "url": "https://vast.ai/privacy",
+  "entry_class": "infrastructure",
+  "slug": "privacy_policy",
+  "draft": "How Vast.ai handles personal data of users of its compute service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "together",
+  "doc_type": "service_terms",
+  "name": "Together AI Terms of Service",
+  "url": "https://www.together.ai/terms-of-service",
+  "entry_class": "infrastructure",
+  "slug": "service_terms",
+  "draft": "The contract between Together AI and a customer of its compute service; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "together",
+  "doc_type": "dpa",
+  "name": "Together AI Data Processing Addendum",
+  "url": "https://www.together.ai/privacy",
+  "entry_class": "infrastructure",
+  "slug": "dpa",
+  "draft": "The data-processing terms Together AI offers customers of its compute service; they govern its processing of customer personal data in the service this entry tracks."
+ },
+ {
+  "provider": "together",
+  "doc_type": "privacy_policy",
+  "name": "Together AI Privacy Policy",
+  "url": "https://www.together.ai/privacy",
+  "entry_class": "infrastructure",
+  "slug": "privacy_policy",
+  "draft": "How Together AI handles personal data of users of its compute service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "baseten",
+  "doc_type": "service_terms",
+  "name": "Baseten Terms and Conditions",
+  "url": "https://www.baseten.co/terms-and-conditions/",
+  "entry_class": "infrastructure",
+  "slug": "service_terms",
+  "draft": "The contract between Baseten and a customer of its compute service; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "baseten",
+  "doc_type": "sla",
+  "name": "Baseten Service Level Agreement",
+  "url": "https://www.baseten.co/service-level-agreement/",
+  "entry_class": "infrastructure",
+  "slug": "sla",
+  "draft": "The availability and service-credit commitment Baseten makes for its compute service, governing the service this entry tracks."
+ },
+ {
+  "provider": "baseten",
+  "doc_type": "dpa",
+  "name": "Baseten Data Processing Addendum",
+  "url": "https://www.baseten.co/terms-and-conditions/",
+  "entry_class": "infrastructure",
+  "slug": "dpa",
+  "draft": "The data-processing terms Baseten offers customers of its compute service; they govern its processing of customer personal data in the service this entry tracks."
+ },
+ {
+  "provider": "baseten",
+  "doc_type": "subprocessor_list",
+  "name": "Baseten Sub-processors (Trust Center)",
+  "url": "https://trust.baseten.co/",
+  "entry_class": "infrastructure",
+  "slug": "subprocessor_list",
+  "draft": "The sub-processors Baseten engages to deliver its compute service, disclosed under the data-processing terms for the service this entry tracks."
+ },
+ {
+  "provider": "baseten",
+  "doc_type": "privacy_policy",
+  "name": "Baseten Privacy Policy",
+  "url": "https://www.baseten.co/privacy-policy/",
+  "entry_class": "infrastructure",
+  "slug": "privacy_policy",
+  "draft": "How Baseten handles personal data of users of its compute service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "claude",
+  "doc_type": "service_terms",
+  "name": "Anthropic Commercial Terms of Service",
+  "url": "https://www.anthropic.com/legal/commercial-terms",
+  "entry_class": "hosted",
+  "slug": "service_terms",
+  "draft": "The contract between Anthropic and a customer of the Claude hosted model API; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "claude",
+  "doc_type": "aup",
+  "name": "Anthropic Usage Policy",
+  "url": "https://www.anthropic.com/legal/aup",
+  "entry_class": "hosted",
+  "slug": "aup",
+  "draft": "The acceptable-use restrictions Anthropic imposes on customers of the Claude hosted model API, forming part of the terms governing the service this entry tracks."
+ },
+ {
+  "provider": "claude",
+  "doc_type": "deprecation",
+  "name": "Anthropic model deprecations",
+  "url": "https://docs.claude.com/en/docs/about-claude/model-deprecations.md",
+  "entry_class": "hosted",
+  "slug": "deprecation",
+  "draft": "The policy Anthropic publishes on retiring and pinning model versions in the Claude API, governing continuity for the service this entry tracks."
+ },
+ {
+  "provider": "claude",
+  "doc_type": "subprocessor_list",
+  "name": "Anthropic Sub-processors",
+  "url": "https://trust.anthropic.com/subprocessors",
+  "entry_class": "hosted",
+  "slug": "subprocessor_list",
+  "draft": "The sub-processors Anthropic engages to deliver the Claude hosted model API, disclosed under the data-processing terms for the service this entry tracks."
+ },
+ {
+  "provider": "claude",
+  "doc_type": "privacy_policy",
+  "name": "Anthropic Privacy Policy",
+  "url": "https://www.anthropic.com/legal/privacy",
+  "entry_class": "hosted",
+  "slug": "privacy_policy",
+  "draft": "How Anthropic handles personal data of users of the Claude hosted service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "claude",
+  "doc_type": "transparency_report",
+  "name": "Anthropic Transparency Hub",
+  "url": "https://www.anthropic.com/transparency",
+  "entry_class": "hosted",
+  "slug": "transparency_report",
+  "draft": "How Anthropic responds to government and law-enforcement requests for data held in the Claude hosted service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "claude",
+  "doc_type": "ai_documentation",
+  "name": "Anthropic model cards / Transparency Hub",
+  "url": "https://www.anthropic.com/transparency",
+  "entry_class": "hosted",
+  "slug": "ai_documentation",
+  "draft": "The documentation Anthropic publishes for the models served by the Claude API, describing the service this entry tracks."
+ },
+ {
+  "provider": "openai",
+  "doc_type": "service_terms",
+  "name": "OpenAI Service Terms",
+  "url": "https://openai.com/policies/service-terms/",
+  "entry_class": "hosted",
+  "slug": "service_terms",
+  "draft": "The contract between OpenAI and a customer of the OpenAI API / GPT hosted model API; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "openai",
+  "doc_type": "service_terms",
+  "name": "OpenAI Business Terms",
+  "url": "https://openai.com/policies/business-terms/",
+  "entry_class": "hosted",
+  "slug": "business_terms",
+  "draft": "The contract between OpenAI and a customer of the OpenAI API / GPT hosted model API; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "openai",
+  "doc_type": "aup",
+  "name": "OpenAI Usage Policies",
+  "url": "https://openai.com/policies/usage-policies/",
+  "entry_class": "hosted",
+  "slug": "aup",
+  "draft": "The acceptable-use restrictions OpenAI imposes on customers of the OpenAI API / GPT hosted model API, forming part of the terms governing the service this entry tracks."
+ },
+ {
+  "provider": "openai",
+  "doc_type": "deprecation",
+  "name": "OpenAI deprecations",
+  "url": "https://developers.openai.com/api/docs/deprecations",
+  "entry_class": "hosted",
+  "slug": "deprecation",
+  "draft": "The policy OpenAI publishes on retiring and pinning model versions in the OpenAI API / GPT API, governing continuity for the service this entry tracks."
+ },
+ {
+  "provider": "openai",
+  "doc_type": "dpa",
+  "name": "OpenAI Data Processing Addendum",
+  "url": "https://openai.com/policies/data-processing-addendum/",
+  "entry_class": "hosted",
+  "slug": "dpa",
+  "draft": "The data-processing terms OpenAI offers customers of the OpenAI API / GPT hosted model API; they govern its processing of customer personal data in the service this entry tracks."
+ },
+ {
+  "provider": "openai",
+  "doc_type": "subprocessor_list",
+  "name": "OpenAI Sub-processor List",
+  "url": "https://openai.com/policies/sub-processor-list/",
+  "entry_class": "hosted",
+  "slug": "subprocessor_list",
+  "draft": "The sub-processors OpenAI engages to deliver the OpenAI API / GPT hosted model API, disclosed under the data-processing terms for the service this entry tracks."
+ },
+ {
+  "provider": "openai",
+  "doc_type": "privacy_policy",
+  "name": "OpenAI Privacy Policy",
+  "url": "https://openai.com/policies/privacy-policy/",
+  "entry_class": "hosted",
+  "slug": "privacy_policy",
+  "draft": "How OpenAI handles personal data of users of the OpenAI API / GPT hosted service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "openai",
+  "doc_type": "ai_documentation",
+  "name": "OpenAI usage policies & system cards",
+  "url": "https://openai.com/policies/usage-policies/",
+  "entry_class": "hosted",
+  "slug": "ai_documentation",
+  "draft": "The documentation OpenAI publishes for the models served by the OpenAI API / GPT API, describing the service this entry tracks."
+ },
+ {
+  "provider": "gpt-oss",
+  "doc_type": "model_license",
+  "name": "gpt-oss model license (Apache 2.0)",
+  "url": "https://raw.githubusercontent.com/openai/gpt-oss/main/LICENSE",
+  "entry_class": "weights",
+  "slug": "model_license",
+  "draft": "The licence OpenAI attaches to the gpt-oss weights; it is the instrument under which a downloader may use, modify and redistribute them, so it governs the artifact this entry tracks."
+ },
+ {
+  "provider": "gpt-oss",
+  "doc_type": "ai_documentation",
+  "name": "Model card / usage policy",
+  "url": "https://openai.com/index/gpt-oss-model-card/",
+  "entry_class": "weights",
+  "slug": "ai_documentation",
+  "draft": "The model card OpenAI publishes in the repository that distributes the gpt-oss weights; it is the publisher's own documentation of the artifact this entry tracks."
+ },
+ {
+  "provider": "gemini",
+  "doc_type": "service_terms",
+  "name": "Gemini API Additional Terms of Service",
+  "url": "https://ai.google.dev/gemini-api/terms",
+  "entry_class": "hosted",
+  "slug": "service_terms",
+  "draft": "The contract between Google and a customer of the Gemini hosted model API; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "gemini",
+  "doc_type": "aup",
+  "name": "Google Generative AI Prohibited Use Policy",
+  "url": "https://policies.google.com/terms/generative-ai/use-policy",
+  "entry_class": "hosted",
+  "slug": "aup",
+  "draft": "The acceptable-use restrictions Google imposes on customers of the Gemini hosted model API, forming part of the terms governing the service this entry tracks."
+ },
+ {
+  "provider": "gemini",
+  "doc_type": "dpa",
+  "name": "Google Cloud Data Processing Addendum (Gemini)",
+  "url": "https://cloud.google.com/terms/data-processing-addendum",
+  "entry_class": "hosted",
+  "slug": "dpa",
+  "draft": "The data-processing terms Google offers customers of the Gemini hosted model API; they govern its processing of customer personal data in the service this entry tracks."
+ },
+ {
+  "provider": "gemini",
+  "doc_type": "privacy_policy",
+  "name": "Gemini API Additional Terms",
+  "url": "https://ai.google.dev/gemini-api/terms",
+  "entry_class": "hosted",
+  "slug": "privacy_policy",
+  "draft": "How Google handles personal data of users of the Gemini hosted service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "gemini",
+  "doc_type": "ai_documentation",
+  "name": "Google Generative AI Prohibited Use Policy + model cards",
+  "url": "https://policies.google.com/terms/generative-ai",
+  "entry_class": "hosted",
+  "slug": "ai_documentation",
+  "draft": "The documentation Google publishes for the models served by the Gemini API, describing the service this entry tracks."
+ },
+ {
+  "provider": "gemini",
+  "doc_type": "subprocessor_list",
+  "name": "Google Cloud Third Party Subprocessors (Gemini)",
+  "url": "https://cloud.google.com/terms/sccs/3p-subprocessors",
+  "entry_class": "hosted",
+  "slug": "subprocessor_list",
+  "draft": "The sub-processors Google engages to deliver the Gemini hosted model API, disclosed under the data-processing terms for the service this entry tracks."
+ },
+ {
+  "provider": "gemini",
+  "doc_type": "transparency_report",
+  "name": "Google Transparency Report (enterprise)",
+  "url": "https://transparencyreport.google.com/user-data/enterprise",
+  "entry_class": "hosted",
+  "slug": "transparency_report",
+  "draft": "How Google responds to government and law-enforcement requests for data held in the Gemini hosted service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "gemma",
+  "doc_type": "model_license",
+  "name": "Gemma Terms of Use (Gemma license)",
+  "url": "https://ai.google.dev/gemma/terms",
+  "entry_class": "weights",
+  "slug": "model_license",
+  "draft": "The licence Google attaches to the Gemma weights; it is the instrument under which a downloader may use, modify and redistribute them, so it governs the artifact this entry tracks."
+ },
+ {
+  "provider": "gemma",
+  "doc_type": "ai_documentation",
+  "name": "Model card / usage policy",
+  "url": "https://ai.google.dev/gemma/prohibited_use_policy",
+  "entry_class": "weights",
+  "slug": "ai_documentation",
+  "draft": "The model card Google publishes in the repository that distributes the Gemma weights; it is the publisher's own documentation of the artifact this entry tracks."
+ },
+ {
+  "provider": "grok",
+  "doc_type": "service_terms",
+  "name": "xAI Terms of Service",
+  "url": "https://x.ai/legal/terms-of-service",
+  "entry_class": "hosted",
+  "slug": "service_terms",
+  "draft": "The contract between xAI and a customer of the Grok hosted model API; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "grok",
+  "doc_type": "aup",
+  "name": "xAI Acceptable Use Policy",
+  "url": "https://x.ai/legal/acceptable-use-policy",
+  "entry_class": "hosted",
+  "slug": "aup",
+  "draft": "The acceptable-use restrictions xAI imposes on customers of the Grok hosted model API, forming part of the terms governing the service this entry tracks."
+ },
+ {
+  "provider": "grok",
+  "doc_type": "dpa",
+  "name": "xAI Data Processing Addendum",
+  "url": "https://x.ai/legal/data-processing-addendum",
+  "entry_class": "hosted",
+  "slug": "dpa",
+  "draft": "The data-processing terms xAI offers customers of the Grok hosted model API; they govern its processing of customer personal data in the service this entry tracks."
+ },
+ {
+  "provider": "grok",
+  "doc_type": "privacy_policy",
+  "name": "xAI Privacy Policy",
+  "url": "https://x.ai/legal/privacy-policy",
+  "entry_class": "hosted",
+  "slug": "privacy_policy",
+  "draft": "How xAI handles personal data of users of the Grok hosted service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "llama",
+  "doc_type": "model_license",
+  "name": "Llama 4 Community License",
+  "url": "https://raw.githubusercontent.com/meta-llama/llama-models/main/models/llama4/LICENSE",
+  "entry_class": "weights",
+  "slug": "model_license",
+  "draft": "The licence Meta attaches to the Llama weights; it is the instrument under which a downloader may use, modify and redistribute them, so it governs the artifact this entry tracks."
+ },
+ {
+  "provider": "llama",
+  "doc_type": "aup",
+  "name": "Llama 4 Acceptable Use Policy",
+  "url": "https://raw.githubusercontent.com/meta-llama/llama-models/main/models/llama4/USE_POLICY.md",
+  "entry_class": "weights",
+  "slug": "aup",
+  "draft": "The use policy Meta attaches to the Llama weights; it restricts what a downloader may do with them, so it attaches to the artifact this entry tracks rather than to any hosted service."
+ },
+ {
+  "provider": "deepseek",
+  "doc_type": "model_license",
+  "name": "DeepSeek-R1 model license (MIT)",
+  "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1/raw/main/LICENSE",
+  "entry_class": "weights",
+  "slug": "model_license",
+  "draft": "The licence DeepSeek attaches to the DeepSeek open models weights; it is the instrument under which a downloader may use, modify and redistribute them, so it governs the artifact this entry tracks."
+ },
+ {
+  "provider": "deepseek",
+  "doc_type": "ai_documentation",
+  "name": "Model card / usage policy",
+  "url": "https://cdn.deepseek.com/policies/en-US/deepseek-terms-of-use.html",
+  "entry_class": "weights",
+  "slug": "ai_documentation",
+  "draft": "The model card DeepSeek publishes in the repository that distributes the DeepSeek open models weights; it is the publisher's own documentation of the artifact this entry tracks."
+ },
+ {
+  "provider": "deepseek-platform",
+  "doc_type": "service_terms",
+  "name": "DeepSeek Open Platform Terms of Service",
+  "url": "https://platform.deepseek.com/downloads/DeepSeek_Open_Platform_Terms_of_Service.html",
+  "entry_class": "hosted",
+  "slug": "service_terms",
+  "draft": "The contract between DeepSeek and a customer of the DeepSeek platform hosted model API; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "deepseek-platform",
+  "doc_type": "privacy_policy",
+  "name": "DeepSeek Privacy Policy",
+  "url": "https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html",
+  "entry_class": "hosted",
+  "slug": "privacy_policy",
+  "draft": "How DeepSeek handles personal data of users of the DeepSeek platform hosted service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "qwen",
+  "doc_type": "model_license",
+  "name": "Qwen3-235B-A22B model license (Apache-2.0)",
+  "url": "https://huggingface.co/Qwen/Qwen3-235B-A22B/raw/main/LICENSE",
+  "entry_class": "weights",
+  "slug": "model_license",
+  "draft": "The licence Alibaba attaches to the Qwen weights; it is the instrument under which a downloader may use, modify and redistribute them, so it governs the artifact this entry tracks."
+ },
+ {
+  "provider": "qwen",
+  "doc_type": "ai_documentation",
+  "name": "Model card / usage policy",
+  "url": "https://huggingface.co/Qwen/Qwen3-235B-A22B/raw/main/README.md",
+  "entry_class": "weights",
+  "slug": "ai_documentation",
+  "draft": "The model card Alibaba publishes in the repository that distributes the Qwen weights; it is the publisher's own documentation of the artifact this entry tracks."
+ },
+ {
+  "provider": "kimi",
+  "doc_type": "model_license",
+  "name": "Kimi K2 model license (Modified MIT)",
+  "url": "https://huggingface.co/moonshotai/Kimi-K2-Instruct/raw/main/LICENSE",
+  "entry_class": "weights",
+  "slug": "model_license",
+  "draft": "The licence Moonshot AI attaches to the Kimi open models weights; it is the instrument under which a downloader may use, modify and redistribute them, so it governs the artifact this entry tracks."
+ },
+ {
+  "provider": "kimi",
+  "doc_type": "ai_documentation",
+  "name": "Kimi K2 model card",
+  "url": "https://huggingface.co/moonshotai/Kimi-K2-Instruct/raw/main/README.md",
+  "entry_class": "weights",
+  "slug": "ai_documentation",
+  "draft": "The model card Moonshot AI publishes in the repository that distributes the Kimi open models weights; it is the publisher's own documentation of the artifact this entry tracks."
+ },
+ {
+  "provider": "moonshot-platform",
+  "doc_type": "service_terms",
+  "name": "Moonshot (Kimi) Platform model-use agreement",
+  "url": "https://platform.moonshot.ai/docs/agreement/modeluse",
+  "entry_class": "hosted",
+  "slug": "service_terms",
+  "draft": "The contract between Moonshot AI and a customer of the Moonshot platform hosted model API; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "moonshot-platform",
+  "doc_type": "privacy_policy",
+  "name": "Moonshot (Kimi) Platform privacy policy",
+  "url": "https://platform.kimi.ai/docs/agreement/userprivacy",
+  "entry_class": "hosted",
+  "slug": "privacy_policy",
+  "draft": "How Moonshot AI handles personal data of users of the Moonshot platform hosted service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "moonshot-platform",
+  "doc_type": "ai_documentation",
+  "name": "Kimi OpenPlatform Terms of Service",
+  "url": "https://platform.moonshot.ai/docs/agreement/modeluse",
+  "entry_class": "hosted",
+  "slug": "ai_documentation",
+  "draft": "The documentation Moonshot AI publishes for the models served by the Moonshot platform API, describing the service this entry tracks."
+ },
+ {
+  "provider": "glm",
+  "doc_type": "model_license",
+  "name": "GLM-5.2 model license (MIT)",
+  "url": "https://huggingface.co/zai-org/GLM-5.2/raw/main/LICENSE",
+  "entry_class": "weights",
+  "slug": "model_license",
+  "draft": "The licence Z.ai attaches to the GLM weights; it is the instrument under which a downloader may use, modify and redistribute them, so it governs the artifact this entry tracks."
+ },
+ {
+  "provider": "glm",
+  "doc_type": "ai_documentation",
+  "name": "GLM-5.2 model card",
+  "url": "https://huggingface.co/zai-org/GLM-5.2/raw/main/README.md",
+  "entry_class": "weights",
+  "slug": "ai_documentation",
+  "draft": "The model card Z.ai publishes in the repository that distributes the GLM weights; it is the publisher's own documentation of the artifact this entry tracks."
+ },
+ {
+  "provider": "minimax",
+  "doc_type": "model_license",
+  "name": "MiniMax-M3 model license (MiniMax Community License)",
+  "url": "https://huggingface.co/MiniMaxAI/MiniMax-M3/raw/main/LICENSE",
+  "entry_class": "weights",
+  "slug": "model_license",
+  "draft": "The licence MiniMax attaches to the MiniMax weights; it is the instrument under which a downloader may use, modify and redistribute them, so it governs the artifact this entry tracks."
+ },
+ {
+  "provider": "minimax",
+  "doc_type": "ai_documentation",
+  "name": "MiniMax-M3 model card",
+  "url": "https://huggingface.co/MiniMaxAI/MiniMax-M3/raw/main/README.md",
+  "entry_class": "weights",
+  "slug": "ai_documentation",
+  "draft": "The model card MiniMax publishes in the repository that distributes the MiniMax weights; it is the publisher's own documentation of the artifact this entry tracks."
+ },
+ {
+  "provider": "mistral-platform",
+  "doc_type": "service_terms",
+  "name": "Mistral AI Terms of Service",
+  "url": "https://mistral.ai/terms",
+  "entry_class": "hosted",
+  "slug": "service_terms",
+  "draft": "The contract between Mistral and a customer of the Mistral platform hosted model API; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "mistral-platform",
+  "doc_type": "dpa",
+  "name": "Mistral AI Data Processing Addendum",
+  "url": "https://legal.mistral.ai/terms/data-processing-addendum",
+  "entry_class": "hosted",
+  "slug": "dpa",
+  "draft": "The data-processing terms Mistral offers customers of the Mistral platform hosted model API; they govern its processing of customer personal data in the service this entry tracks."
+ },
+ {
+  "provider": "mistral-platform",
+  "doc_type": "subprocessor_list",
+  "name": "Mistral AI Sub-processors",
+  "url": "https://trust.mistral.ai/subprocessors",
+  "entry_class": "hosted",
+  "slug": "subprocessor_list",
+  "draft": "The sub-processors Mistral engages to deliver the Mistral platform hosted model API, disclosed under the data-processing terms for the service this entry tracks."
+ },
+ {
+  "provider": "mistral-platform",
+  "doc_type": "privacy_policy",
+  "name": "Mistral AI Privacy Policy",
+  "url": "https://legal.mistral.ai/terms/privacy-policy",
+  "entry_class": "hosted",
+  "slug": "privacy_policy",
+  "draft": "How Mistral handles personal data of users of the Mistral platform hosted service, which is the relationship this entry tracks."
+ },
+ {
+  "provider": "mistral-platform",
+  "doc_type": "ai_documentation",
+  "name": "Mistral usage policy / model cards",
+  "url": "https://mistral.ai/terms/",
+  "entry_class": "hosted",
+  "slug": "ai_documentation",
+  "draft": "The documentation Mistral publishes for the models served by the Mistral platform API, describing the service this entry tracks."
+ },
+ {
+  "provider": "mistral-open",
+  "doc_type": "ai_documentation",
+  "name": "Model card / usage policy",
+  "url": "https://legal.mistral.ai/terms",
+  "entry_class": "weights",
+  "slug": "ai_documentation",
+  "draft": "The model card Mistral publishes in the repository that distributes the Mistral open models weights; it is the publisher's own documentation of the artifact this entry tracks."
+ },
+ {
+  "provider": "command",
+  "doc_type": "service_terms",
+  "name": "Cohere Terms of Use",
+  "url": "https://cohere.com/terms-of-use",
+  "entry_class": "hosted",
+  "slug": "service_terms",
+  "draft": "The contract between Cohere and a customer of the Command hosted model API; it is the master agreement for the service this entry tracks."
+ },
+ {
+  "provider": "command",
+  "doc_type": "ai_documentation",
+  "name": "Cohere Enterprise Data Commitments",
+  "url": "https://cohere.com/enterprise-data-commitments",
+  "entry_class": "hosted",
+  "slug": "ai_documentation",
+  "draft": "The documentation Cohere publishes for the models served by the Command API, describing the service this entry tracks."
+ },
+ {
+  "provider": "command",
+  "doc_type": "subprocessor_list",
+  "name": "Cohere Sub-processors (Trust Center)",
+  "url": "https://trustcenter.cohere.com/",
+  "entry_class": "hosted",
+  "slug": "subprocessor_list",
+  "draft": "The sub-processors Cohere engages to deliver the Command hosted model API, disclosed under the data-processing terms for the service this entry tracks."
+ },
+ {
+  "provider": "command",
+  "doc_type": "privacy_policy",
+  "name": "Cohere Privacy Policy",
+  "url": "https://cohere.com/privacy",
+  "entry_class": "hosted",
+  "slug": "privacy_policy",
+  "draft": "How Cohere handles personal data of users of the Command hosted service, which is the relationship this entry tracks."
+ }
+]

@@ -33,6 +33,7 @@ from .registry import Registry, load_registry
 from .schema import (DIMENSIONS, dimension_group, is_applicable, section_of,
                      segment_config, segment_group)
 from .snapshot import SnapshotStore
+from .fingerprint import check as fingerprint_check
 from .scopecheck import check as scope_check
 from .textcheck import NON_TEXT_MESSAGE, looks_like_text, sufficient_content
 
@@ -244,6 +245,7 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
                 f"this entry tracks {g.declared}")
     _write_generation_report(generation_findings)
     _write_scope_report(_scope_sweep(registry, store))
+    _write_fingerprint_report(_fingerprint_sweep(registry, store))
 
     provider_names = registry.provider_names()
     providers_meta: List[dict] = []
@@ -252,6 +254,8 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
     warn_rows: List[tuple] = []      # (provider, group, dim, status, reason, excerpt)
 
     for provider in registry.providers():
+        registered_slugs = {d.slug for d in registry.for_provider(provider)
+                            if d.status in ("verified", "unverified")}
         record = load_extraction(provider)
         if record is None:
             continue  # not yet extracted
@@ -351,6 +355,21 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
         # confidence score can express.
         for f in fields.values():
             src = f.get("source") or {}
+            # A value whose source document is no longer registered has nothing
+            # standing behind it. Removing a document from the registry (because
+            # it does not govern the artifact, say) must withdraw the values it
+            # produced; otherwise the extraction outlives the decision and the
+            # site keeps asserting what a withdrawn document said.
+            if src.get("slug") and src["slug"] not in registered_slugs:
+                f["status"] = "not_retrievable"
+                f["capture_cause"] = "source_withdrawn"
+                f["value"] = ""
+                f["citation"] = ""
+                f["suppressed_note"] = (
+                    "the source document was removed from the registry; no "
+                    "governing document is currently captured for this entry")
+                continue
+
             if src.get("slug") in suppress_slugs.get(provider, {}):
                 f["status"] = "not_retrievable"
                 f["capture_cause"] = "generation_mismatch"
@@ -401,6 +420,20 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
         lic_field = fields.get("model_license") or {}
         # Annotate permissive-licence silence now that statuses are final.
         _bucket = _license_bucket(lic_field.get("value", ""))
+        # An entry with no registered document cannot report silence on anything:
+        # we read nothing, so nothing can be said to be absent from what we read.
+        # Runs after derivation, which is what turns an empty value into
+        # "no_clause_found" in the first place.
+        if not registered_slugs:
+            for f in fields.values():
+                if f.get("status") == "no_clause_found":
+                    f["status"] = "not_retrievable"
+                    f["capture_cause"] = "source_withdrawn"
+                    f["value"] = ""
+                    f["citation"] = ""
+                    f["suppressed_note"] = (
+                        "no governing document is currently captured for this entry")
+
         _apply_licence_silence(fields, _bucket)
         if _bucket == "bespoke/community license":
             _apply_bespoke_silence(fields, provider)
@@ -941,3 +974,60 @@ def _write_scope_report(findings: List[dict]) -> None:
     if findings:
         print(f"  scope flags: {len(findings)} document(s) disagree with their "
               f"entry class -> {SCOPE_REPORT_PATH}")
+
+
+# ---------------------------------------------------------------------------
+# Capture fingerprint sweep
+#
+# A capture can be a real page, cleanly fetched, of adequate length, from the
+# right domain -- and still be the wrong page. Qwen's model card was captured
+# from the Hugging Face org landing page: HTTP 200, correct host, correct org,
+# 2,889 characters of activity feed. Every provenance and content-floor check
+# passed because every one of them was satisfied.
+#
+# The cheap test: a document about a specific model generation mentions that
+# generation. Flags only, and only for the two doc types bound to a named
+# artifact.
+# ---------------------------------------------------------------------------
+
+FINGERPRINT_REPORT_PATH = Path("data/fingerprint_flags.json")
+
+
+def _fingerprint_sweep(registry, store) -> List[dict]:
+    names = {d.provider: d.provider_name for d in registry.documents()}
+    declared = {}
+    for d in registry.documents():
+        if getattr(d, "generation", None):
+            declared.setdefault(d.provider, d.generation)
+
+    findings = []
+    for doc in registry.fetchable():
+        snap = store.current(doc.provider, doc.slug)
+        if not snap or not snap.text:
+            continue
+        flag = fingerprint_check(
+            snap.text, doc.doc_type,
+            model_name=names.get(doc.provider, ""),
+            generation=getattr(doc, "generation", None) or declared.get(doc.provider, ""),
+            provider_name=names.get(doc.provider, ""))
+        if flag:
+            flag.update({"provider": doc.provider, "doc_type": doc.doc_type,
+                         "url": doc.url, "name": doc.name})
+            findings.append(flag)
+    return findings
+
+
+def _write_fingerprint_report(findings: List[dict]) -> None:
+    FINGERPRINT_REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    FINGERPRINT_REPORT_PATH.write_text(json.dumps({
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "count": len(findings),
+        "note": ("Captures for model_license or ai_documentation that never name "
+                 "the tracked model or generation. A prompt to check the capture is "
+                 "the document it claims to be; nothing is suppressed. A publisher "
+                 "renaming a checkpoint produces a flag here and is not a defect."),
+        "findings": findings,
+    }, indent=2, ensure_ascii=False), encoding="utf-8")
+    if findings:
+        print(f"  fingerprint flags: {len(findings)} capture(s) never name the "
+              f"tracked model -> {FINGERPRINT_REPORT_PATH}")

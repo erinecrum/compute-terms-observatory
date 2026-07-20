@@ -18,6 +18,23 @@ model asked to confirm will confirm. Requiring the counter-argument means the
 best objection is written down even when the conclusion is that the document is
 fine, so a reviewer sees the strongest reason to look rather than a reassurance.
 
+THIS LAYER OWNS THE "WRONG PAGE" CLASS, AND CANNOT BE RETIRED.
+
+A capture can be a real page, cleanly fetched, HTTP 200, from the right domain and
+the right org namespace, of adequate length -- and be the wrong page. Qwen's model
+card was once captured from the Hugging Face org landing page: 2,889 characters of
+activity feed. Content floors measure size and a wrong page is often normally
+sized. Provenance checks verify origin and this came from the right place. The
+fingerprint check narrows the class by demanding the tracked generation appear,
+but note it first MISSED that case, because an org feed is wall-to-wall with the
+family name; only requiring the specific checkpoint worked.
+
+Reading the document and asking what it is remains the only check that does not
+depend on guessing the right string in advance. That is what this pass does, and
+it is why a stable registry is not a reason to switch it off: a stable registry is
+precisely the condition under which a wrong capture sits unnoticed for months,
+with no edit to trigger review.
+
 THIS PASS NEVER SUPPRESSES OR MODIFIES ANYTHING. It writes a triage report. Every
 disposition is the reviewer's. That is deliberate: a model's opinion about which
 instrument governs an artifact is not a basis on which to withdraw a published

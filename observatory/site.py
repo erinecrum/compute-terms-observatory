@@ -484,6 +484,9 @@ _CAPTURE_CAUSE = {
     "generation_mismatch": "superseded generation",
     # Text, but not the document: below the per-doc_type content floor.
     "insufficient_capture": "insufficient capture",
+    # The document that produced this value was removed from the registry. Not a
+    # fetch failure: it was retrieved fine and then judged not to govern.
+    "source_withdrawn": "source document withdrawn",
 }
 
 

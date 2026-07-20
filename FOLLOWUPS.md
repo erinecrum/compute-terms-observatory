@@ -2,6 +2,40 @@
 
 Deferred items to revisit deliberately, not in passing.
 
+## Wrong-page captures are a class, not an incident
+
+A capture can be a real page, cleanly fetched, HTTP 200, from the correct domain and
+the correct org namespace, of adequate length -- and be the wrong page.
+
+The instance: Qwen's model card was captured from the Hugging Face org LANDING page,
+2,889 characters of activity feed, after the registry URL moved and before the next
+fetch. Every provenance and content-floor check passed, because every one of them was
+satisfied. Nothing was broken; the wrong document was simply sitting where the right
+one should be.
+
+Why the existing controls cannot own this class:
+
+- **Content floors** measure size. A wrong page is often a perfectly normal size.
+- **Provenance and domain checks** verify where a capture came from. This one came
+  from exactly the right place.
+- **The generation check** compares a document's text to the tracked generation, but
+  only fires where the text names SOME generation. An activity feed names many.
+- **The fingerprint check** (added 2026-07-20) catches the common shape by requiring
+  the tracked generation to appear. Note it initially MISSED the Qwen case: the org
+  feed is wall-to-wall "Qwen", so a family-name match succeeded. It only works
+  because it demands the specific checkpoint. Anything looser reproduces the defect.
+
+So the fingerprint narrows the class; it does not own it. **The audit pass owns this
+class**, because reading the document and asking what it is, is the only check that
+does not depend on guessing the right string in advance.
+
+This is the reason the audit pass cannot be retired once the registry stabilises. A
+stable registry is exactly the condition under which this defect is invisible: no
+edits, no new sources, nothing to review, and a capture quietly pointing at the wrong
+page for months. Do not let a quiet quarter become an argument for switching it off.
+
+Raised 2026-07-20.
+
 ## Quarterly full-registry governs review
 
 **Next due: 2026-10-20**, then quarterly.
@@ -30,6 +64,34 @@ Working method:
 3. Check `data/scope_flags.json` and the generation report in the same pass.
 4. Record dispositions in the registry notes, including the ones you decline to
    change and why.
+
+Raised 2026-07-20.
+
+## mistral-open has no governing document
+
+The legal index page (legal.mistral.ai/terms) was removed on 2026-07-20: it is a table
+of contents, and an index governs nothing. The entry now renders 22 dimensions as
+not-retrievable, which is its true state, rather than borrowing a document.
+
+**Decision needed: which family does this entry track?** Mistral publishes across both
+Apache-2.0 and its own research licence, so the answer determines the licence.
+
+Findings from the 2026-07-20 probe:
+
+- Mistral ships **no LICENSE file** in its Hugging Face repos. Every candidate probed
+  returned 404 for `/raw/main/LICENSE`. The licence is declared in the model card
+  front matter (`license: apache-2.0`) and the repo tag.
+- `mistralai/Mistral-Large-3` is the current flagship and declares Apache-2.0; its
+  card states "Apache 2.0 License: Open-source license allowing usage and modification
+  for both commercial and non-commercial purposes". Mistral-Small-3.2 and
+  Magistral-Small-2509 also declare Apache-2.0.
+- The Mistral Research Licence exists at mistral.ai/static/licenses/MRL-0.1.md and
+  applies to other families.
+
+This creates a wrinkle worth deciding deliberately: with no LICENSE file, a
+`model_license` document has no URL to point at that is not also the model card. Either
+the licence is recorded as declared-within-the-model-card, or the entry carries only an
+`ai_documentation` document and the licence dimension is sourced from it.
 
 Raised 2026-07-20.
 
