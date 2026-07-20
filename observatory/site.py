@@ -825,7 +825,9 @@ def render_about(dataset: dict) -> str:
          "routinely differ. Every value links to its source so you can check it yourself. Nothing "
          "here creates an attorney-client relationship.</p>"),
         ("Who runs it?",
-         "<p>It is an independent, open-source research project. The code is MIT-licensed and the "
+         "<p>It is an independent research project. The source code is published so the "
+         "methods can be inspected and the published claims checked, but it is "
+         "source-available rather than open source: it is not licensed for reuse. The "
          "brand is reserved. It is not affiliated with, endorsed by, or sponsored by any of the "
          "providers it tracks.</p>"),
         ("How do I report an error?",
@@ -1004,7 +1006,8 @@ those versions are not captured, and the English version is treated as the refer
 text. Where a provider's own document states that another language governs in the
 event of a conflict, that statement is part of the terms and is read like any other
 clause, but the non-English text behind it is not archived here.</p>
-<p><strong>Code and data.</strong> The code is open source (MIT). The change history is
+<p><strong>Code and data.</strong> The source code is published for inspection and
+verification, under a source-available licence rather than an open-source one. The change history is
 published here as the change feed; the archived snapshot corpus is maintained in the
 project's data repository. See the <a href="about.html">About</a> page for the full
 provider and dimension coverage.</p>"""),

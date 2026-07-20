@@ -103,7 +103,9 @@ Modules live in `observatory/`: `registry`, `fetcher`, `snapshot`, `differ`,
 
 ### Code and data (public code, private data)
 
-The code in this repo is open source (MIT). The **data corpus** (the growing
+The code in this repo is **source-available, not open source**: published so the
+methods can be inspected and the claims checked, but not licensed for reuse (see
+[LICENSE](LICENSE)). The **data corpus** (the growing
 `snapshots/` and `data/`) lives in a **separate private repository**,
 `compute-terms-observatory-data`. Going forward, `snapshots/` and `data/` are
 gitignored here, so new corpus versions land only in the private repo; the copies
@@ -169,9 +171,15 @@ and features can be added without rework.
 
 ## License
 
-The **source code** is released under the [MIT License](LICENSE). You may use,
-modify, and redistribute the code freely, including commercially, provided the
-copyright notice is kept.
+The **source code** is **source-available, not open source**, under the
+[LICENSE](LICENSE). You may read it and run it privately to evaluate it or to
+verify how the Observatory produces its published output. You may not copy,
+redistribute, modify, or build on it. All rights not expressly granted are
+reserved.
+
+Versions published before 2026-07-19 were MIT-licensed. That grant is not revoked
+and cannot be: anyone who obtained those versions keeps their MIT rights in them.
+The current licence governs this version onward.
 
 The **brand is not covered by the code license.** The "Compute Terms Observatory"
 name, the O. logo and O.bservatory wordmark, and the site's visual identity are all

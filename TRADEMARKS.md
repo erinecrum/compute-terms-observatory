@@ -1,7 +1,8 @@
 # Trademarks & brand
 
-The [MIT License](LICENSE) covers the source **code** of this project only. It does
-**not** grant any rights to the project's brand.
+The [LICENSE](LICENSE) covers the source **code** of this project only, and covers
+it on a source-available basis rather than an open-source one. It does **not**
+grant any rights to the project's brand.
 
 The following are **not** covered by the code license, and **all rights are
 reserved**:

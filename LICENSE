@@ -1,27 +1,77 @@
-MIT License
+Compute Terms Observatory - Source-Available License
 
-Copyright (c) 2026 Erin Crum
+Copyright (c) 2026 Erin Crum. All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This software is source-available, not open source. The source is published so
+that the Observatory's methods can be inspected and its published claims checked.
+Publication is not a grant of rights to use the software.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. PERMITTED
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+   Subject to the terms below, you may:
+
+   (a) view, read, and study the source code; and
+
+   (b) run the software privately for the sole purpose of personally evaluating
+       it, including verifying how the Observatory produces its published output.
+
+2. NOT PERMITTED
+
+   Except as expressly permitted above, and except where a right cannot lawfully
+   be restricted, you may not:
+
+   (a) copy, reproduce, or redistribute the software, in source or compiled form,
+       in whole or in part;
+
+   (b) modify the software or create derivative works based on it;
+
+   (c) use the software, or any part of it, in any product, service, or offering,
+       whether or not commercial, or for the benefit of any third party;
+
+   (d) sublicense, sell, rent, lease, or otherwise transfer any rights in the
+       software; or
+
+   (e) remove or alter any copyright, trademark, or other proprietary notice.
+
+3. NO OTHER RIGHTS
+
+   All rights not expressly granted are reserved. No rights are granted by
+   implication, estoppel, or otherwise. Publishing this source does not place it
+   in the public domain and does not grant any licence under any patent.
+
+4. BRAND AND DATA NOT COVERED
+
+   This licence covers the source CODE only.
+
+   The "Compute Terms Observatory" name, the "O.bservatory" wordmark, the .O logo
+   and brand mark, and the site's visual identity are NOT licensed here and are
+   all rights reserved. See TRADEMARKS.md.
+
+   The archived document corpus, the extracted dataset, and the published document
+   versions are likewise not covered by this licence. Documents captured from third
+   parties remain the property of their respective owners; the Observatory
+   reproduces them for documentation and verification purposes.
+
+5. NO WARRANTY
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHOR OR COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM,
+   OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   SOFTWARE.
+
+6. QUESTIONS
+
+   For any use beyond what is permitted above, contact
+   legal@termsobservatory.org.
 
 ---
 
-This MIT license covers the source CODE only. The "Compute Terms Observatory"
-name, the O. logo and O.bservatory wordmark, and the site's visual identity are
-NOT covered by this license and are all rights reserved. See TRADEMARKS.md.
+PRIOR LICENSING
+
+Versions of this software published before 2026-07-19 were released under the MIT
+License. That grant is not revoked and cannot be: anyone who obtained a copy of
+those versions while they were MIT-licensed retains their MIT rights in the
+versions they obtained. This licence governs this version and all later versions.
