@@ -229,12 +229,13 @@ _LEAD = ("One place to see the contract terms cloud infrastructure and AI model 
 # Two lines, deliberately ranked. The lead says what the site is FOR; the caveat
 # says what the summaries are. Collapsing them into one sentence made the caveat
 # compete with the purpose, and a first-time reader met the disclaimer first.
-_DECK_HTML = (
-    f'<span class="deck-lead">{_LEAD}</span>'
+_DECK_LEAD_HTML = f'<span class="deck-lead">{_LEAD}</span>'
+_DECK_NOTE_HTML = (
     '<span class="deck-note"><span class="note-full">AI-generated summaries under a '
     f'{_DECK_LINK}. Not legal advice.</span>'
     '<span class="note-short">AI-generated summaries. Not legal advice.</span></span>'
 )
+_DECK_HTML = _DECK_LEAD_HTML + _DECK_NOTE_HTML
 
 
 # The one-line statement of purpose. Appears in the footer of every page, and as
@@ -242,6 +243,21 @@ _DECK_HTML = (
 # Same sentence as the masthead lead, so the footer restates the purpose rather
 # than paraphrasing it into a second, slightly different claim.
 _PURPOSE_LINE = _LEAD
+
+# Line 2 of the home header: what the site DOES, as opposed to what it is. Home
+# page only; interior pages keep the two-line treatment, where a reader has
+# already arrived and does not need the pitch again.
+_WHAT_IT_DOES_FULL = (
+    "Each provider's documents are archived twice daily, read against the same set "
+    "of contract dimensions, and laid out side by side, so you can compare posture "
+    "across providers, catch terms as they change, and reach the primary document "
+    "behind any value in one click.")
+_WHAT_IT_DOES_SHORT = (
+    "Documents archived twice daily, read against the same dimensions, laid out "
+    "side by side.")
+_HOME_LINE2 = (
+    f'<span class="deck-does"><span class="does-full">{_WHAT_IT_DOES_FULL}</span>'
+    f'<span class="does-short">{_WHAT_IT_DOES_SHORT}</span></span>')
 
 
 # Item A5 gate: the document-versions policy text names contact@termsobservatory.org,
@@ -390,7 +406,7 @@ def _shell(title: str, body: str, active: str, subtitle: str = "",
             f'<nav class="nav">{nav}</nav></div></header>'
             '<section class="hero"><div class="hero-in">'
             f'<div class="hero-wm">{_wordmark()}</div>'
-            f'<p class="hero-deck">{_DECK_HTML}</p>'
+            f'<p class="hero-deck">{_DECK_LEAD_HTML}{_HOME_LINE2}{_DECK_NOTE_HTML}</p>'
             '</div></section>'
         )
     else:
@@ -707,10 +723,6 @@ def render_matrix(dataset: dict) -> str:
     # selection (default: All). The AI Model Providers pill reveals a sub-control.
     chooser = (
         '<div class="chooser" id="chooser">'
-        # The explainer leads the chooser rather than trailing it: a first-time
-        # visitor needs the frame before the choice, not after making one.
-        '<p class="chooser-hint" id="chooser-hint">Compare cloud infrastructure '
-        'providers, or AI model providers (closed or open).</p>'
         '<div class="chooser-main">'
         '<button type="button" class="cpill" data-choose="cloud">'
         '<span class="pl-full">Cloud Infrastructure Providers</span>'
@@ -1646,7 +1658,13 @@ font-style:italic;color:var(--muted);font-size:13.5px}
 /* Same serif as the lead. Ranking is carried by size and colour alone, so the two
    lines read as one voice rather than as a caption bolted under a headline.
    (Declared, not inherited: .deck .wrap no longer sets the family.) */
-.deck-note{display:block;margin-top:4px;
+/* Line 2: what the site does. Regular face, so it reads as explanation rather
+   than as a second tagline competing with the lead. */
+.deck-does{display:block;margin-top:9px;font-family:inherit;font-style:normal;
+color:var(--muted);font-size:12.5px;line-height:1.65}
+.does-short{display:none}
+@media(max-width:640px){.does-full{display:none}.does-short{display:inline}}
+.deck-note{display:block;margin-top:9px;
 font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-style:normal;
 color:var(--faint);font-size:11.5px;line-height:1.5}
 .deck a{color:inherit;text-decoration:underline;text-decoration-color:var(--line-2)}
@@ -1788,7 +1806,6 @@ p{max-width:74ch}
 @media(max-width:760px){.pl-full{display:none}.pl-short{display:inline}}
 /* Second-level model chooser sits between the primary row and the open subgroup. */
 .chooser-models{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
-.chooser-hint{margin:0 0 11px;font-size:12px;color:var(--faint);line-height:1.5}
 .legend{display:flex;flex-wrap:wrap;align-items:center;gap:6px 15px;font-size:12.5px;color:var(--muted)}
 .legend-lbl{font-weight:700;text-transform:uppercase;letter-spacing:.07em;font-size:11px;color:var(--faint)}
 .lg{display:inline-flex;align-items:center;gap:6px}
@@ -2217,13 +2234,10 @@ document.addEventListener('click',function(e){
     var choose='all', sub='all';
     var modelsRow=document.getElementById('chooser-models');
     var openRow=document.getElementById('chooser-sub');
-    var hint=document.getElementById('chooser-hint');
     function syncRows(){
       var inModels=(choose==='models'||choose==='allmodels'||choose==='closed'||choose==='open');
       if(modelsRow) modelsRow.hidden=!(inModels||choose==='all');
       if(openRow) openRow.hidden=(choose!=='open');
-      // The explainer earns its place only until the reader has chosen.
-      if(hint) hint.hidden=(choose!=='all');
     }
     function markPrimary(){
       var primary=(choose==='cloud')?'cloud':(choose==='all')?'all':'models';
