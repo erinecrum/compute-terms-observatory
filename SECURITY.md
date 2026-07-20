@@ -45,15 +45,33 @@ runs with the secrets above; a compromised release or a repointed tag would exec
 with them. Dependabot is enabled and raises security updates as pull requests.
 Updates are reviewed and merged deliberately, never auto-merged.
 
-**Repository.** Secret scanning and push protection are enabled, so a key committed
-by mistake is blocked at push rather than discovered later.
+**Repository.** Secret scanning and push protection are enabled on the public
+repository, so a key committed by mistake is blocked at push rather than discovered
+later. They are NOT available on the private corpus repository: secret scanning for
+private repositories requires GitHub Advanced Security, a paid add-on. The API
+accepts the call and silently does not apply it, so this is recorded rather than
+assumed.
+
+**Backups.** The private repository runs a weekly workflow producing a dated archive
+of the corpus with a SHA-256 manifest. It defends against a bad push, not against
+account compromise: the artifact lives in the same account. An off-GitHub copy is
+the part that survives the platform.
 
 **Transport.** HTTPS is enforced by GitHub Pages, with certificates provisioned
 through Let's Encrypt. A CAA record restricts certificate issuance to that issuer.
 
-**Domain.** DNSSEC is enabled. SPF, DKIM and DMARC are published for the domain's
-Google Workspace mail; see `docs/dns-records-squarespace.md` for the records and
-their rationale.
+**Domain.** DNSSEC is enabled. The domain is verified to this GitHub account, so it
+cannot be claimed by another account if it is ever removed from this repository's
+Pages configuration. SPF, DKIM and DMARC are published for the domain's Google
+Workspace mail; see `docs/dns-records-squarespace.md` for the records and their
+rationale.
+
+**Repository branch.** Force-pushes and deletion of `main` are blocked. Required
+status checks are deliberately NOT enabled: the twice-daily pipeline commits the
+public last-checked timestamp directly to `main`, and required checks block direct
+pushes to a protected branch, so enabling them would break the pipeline rather than
+protect it. Requiring checks needs the pipeline changed to stop pushing to `main`
+first.
 
 ## What GitHub Pages cannot provide
 
