@@ -113,9 +113,10 @@ providers:
     # MiniMaxAI is MiniMax's Hugging Face org. NOT minimax-m2.com, which is a
     # third-party operator and the reason this file exists.
     hosts: [huggingface.co/MiniMaxAI]
-  # mistral-open has no registered documents: the legal index page was removed on
-  # 2026-07-20 and no governing capture has replaced it yet. Restore an entry here
-  # when the tracked flagship is decided.
+  mistral-open:
+    # mistralai is Mistral's Hugging Face org. The entry tracks Mistral-Large-3,
+    # whose licence is declared in the model card rather than a LICENSE file.
+    hosts: [huggingface.co/mistralai]
 
 # Hosts where the org namespace, not the host, identifies the publisher. An entry
 # for one of these must be written as "host/Org" and is matched case-insensitively

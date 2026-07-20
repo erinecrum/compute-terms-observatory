@@ -165,10 +165,12 @@ providers:
         name: Google Cloud Transparency & Data Protection
         status: unverified
         url: https://cloud.google.com/transparency
-      - doc_type: ai_documentation
-        name: Google Generative AI Prohibited Use Policy
-        status: unverified
-        url: https://policies.google.com/terms/generative-ai
+      # WITHDRAWN 2026-07-20. Named a Prohibited Use Policy, but the URL is the
+      # Generative AI Additional Terms of Service, whose own text reads: "We updated
+      # the Google Terms of Service on May 22, 2024 to cover AI-related topics. As of
+      # that date, these Generative AI Additional Terms of Service no longer apply."
+      # A superseded consumer instrument on an enterprise compute entry fails twice.
+      # A replacement is proposed but not adopted; see FOLLOWUPS.
 
   # ────────────────────────── GPU-focused ──────────────────────────
   - provider: coreweave
@@ -542,10 +544,12 @@ providers:
         name: OpenAI Sub-processor List
         status: unverified
         url: https://openai.com/policies/sub-processor-list/
-      - doc_type: privacy_policy
-        name: OpenAI Privacy Policy
-        status: unverified
-        url: https://openai.com/policies/privacy-policy/
+      # WITHDRAWN 2026-07-20. This policy disqualifies itself by its own scope
+      # clause: "This Privacy Policy does not apply to content that we process on
+      # behalf of customers of our business offerings, such as our API." This entry
+      # tracks the API. The DPA governs that relationship and remains registered.
+      # Any privacy dimension left without a correctly scoped document renders
+      # not-retrievable, never silent.
       - doc_type: ai_documentation
         name: OpenAI usage policies & system cards
         status: unverified
@@ -657,11 +661,11 @@ providers:
         url: https://x.ai/legal/data-processing-addendum
         fetch_method: browser
         notes: Sub-processor terms within the DPA (dim 3). x.ai 403s the direct bot; browser tier.
-      - doc_type: privacy_policy
-        name: xAI Privacy Policy
-        status: unverified
-        url: https://x.ai/legal/privacy-policy
-        fetch_method: browser
+      # WITHDRAWN 2026-07-20. Same self-disqualification as OpenAI's: "This Privacy
+      # Policy does not apply to data that we process on behalf of customers of our
+      # business offerings, such as the xAI API." This entry tracks the xAI API. The
+      # DPA already supplies data residency, transfer, sub-processor and government
+      # access for this entry.
       - doc_type: ai_documentation
         name: xAI model cards
         status: not_published
@@ -729,13 +733,9 @@ providers:
         status: verified
         generation: DeepSeek-R1
         url: https://huggingface.co/deepseek-ai/DeepSeek-R1/raw/main/LICENSE
-      # FLAGGED, not moved: this is labelled a model card but points at the
-      # platform's terms of use, so it may belong on the platform entry. Left here
-      # pending a decision rather than moved silently.
-      - doc_type: ai_documentation
-        name: Model card / usage policy
-        status: unverified
-        url: https://cdn.deepseek.com/policies/en-US/deepseek-terms-of-use.html
+      # The platform Terms of Use that sat here, filed as a model card, moved to
+      # deepseek-platform on 2026-07-20. It governs the hosted service, not the
+      # weights. Flagged on 2026-07-19 and deferred; the deferral is closed.
 
   - provider: deepseek-platform
     provider_name: DeepSeek platform
@@ -750,6 +750,15 @@ providers:
         fetch_method: browser
         url: https://platform.deepseek.com/downloads/DeepSeek_Open_Platform_Terms_of_Service.html
         notes: 403 to direct archival bot; use browser tier (confirm URL in re-fetch).
+      - doc_type: ai_documentation
+        name: DeepSeek Terms of Use
+        status: verified
+        url: https://cdn.deepseek.com/policies/en-US/deepseek-terms-of-use.html
+        notes: >-
+          Moved here from the deepseek weights entry on 2026-07-20, where it was
+          filed as a model card. It is the Terms of Use for DeepSeek's hosted
+          products and services and governs the hosted relationship, not a set of
+          downloadable weights. Same correction as the Kimi split.
       - doc_type: privacy_policy
         name: DeepSeek Privacy Policy
         status: unverified
@@ -931,25 +940,44 @@ providers:
     parent_company: Mistral
     openness: open_weight
     documents:
-      # This entry currently has NO captured governing document, and renders that
-      # way rather than borrowing one.
+      # LICENCE DECLARED IN THE MODEL CARD, NOT A SEPARATE FILE.
       #
-      # https://legal.mistral.ai/terms was removed on 2026-07-20. It was filed here
-      # as a model card but is Mistral's legal INDEX page: a table of contents
-      # listing consumer and commercial terms, a DPA, privacy and cookie policies.
-      # An index governs nothing. Nothing on it binds a downloader of the weights,
-      # and most instruments it lists govern hosted platform use instead.
+      # Mistral ships no LICENSE file in its Hugging Face repos: every candidate
+      # probed on 2026-07-20 returned 404 for /raw/main/LICENSE, and the
+      # Mistral-Large-3 repo contains only README.md among non-weight files. The
+      # licence is declared in the card front matter and corroborated by the repo
+      # license tag.
       #
-      # The replacement is a curation call awaiting decision: Mistral publishes
-      # across both Apache-2.0 and its own research licence, so which family this
-      # entry tracks determines the licence. See FOLLOWUPS.
+      # General rule, not a Mistral exception: where a repository declares its
+      # licence in card front matter or repo metadata rather than a standalone
+      # file, model_license points at the README, the identifier is quoted from
+      # the front matter, and the repo tag is recorded as corroboration. One
+      # document legitimately fills two registry roles; no second URL is invented.
+      #
+      # https://legal.mistral.ai/terms was removed on 2026-07-20: it is Mistral's
+      # legal INDEX page, a table of contents, and an index governs nothing.
       - doc_type: model_license
-        name: Mistral open-model license
-        status: not_published
+        name: Mistral-Large-3 licence (Apache-2.0, declared in model card)
+        status: verified
+        generation: Mistral-Large-3
+        license_declared_in: model_card_front_matter
+        url: https://huggingface.co/mistralai/Mistral-Large-3/raw/main/README.md
         notes: >-
-          No governing capture. Mistral ships no LICENSE file in its Hugging Face
-          repos; the licence is declared in the model card front matter and the
-          repo tag. Pending the tracked-flagship decision.
+          Front matter declares "license: apache-2.0"; the card body states
+          "Apache 2.0 License: Open-source license allowing usage and modification
+          for both commercial and non-commercial purposes". Corroborated by the
+          Hugging Face repo tag "license:apache-2.0". No LICENSE file exists in
+          the repo, so this card is the operative declaration.
+      - doc_type: ai_documentation
+        name: Mistral-Large-3 model card
+        status: verified
+        generation: Mistral-Large-3
+        url: https://huggingface.co/mistralai/Mistral-Large-3/raw/main/README.md
+        notes: >-
+          Same document as model_license above, in its documentation role. Mistral's
+          current flagship open-weight release; tracked generation approved
+          2026-07-20.
+
   - provider: inkling
     provider_name: Inkling
     segment: model_provider

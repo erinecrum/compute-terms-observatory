@@ -42,6 +42,10 @@ def main() -> int:
 
     registry = load_registry()
     store = SnapshotStore()
+    declared_gen = {}
+    for d in registry.documents():
+        if getattr(d, "generation", None):
+            declared_gen.setdefault(d.provider, d.generation)
 
     queue = []
     for doc in registry.fetchable():
@@ -70,7 +74,8 @@ def main() -> int:
         print(f"  [{i}/{len(queue)}] {doc.provider}/{doc.doc_type} ...", flush=True)
         f = audit_document(
             client, provider=doc.provider, doc_type=doc.doc_type, name=doc.name,
-            url=doc.url, entry_class=cls, tracked=tracked, text=text)
+            url=doc.url, entry_class=cls, tracked=tracked, text=text,
+            generation=getattr(doc, "generation", None) or declared_gen.get(doc.provider, ""))
         if f:
             findings.append(f)
             if f.contested:

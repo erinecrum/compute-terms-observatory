@@ -115,7 +115,78 @@ concluded it does govern. If the objection is genuinely weak, say so and say why
 Judge the document by what it says about its own scope, not by who published it. \
 Sharing a publisher is not sufficient: the question is whether this instrument \
 binds a reader with respect to this artifact. Answer "partly" where the document \
-governs the artifact only in part, or governs it alongside other things."""
+governs the artifact only in part, or governs it alongside other things.
+
+DISQUALIFYING EXCLUSIONS. If the document's own scope clause EXCLUDES the tracked \
+artifact, it is disqualified: answer "no" regardless of its type, its domain, or \
+who published it, and QUOTE THE EXCLUSION VERBATIM in your basis. This is the \
+sharpest form of the defect and the easiest to miss, because everything else about \
+the document looks right. Two real examples, both found this way:
+
+  "This Privacy Policy does not apply to content that we process on behalf of \
+  customers of our business offerings, such as our API."
+
+  "This Privacy Policy does not apply to data that we process on behalf of \
+  customers of our business offerings, such as the xAI API."
+
+Both sat on entries tracking exactly the API they excluded."""
+
+
+# Documentation and transparency reports do not bind anyone; that is what those
+# types ARE. Asking whether they "govern" produced four confident false referrals
+# in the first full pass. The role-appropriate question is whether the document is
+# the publisher's official material FOR this artifact, current, and about the
+# tracked generation.
+_INFORMATIONAL = {"ai_documentation", "transparency_report"}
+
+_INFO_PROMPT = """You are auditing a legal-research registry for a specific defect.
+
+The registry pairs each tracked artifact with documents ABOUT it. This document is \
+an informational type, so do NOT ask whether it binds anyone or sets terms: a model \
+card and a transparency report never do, and judging them by that standard is a \
+category error.
+
+Ask instead:
+  1. Is this the publisher's own official {doc_type} FOR the artifact this entry \
+     tracks, rather than for a different product, tier or audience?
+  2. Is it CURRENT, or has it been superseded, archived or withdrawn? Quote any \
+     text saying so.
+  3. Does it describe the tracked generation, where the entry names one?
+
+A real example of the defect: a Google page named "Generative AI Prohibited Use \
+Policy" whose text actually read "As of that date, these Generative AI Additional \
+Terms of Service no longer apply" -- superseded, and sitting on an enterprise \
+compute entry as current documentation.
+
+ENTRY
+  provider:        {provider}
+  entry class:     {entry_class}
+  this entry tracks: {tracked}
+  tracked generation: {generation}
+
+DOCUMENT
+  type:  {doc_type}
+  name:  {name}
+  url:   {url}
+
+DOCUMENT TEXT (opening {n} characters)
+---
+{text}
+---
+
+Answer in this exact JSON shape and nothing else:
+
+{{
+  "governs": "yes" | "no" | "partly",
+  "confidence": "high" | "medium" | "low",
+  "basis": "<one sentence: is this the publisher's official {doc_type} for this \
+artifact, and is it current>",
+  "strongest_objection": "<the strongest case that this is NOT the right document \
+for this entry: wrong product, wrong audience, superseded, or about a different \
+generation. Quote the text if it says so.>"
+}}
+
+Here "yes" means: the publisher's own current {doc_type} for this artifact."""
 
 
 def _client():
@@ -127,10 +198,12 @@ def _client():
 
 
 def audit_document(client, *, provider, doc_type, name, url, entry_class,
-                   tracked, text) -> Optional[Finding]:
-    prompt = _PROMPT.format(
+                   tracked, text, generation="") -> Optional[Finding]:
+    template = _INFO_PROMPT if doc_type in _INFORMATIONAL else _PROMPT
+    prompt = template.format(
         provider=provider, entry_class=entry_class, tracked=tracked,
         doc_type=doc_type, name=name or "(unnamed)", url=url or "(no url)",
+        generation=generation or "(none declared)",
         n=_DOC_CHARS, text=(text or "")[:_DOC_CHARS])
 
     resp = client.messages.create(

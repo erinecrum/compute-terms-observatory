@@ -1006,6 +1006,12 @@ service terms, and one is not evidence of the other.</p>
 <p>Where a license text is generic and names no generation (a bare MIT or Apache-2.0
 file, for example), the binding between document and model generation is the repository
 path it sits at, not the words in the file.</p>
+<p>Some publishers ship no license file at all, declaring the license in the model
+card&rsquo;s front matter or the repository&rsquo;s metadata instead. Where that is so, the model
+card is recorded as the operative license document, the identifier is quoted from the
+front matter, and the repository&rsquo;s license tag is noted as corroboration. One document
+then fills two roles in the registry, which is preferable to inventing a second URL for
+a file that does not exist.</p>
 <p>Every document in a provider's entry must govern the tracked artifact or
 relationship. Sharing a parent company is not enough: a consumer platform's privacy
 policy does not govern a set of downloadable model weights, because running the weights

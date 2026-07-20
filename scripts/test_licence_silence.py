@@ -128,8 +128,24 @@ def providers_by_form(cfg):
         data = json.loads((ROOT / "data/dataset.json").read_text())
     except (OSError, ValueError):
         return {}
+    # Entries whose licence is declared inside a model card never receive
+    # licence-silence treatment (the treatment assumes a bare grant that addresses
+    # nothing else, and a model card is not that), so probing their text against
+    # reason lines that are never applied to them produces a false failure.
+    declared_in_card = set()
+    try:
+        reg = yaml.safe_load((ROOT / "registry.yaml").read_text(encoding="utf-8"))
+        for prov in reg.get("providers", []):
+            for doc in prov.get("documents", []):
+                if doc.get("license_declared_in"):
+                    declared_in_card.add(prov["provider"])
+    except (OSError, ValueError):
+        pass
+
     out = {}
     for meta in data.get("providers", []):
+        if meta.get("provider") in declared_in_card:
+            continue
         form = (cfg.get("forms") or {}).get(meta.get("license_type", ""))
         if form:
             out.setdefault(form, []).append(meta["provider"])

@@ -117,6 +117,7 @@ def load_registry(path: str | Path = "registry.yaml") -> Registry:
                 parent_company=parent_company,
                 openness=openness,
                 generation=d.get("generation", ""),
+                license_declared_in=d.get("license_declared_in", ""),
                 capture_state=d.get("capture_state", ""),
                 capture_cause=d.get("capture_cause", ""),
                 versions_suppressed=bool(d.get("versions_suppressed", False)),

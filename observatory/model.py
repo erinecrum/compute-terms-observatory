@@ -62,6 +62,12 @@ class Document:
     parent_company: str = ""       # for model families, e.g. "Anthropic", "Google"
     openness: str = ""             # for model families: closed_api | open_weight
     generation: str = ""
+    # Set where a repository declares its licence in card front matter or repo
+    # metadata rather than a standalone LICENSE file. The same document then fills
+    # both the model_license and ai_documentation roles, and licence-silence
+    # treatment does not apply: the premise of that treatment is a bare grant that
+    # addresses nothing else, which a model card is not.
+    license_declared_in: str = ""
     # Set when a provider's own configuration blocks retrieval, so the
     # document is never fetched and its values render as absent-by-access
     # rather than as a repeated failure.
