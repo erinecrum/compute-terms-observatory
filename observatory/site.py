@@ -230,7 +230,7 @@ _DECK_LINK = '<a href="methodology.html">documented methodology</a>'
 _DOES_LINE = ("The published contract terms of cloud infrastructure and AI model "
               "providers, archived twice daily and laid out side by side. "
               "Every value links to the source document.")
-_NOTE_LINE = ("AI-generated summaries &middot; " + _DECK_LINK.replace(
+_NOTE_LINE = ("ai-generated summaries &middot; " + _DECK_LINK.replace(
     ">documented methodology<", ">documented methodology<") +
     " &middot; not legal advice")
 
