@@ -221,7 +221,9 @@ def _wordmark() -> str:
 
 # The serif-italic deck line. "documented methodology" is the only link. A short
 # variant is shown on narrow viewports, the full sentence on desktop.
-_DECK_LINK = '<a href="methodology.html">documented methodology</a>'
+# Only the word carries the link. "documented" is a description of the
+# methodology, not part of its name, so underlining it overstates the target.
+_DECK_LINK = 'documented <a href="methodology.html">methodology</a>'
 # "What they publish" could mean product docs, model cards, benchmarks. Naming
 # the contract terms is the whole point of the site and costs two words.
 # Two lines, deliberately ranked. The lead says what the site is FOR; the caveat
@@ -230,9 +232,8 @@ _DECK_LINK = '<a href="methodology.html">documented methodology</a>'
 _DOES_LINE = ("The published contract terms of cloud infrastructure and AI model "
               "providers, archived twice daily and laid out side by side. "
               "Every value links to the source document.")
-_NOTE_LINE = ("ai-generated summaries &middot; " + _DECK_LINK.replace(
-    ">documented methodology<", ">documented methodology<") +
-    " &middot; not legal advice")
+_NOTE_LINE = ("ai-generated summaries &middot; " + _DECK_LINK +
+              " &middot; not legal advice")
 
 # One element per line, one copy of every string. No desktop/mobile siblings: a
 # second copy of a sentence in the DOM is a second thing that can be read aloud,
@@ -1648,7 +1649,7 @@ font-style:italic;color:var(--muted);font-size:13.5px}
 .brand-slot{display:block}
 
 /* Homepage centered hero (Roamie-style) */
-.hero{padding:40px 24px 26px;text-align:center}
+.hero{padding:40px 24px 0;text-align:center}
 .hero-in{max-width:1040px;margin:0 auto}
 .hero-wm{display:inline-flex;flex-direction:column;align-items:center}
 /* Eyebrow at ~45% of the wordmark's cap height (was ~18%), and the gap pulled to
@@ -1661,6 +1662,9 @@ margin-top:-.16em}
 .deck-does{margin:0;font-size:clamp(14px,1.5vw,16px);line-height:1.6;color:var(--muted);
 text-wrap:pretty}
 .deck-note{margin:7px 0 0;font-size:12px;color:var(--faint);line-height:1.5;text-wrap:pretty}
+.deck-note a{color:inherit;text-decoration:underline;text-decoration-color:var(--line-2);
+text-underline-offset:2px}
+.deck-note a:hover{color:var(--ink);text-decoration-color:currentColor}
 .deck-does,.deck-note{font-style:normal}
 .hero-deck a{color:inherit}
 .hero-deck a:hover{color:var(--ink);text-decoration:none}
@@ -1670,7 +1674,7 @@ text-wrap:pretty}
    shadow: --panel is the same cream the table headers use, so the panel reads as
    part of the same paper rather than as a floating card. */
 .ctlpanel{background:var(--panel);border:1px solid var(--line);border-radius:18px;
-padding:20px 24px 22px;margin:26px auto 30px;max-width:1180px}
+padding:20px 24px 22px;margin:14px auto 30px;max-width:1180px}
 .ctl-hint{margin:0 auto 16px;max-width:62ch;font-size:12.5px;color:var(--faint);
 line-height:1.55;text-align:center;text-wrap:balance}
 .ctlpanel .toolbar{border:0;padding:0;margin-top:14px;background:transparent}
