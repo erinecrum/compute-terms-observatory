@@ -860,7 +860,18 @@ def render_about(dataset: dict) -> str:
         ("How do I report an error?",
          '<p>Open an issue on the <a href="https://github.com/erinecrum/compute-terms-observatory">'
          "source repository</a> with the provider, the dimension, and what you believe is wrong. "
-         "Corrections are re-checked against the archived source.</p>"),
+         "Corrections are re-checked against the archived source.</p>"
+         "<p>Errors fall into three kinds, and it helps to say which:</p><ul>"
+         "<li><strong>The reading is wrong.</strong> The cited document says something "
+         "different from what the cell reports.</li>"
+         "<li><strong>The document is out of date.</strong> The provider has since "
+         "revised or replaced it.</li>"
+         "<li><strong>The cited document does not govern the tracked artifact.</strong> "
+         "The document is real and quoted correctly, but it does not apply to the thing "
+         "in that row: a hosted platform's terms cited against downloadable weights, a "
+         "policy that governs a different product of the same company, or a document "
+         "published by someone other than the provider. Every document carries a stated "
+         "basis for why it governs; this is a challenge to that basis.</li></ul>"),
     ]
     rows = "".join(
         f'<details class="faq" name="faq"><summary>{esc(q)}'
@@ -996,6 +1007,15 @@ path it sits at, not the words in the file.</p>
 relationship. Sharing a parent company is not enough: a consumer platform's privacy
 policy does not govern a set of downloadable model weights, because running the weights
 creates no data-processing relationship with the publisher.</p>
+<p>Every document carries a <strong>stated basis</strong>: one sentence recording what it
+governs and why that is this entry&rsquo;s tracked artifact. The basis is written when the
+document is registered, not derived afterwards, so the judgment is made explicitly and
+once. Mechanical checks sit around it, a document type that could not govern an entry&rsquo;s
+artifact is a build error, and each document&rsquo;s own scope language is compared against
+the entry it sits on, but neither can settle whether a given instrument governs a given
+thing. That remains a judgment, and it is <strong>contestable</strong>: a reader who
+believes a cell cites a document that does not govern the artifact can say so through the
+error channel, and that is a listed category of error rather than a special case.</p>
 <p><strong>Archived captures.</strong> Where a provider blocks direct retrieval, the
 Observatory falls back to the most recent Internet Archive capture. Values from an
 archived capture are marked with the capture date, because the archived text may lag the

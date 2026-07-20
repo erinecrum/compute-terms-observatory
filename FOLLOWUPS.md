@@ -2,6 +2,37 @@
 
 Deferred items to revisit deliberately, not in passing.
 
+## Quarterly full-registry governs review
+
+**Next due: 2026-10-20**, then quarterly.
+
+Read every fetchable document's `governs` line against the document itself and the
+entry it sits on, in one pass, deliberately. Same shape as the sweep on 2026-07-19
+that found the Meta consumer privacy policy filed against the Llama weights.
+
+The reason this has a cadence: every governing-document violation found so far was
+found by accident. Llama's came from a deliberate sweep, but Kimi's, GLM's and
+MiniMax's each surfaced only because an unrelated check suppressed their values and
+someone asked why an entry looked empty. Violations that produce confident,
+well-sourced, WRONG values -- the more likely shape, since a wrong document usually
+has plenty to say -- generate no such signal at all.
+
+The layered controls added on 2026-07-20 (doc-type lint, scope-clause check,
+monthly adversarial audit) narrow the gap but cannot close it: whether a given
+instrument governs a given artifact is a judgment. This review is where that
+judgment gets spent on purpose rather than on prompting.
+
+Working method:
+
+1. `python scripts/governance_audit.py` for a fresh triage list.
+2. Work the contested list, then read the clean list's `basis` lines too: the audit
+   agreeing is not the same as the basis being right.
+3. Check `data/scope_flags.json` and the generation report in the same pass.
+4. Record dispositions in the registry notes, including the ones you decline to
+   change and why.
+
+Raised 2026-07-20.
+
 ## Qwen tracked generation lags the provider's own documentation
 
 The registry now tracks **Qwen3-235B-A22B** (Apache-2.0), moved from Qwen2.5-72B on
