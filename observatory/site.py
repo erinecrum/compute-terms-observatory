@@ -222,8 +222,10 @@ def _wordmark() -> str:
 # The serif-italic deck line. "documented methodology" is the only link. A short
 # variant is shown on narrow viewports, the full sentence on desktop.
 _DECK_LINK = '<a href="methodology.html">documented methodology</a>'
-_LEAD = ("One place to see what cloud infrastructure and AI model providers publish, "
-         "side by side, as it changes.")
+# "What they publish" could mean product docs, model cards, benchmarks. Naming
+# the contract terms is the whole point of the site and costs two words.
+_LEAD = ("One place to see the contract terms cloud infrastructure and AI model "
+         "providers publish, side by side, as they change.")
 # Two lines, deliberately ranked. The lead says what the site is FOR; the caveat
 # says what the summaries are. Collapsing them into one sentence made the caveat
 # compete with the purpose, and a first-time reader met the disclaimer first.
@@ -707,8 +709,8 @@ def render_matrix(dataset: dict) -> str:
         '<div class="chooser" id="chooser">'
         # The explainer leads the chooser rather than trailing it: a first-time
         # visitor needs the frame before the choice, not after making one.
-        '<p class="chooser-hint" id="chooser-hint">Compare the published contract terms of '
-        'cloud infrastructure providers, or of AI model providers (closed or open).</p>'
+        '<p class="chooser-hint" id="chooser-hint">Compare cloud infrastructure '
+        'providers, or AI model providers (closed or open).</p>'
         '<div class="chooser-main">'
         '<button type="button" class="cpill" data-choose="cloud">'
         '<span class="pl-full">Cloud Infrastructure Providers</span>'
