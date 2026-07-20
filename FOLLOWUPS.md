@@ -57,16 +57,28 @@ arbitration retained.
 
 Raised 2026-07-19.
 
-## DMARC: move to p=reject after two weeks
+## DMARC: tighten the policy in two steps
 
-Set 2026-07-19, check from **2026-08-02**. DMARC starts at `quarantine` while
-Workspace mail is new. Once the Postmark digests show legitimate mail passing SPF and
-DKIM consistently, replace the `_dmarc` TXT record with:
+Verified live 2026-07-19: MX, SPF, DKIM and DMARC all pass. Policy currently sits at
+`p=none`, which is monitoring only. Aggregate reports go to a Postmark digest rather
+than the mailbox.
 
-    v=DMARC1; p=reject; rua=mailto:<the Postmark address from the DMARC sheet>; fo=1; adkim=s; aspf=s
+**Step 1, from 2026-08-02.** If the digests show legitimate mail passing SPF and
+DKIM consistently, move to quarantine and tighten SPF alignment:
 
-and tighten SPF from `~all` to `-all` in the same session. Do not do either while
-reports still show failures: that rejects your own mail.
+    v=DMARC1; p=quarantine; pct=100; rua=mailto:re+c1mghgxwsqv@dmarc.postmarkapp.com; sp=quarantine; aspf=s;
+
+**Step 2, roughly two weeks after that**, if still clean, move to reject and tighten
+SPF from `~all` to `-all` in the same session:
+
+    v=DMARC1; p=reject; pct=100; rua=mailto:re+c1mghgxwsqv@dmarc.postmarkapp.com; sp=reject; aspf=s;
+
+Do not skip step 1, and do not tighten while any report still shows failures: that
+rejects your own mail. Paste through a plain-text editor; the first attempt at this
+record picked up a stray tab that silently invalidated it.
+
+Note: termsobservatory.com is separately configured as a non-sending domain
+(`v=spf1 -all`, DMARC `p=reject`, no MX). That is correct and needs no change.
 
 ## Rotate DATA_REPO_TOKEN every 90 days
 
