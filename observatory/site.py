@@ -1639,7 +1639,11 @@ letter-spacing:.12em;padding:4px 0;border-bottom:2px solid transparent}
    caveat sits under it, smaller and muted, so purpose reads before disclaimer. */
 .deck-lead{display:block;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;
 font-style:italic;color:var(--muted);font-size:13.5px}
-.deck-note{display:block;margin-top:3px;font-family:inherit;font-style:normal;
+/* Same serif as the lead. Ranking is carried by size and colour alone, so the two
+   lines read as one voice rather than as a caption bolted under a headline.
+   (Declared, not inherited: .deck .wrap no longer sets the family.) */
+.deck-note{display:block;margin-top:4px;
+font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-style:normal;
 color:var(--faint);font-size:11.5px;line-height:1.5}
 .deck a{color:inherit;text-decoration:underline;text-decoration-color:var(--line-2)}
 .deck a:hover{color:var(--ink)}
