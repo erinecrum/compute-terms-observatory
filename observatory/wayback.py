@@ -63,6 +63,12 @@ def nearest_capture(url: str, when: str, direction: str) -> Optional[str]:
         with urlopen(req, timeout=_TIMEOUT) as resp:
             data = json.loads(resp.read().decode("utf-8", "replace"))
         snap = ((data.get("archived_snapshots") or {}).get("closest") or {})
+        # The availability API returns http:// URLs. Upgrade them: the site is
+        # HTTPS-only, and sending a reader who clicked "verify this independently"
+        # over plaintext undercuts the point of the link. archive.org serves the
+        # same path over TLS.
+        if snap.get("url", "").startswith("http://"):
+            snap["url"] = "https://" + snap["url"][len("http://"):]
         if snap.get("available") and snap.get("timestamp") and snap.get("url"):
             got = _parse(snap["timestamp"])
             if got:
