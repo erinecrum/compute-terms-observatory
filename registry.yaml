@@ -467,8 +467,14 @@ providers:
       - doc_type: deprecation
         name: Anthropic model deprecations
         status: verified
-        url: https://docs.anthropic.com/en/docs/about-claude/model-deprecations
-        fetch_method: browser
+        url: https://docs.claude.com/en/docs/about-claude/model-deprecations.md
+        notes: >-
+          Source relocation (non-substantive). Anthropic publishes a markdown
+          version of this page for automated consumption, alongside a site-wide
+          llms.txt index. The rendered page is 816KB of JavaScript that normalized
+          to nothing, so the fetcher fell back to the Internet Archive and the
+          entry sat on a capture from 2025-09-12. The .md is 12.6KB of the actual
+          document. Same content, provider-published, intended for this use.
       - doc_type: sla
         name: Anthropic API SLA
         status: not_published
