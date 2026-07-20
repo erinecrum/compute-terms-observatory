@@ -366,6 +366,11 @@ def _shell(title: str, body: str, active: str, subtitle: str = "",
 <meta charset="utf-8">
 <!--CSP-->
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Pages cannot set response headers, so the protections that have a meta form are
+     set here. Referrer-Policy limits what provider sites learn when a reader follows
+     a source link. X-Content-Type-Options has no meta equivalent and cannot be set;
+     see SECURITY.md for the full list of what Pages cannot provide. -->
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>{esc(title)} | {BRAND}</title>
 <link rel="icon" href="{_FAVICON}">
 <style>{_CSS}</style>
