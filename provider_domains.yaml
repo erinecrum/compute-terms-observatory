@@ -1,0 +1,125 @@
+# Which hosts each provider's documents may come from.
+#
+# WHY THIS EXISTS
+#
+# minimax/ai_documentation once pointed at https://minimax-m2.com/terms. That is
+# the Terms of Service of a party that commercially operates the MiniMax M2 model
+# and is independent of MiniMax. It sat in the registry for weeks, linked and
+# labelled as MiniMax's model card, and nothing objected: the URL resolved, the
+# document was real, the fetch succeeded, and the name contained "minimax".
+#
+# It was found only because a generation check built for an unrelated purpose
+# suppressed its values and someone asked why the entry looked empty.
+#
+# Note what does NOT work as a defence here. Matching the host against the
+# provider's name would have passed minimax-m2.com, since it contains "minimax".
+# Plausibility is exactly the property a bad source has. The only check that
+# catches this is an explicit list, reviewed once by a person, enforced after.
+#
+# THE RULE
+#
+# Every document URL in registry.yaml must have a host listed under its provider
+# here. Adding a source from a new host is therefore a deliberate edit to this
+# file, which is the review gate that was missing.
+#
+# Two entry forms:
+#
+#   example.com              an exact host. A leading "www." is ignored on both
+#                            sides, so list the bare form.
+#   huggingface.co/Org       a distribution platform, where the host alone means
+#                            nothing and the ORG NAMESPACE is what identifies the
+#                            publisher. Anyone can host a repository on
+#                            huggingface.co; only Qwen can publish under
+#                            huggingface.co/Qwen.
+#
+# Enforced by scripts/test_provider_domains.py.
+#
+# REVIEW NOTE: this list was seeded from the hosts already in registry.yaml as of
+# 2026-07-20 and then read through by hand, entry by entry, against each
+# provider's own site. Seeding from current state is only safe because that audit
+# happened; a future addition gets no such presumption.
+
+providers:
+  # ── Hyperscalers ──
+  aws:
+    hosts: [aws.amazon.com]
+  azure:
+    hosts: [microsoft.com, privacy.microsoft.com]
+  gcp:
+    hosts: [cloud.google.com, policies.google.com]
+
+  # ── GPU clouds ──
+  coreweave:
+    hosts: [coreweave.com, docs.coreweave.com]
+  lambda:
+    hosts: [lambda.ai]
+  crusoe:
+    hosts: [legal.crusoe.ai, privacy.crusoe.ai, trust.crusoe.ai]
+  runpod:
+    hosts: [runpod.io]
+  vast:
+    hosts: [vast.ai]
+  together:
+    hosts: [together.ai]
+  baseten:
+    hosts: [baseten.co, trust.baseten.co]
+
+  # ── Model providers, hosted ──
+  claude:
+    hosts: [anthropic.com, docs.claude.com, trust.anthropic.com]
+  openai:
+    hosts: [openai.com, developers.openai.com]
+  gemini:
+    hosts: [ai.google.dev, cloud.google.com, policies.google.com,
+            transparencyreport.google.com]
+  grok:
+    hosts: [x.ai]
+  command:
+    hosts: [cohere.com, trustcenter.cohere.com]
+  mistral-platform:
+    hosts: [mistral.ai, legal.mistral.ai, trust.mistral.ai]
+  deepseek-platform:
+    hosts: [cdn.deepseek.com, platform.deepseek.com]
+  moonshot-platform:
+    # Moonshot operates its platform under both names; kimi.ai is the product
+    # domain and moonshot.ai the company domain, and both serve the same docs.
+    hosts: [platform.kimi.ai, platform.moonshot.ai]
+
+  # ── Model providers, open weights ──
+  # For these the licence and model card live in the publisher's own namespace on
+  # a distribution platform. The namespace is the identity claim, so it is pinned.
+  gemma:
+    hosts: [ai.google.dev]
+  llama:
+    # meta-llama is Meta's GitHub org; llama.com is Meta's Llama site.
+    hosts: [llama.com, raw.githubusercontent.com/meta-llama]
+  gpt-oss:
+    # openai is OpenAI's GitHub org.
+    hosts: [openai.com, raw.githubusercontent.com/openai]
+  qwen:
+    # Qwen is Alibaba's Hugging Face org for the Qwen models.
+    hosts: [huggingface.co/Qwen]
+  deepseek:
+    hosts: [cdn.deepseek.com, huggingface.co/deepseek-ai]
+  kimi:
+    # moonshotai is Moonshot AI's Hugging Face org.
+    hosts: [huggingface.co/moonshotai]
+  glm:
+    # zai-org is Z.ai (Zhipu AI)'s Hugging Face org, which publishes GLM. The org
+    # name shares no substring with "glm", which is exactly why a name-similarity
+    # check is the wrong tool and this list is the right one.
+    hosts: [huggingface.co/zai-org]
+  minimax:
+    # MiniMaxAI is MiniMax's Hugging Face org. NOT minimax-m2.com, which is a
+    # third-party operator and the reason this file exists.
+    hosts: [huggingface.co/MiniMaxAI]
+  mistral-open:
+    hosts: [legal.mistral.ai]
+
+# Hosts where the org namespace, not the host, identifies the publisher. An entry
+# for one of these must be written as "host/Org" and is matched case-insensitively
+# on the first path segment.
+platform_hosts:
+  - huggingface.co
+  - github.com
+  - raw.githubusercontent.com

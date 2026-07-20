@@ -14,6 +14,10 @@ name: Checks
 #   test_licence_silence    - the four-corners rule on licence_silence.yaml, plus a
 #                             probe of each provider's actual licence text for
 #                             clauses that would falsify a "contains no ..." claim.
+#   test_provider_domains   - every document URL must come from a host its
+#                             provider controls, matched against an explicit
+#                             allowlist. A third party's terms once sat in the
+#                             registry as a provider's own model card.
 #   test_text_check         - captures that decoded as markup rather than text.
 #
 # The corpus is private, so on a fork or a run without the token these degrade to
@@ -74,7 +78,7 @@ jobs:
           set -euo pipefail
           fail=0
           for t in test_status_derivation test_section_wiring \
-                   test_licence_silence test_text_check; do
+                   test_licence_silence test_provider_domains test_text_check; do
             echo "::group::$t"
             python "scripts/$t.py" || fail=1
             echo "::endgroup::"
