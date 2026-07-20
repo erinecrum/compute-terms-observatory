@@ -1291,41 +1291,124 @@ def render_version(meta: dict, text: str, doc_url: str, role: str) -> str:
 """
 
 
-def render_comparison(c: dict) -> str:
-    """One change, every changed passage shown whole, before and after.
+def _version_provenance(meta: dict, role_label: str) -> str:
+    """The capture date, method, hash and archived-capture banner for one column,
+    matching the version-page treatment so a reader sees what each side is evidence
+    of."""
+    method = meta.get("fetch_method") or "direct"
+    archived = method == "wayback"
+    when = (meta.get("capture_timestamp") or meta.get("fetched_at") or "")[:19].replace("T", " ")
+    sha = (meta.get("text_sha256") or "")[:16]
+    chip = ('<span class="badge archived">archived capture</span>' if archived
+            else '<span class="badge muted">direct capture</span>')
+    banner = ('<p class="bl-arch">Archived from the Internet Archive; may lag the '
+              'provider&rsquo;s live page.</p>' if archived else "")
+    return (f'<div class="bl-prov"><div class="bl-prov-h">{chip}'
+            f'<span class="bl-role">{esc(role_label)}</span></div>'
+            f'<span><strong>Captured</strong> {esc(when)} UTC</span>'
+            f'<span><strong>Method</strong> {esc("Internet Archive" if archived else method)}</span>'
+            f'<span><strong>Hash</strong> <code>{esc(sha)}</code></span>{banner}</div>')
 
-    The inline redline in the feed is windowed for scanning; this is the page a
-    reader lands on when the window is not enough. It shows the changed passages
-    in full, not the entire document: the unchanged bulk of a provider's terms is
-    theirs to publish, and reproducing it here would serve no reader.
+
+def render_comparison(c: dict, old_text: str, new_text: str,
+                      old_meta: dict, new_meta: dict) -> tuple[str, bool]:
+    """Both complete captured documents, side by side, as a legal blackline.
+
+    The inline redline in the feed is a windowed preview; this is the evidence.
+    Both full texts are already public on the two per-version pages, so showing
+    them together adds no exposure, only the alignment that makes a change legible.
+
+    Returns (html, collapsed_aggressively) so the caller can report which very
+    large documents needed the unchanged bulk dropped rather than merely hidden.
     """
-    rows = "".join(
-        '<div class="cmp-block">'
-        + (f'<div class="cmp-side old"><h3>Before</h3><p>{esc(b["old"])}</p></div>'
-           if b.get("old") else '<div class="cmp-side old empty"><h3>Before</h3>'
-                                '<p class="none">Not present</p></div>')
-        + (f'<div class="cmp-side new"><h3>After</h3><p>{esc(b["new"])}</p></div>'
-           if b.get("new") else '<div class="cmp-side new empty"><h3>After</h3>'
-                                '<p class="none">Removed</p></div>')
-        + '</div>'
-        for b in c.get("all_blocks", [])
-    )
-    n = len(c.get("all_blocks", []))
-    return f"""
+    from .blackline import build as _bl_build
+
+    paired = bool(c.get("substantive", True)) and not c.get("curation")
+    bl = _bl_build(old_text, new_text, paired=paired)
+
+    if paired:
+        head = (f'<p class="page-standfirst">Both captured versions of '
+                f'{esc(c["document"])}, in full. Deleted text is struck through on '
+                f'the left; inserted text is underlined on the right.</p>')
+        nav = (f'<div class="bl-nav" id="bl-nav"><span class="bl-count">'
+               f'<strong id="bl-n">{bl.change_count}</strong> '
+               f'change{"" if bl.change_count == 1 else "s"}</span>'
+               '<button type="button" id="bl-prev" aria-label="Previous change">'
+               '&uarr; Prev</button>'
+               '<button type="button" id="bl-next" aria-label="Next change">'
+               'Next &darr;</button></div>')
+    else:
+        # Source-change / curation: two different documents. State it plainly and
+        # force no alignment between unrelated structures.
+        head = ('<div class="bl-notice"><strong>These are two different documents, '
+                'not edits to one document.</strong> The tracked source changed, so '
+                'the two are shown side by side without pairing passages between '
+                'them.</div>')
+        nav = ""
+
+    prov = (f'<div class="bl-provs">'
+            f'{_version_provenance(old_meta, "Before")}'
+            f'{_version_provenance(new_meta, "After")}</div>')
+
+    vlinks = []
+    if c.get("prev_stamp"):
+        vlinks.append('<a href="' + esc(version_page_id(c["provider"], c["slug"], c["prev_stamp"]))
+                      + '.html">raw before</a>')
+    if c.get("curr_stamp"):
+        vlinks.append('<a href="' + esc(version_page_id(c["provider"], c["slug"], c["curr_stamp"]))
+                      + '.html">raw after</a>')
+    vlinks.append(f'<a href="{safe_url(c["url"])}" target="_blank" rel="noopener">'
+                  'provider&rsquo;s live document</a>')
+    links = '<p class="bl-links">' + " &middot; ".join(vlinks) + '</p>'
+
+    agg = ('<p class="bl-aggnote">This document is large; unchanged passages far '
+           'from any change are summarised rather than shown. Use the source links '
+           'for the complete text.</p>' if bl.collapsed_aggressively else "")
+
+    body = f"""
 <p><a href="changes.html">&larr; Back to the change feed</a></p>
-<p class="page-standfirst">Every passage that changed in {esc(c["document"])}, shown whole.
-Unchanged text is not reproduced here; read the
-<a href="{safe_url(c["url"])}" target="_blank" rel="noopener">provider's document</a> for the
-document in full.</p>
+{head}
 <div class="cmp-meta">
   <span><strong>{esc(c["provider_name"])}</strong> &middot; {esc(c["document"])}
   <span class="tag">{esc(c["doc_type"])}</span></span>
-  <span>Detected {esc(c["detected_at"][:10])} &middot; {n} changed passage{'' if n == 1 else 's'}
-  &middot; +{c.get("added_lines", 0)}/-{c.get("removed_lines", 0)} lines</span>
-  <span class="cmp-stamps">Comparing archived captures
-  <code>{esc(c.get("prev_stamp", ""))}</code> and <code>{esc(c.get("curr_stamp", ""))}</code></span>
+  <span>Detected {esc(c["detected_at"][:10])}</span>
 </div>
-{rows}
+{prov}
+{nav}
+{agg}
+{links}
+<div class="bl-wrap">{bl.html}</div>
+{links}
+<script>{_BLACKLINE_JS}</script>
+"""
+    return body, bl.collapsed_aggressively
+
+
+# Expanders and change-to-change jumping. The two columns share one table, so they
+# scroll together with no scripting; this only reveals collapsed runs and steps a
+# highlight through the changed rows. No client-side diffing.
+_BLACKLINE_JS = """
+(function(){
+  var wrap=document.querySelector('.bl-wrap'); if(!wrap) return;
+  wrap.addEventListener('click',function(e){
+    var b=e.target.closest('.bl-expand'); if(!b) return;
+    var pre=b.parentElement.querySelector('.bl-hidden');
+    if(pre){ pre.hidden=false; b.remove(); }
+  });
+  var changes=[].slice.call(wrap.querySelectorAll('[data-change]'));
+  var nEl=document.getElementById('bl-n'); if(nEl) nEl.textContent=changes.length;
+  var i=-1;
+  function go(step){
+    if(!changes.length) return;
+    i=(i+step+changes.length)%changes.length;
+    changes.forEach(function(r){ r.classList.remove('bl-target'); });
+    var t=changes[i]; t.classList.add('bl-target');
+    t.scrollIntoView({block:'center',behavior:'smooth'});
+  }
+  var pv=document.getElementById('bl-prev'), nx=document.getElementById('bl-next');
+  if(pv) pv.addEventListener('click',function(){ go(-1); });
+  if(nx) nx.addEventListener('click',function(){ go(1); });
+})();
 """
 
 
@@ -1351,10 +1434,11 @@ def _change_item(c: dict) -> str:
         + (f'<ins>{esc(b["new"])}</ins> ' if b.get("new") else "")
         for b in c.get("blocks", [])
     ).strip()
+    # A full-document comparison exists for any entry whose version pair is still
+    # captured, source-changes included.
+    has_compare = bool(c.get("compare_id") and c.get("prev_stamp") and c.get("curr_stamp")
+                       and not c.get("versions_suppressed"))
     links = []
-    if c.get("all_blocks"):
-        links.append(f'<a href="compare-{esc(c["compare_id"])}.html">'
-                     'View full document comparison</a>')
     # Full captured text for each side. Suppressed per document, the redline,
     # hashes and Internet Archive links stay: verification does not depend on us
     # hosting the text, only on the text being checkable.
@@ -1362,7 +1446,7 @@ def _change_item(c: dict) -> str:
         links.append('<span class="rl-note">Full-text versions for this document are '
                      'not currently displayed. The redline, content hashes, and '
                      'Internet Archive captures remain available for verification.</span>')
-    elif c.get("all_blocks"):
+    elif has_compare:
         if c.get("prev_stamp"):
             links.append('<a href="' + esc(version_page_id(c["provider"], c["slug"], c["prev_stamp"]))
                          + '.html">View prior version</a>')
@@ -1376,8 +1460,11 @@ def _change_item(c: dict) -> str:
         if url:
             links.append(f'<a href="{safe_url(url)}" target="_blank" rel="noopener">{label}</a>')
     full = f'<p class="rl-full">{" &middot; ".join(links)}</p>' if links else ""
-    redline = (f'<details class="redline"><summary>View redline</summary>'
+    # The inline redline is a preview; the primary action is the full side-by-side.
+    redline = (f'<details class="redline"><summary>Preview of changes</summary>'
                f'<div class="rl">{rl}</div>{full}</details>') if rl else ""
+    compare_cta = (f'<a class="cmp-cta" href="compare-{esc(c["compare_id"])}.html">'
+                   'Compare full documents side by side</a>') if has_compare else ""
 
     meta = f'<a class="csource" href="{safe_url(c["url"])}" target="_blank" rel="noopener">source</a>'
     dim_keys = " ".join(d["key"] for d in dims)
@@ -1400,7 +1487,7 @@ def _change_item(c: dict) -> str:
     <span class="tag">{esc(c["doc_type"])}</span>{cosmetic_tag}
     <span class="cdate">{esc(c["detected_at"][:10])}</span></div>
   {summary}
-  <div class="cfoot">{meta}{redline}</div>
+  <div class="cfoot">{meta}{compare_cta}{redline}</div>
 </article>"""
 
 
@@ -1492,9 +1579,14 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
     from .snapshot import SnapshotStore
 
     _store = SnapshotStore("snapshots")
+
+    def _snap(provider, slug, stamp):
+        return next((s for s in _store.history(provider, slug) if s.stamp == stamp), None)
+
     _seen_versions = set()
+    _heavy = []  # documents that needed aggressive collapse, reported to the build
     for c in dataset.get("change_log", []):
-        if not c.get("all_blocks") or c.get("versions_suppressed"):
+        if c.get("versions_suppressed"):
             continue
         for stamp, role in ((c.get("prev_stamp"), "prior"), (c.get("curr_stamp"), "current")):
             if not stamp:
@@ -1502,8 +1594,7 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
             key = (c["provider"], c["slug"], stamp)
             if key in _seen_versions:
                 continue      # shared between consecutive changes; publish once
-            snap = next((s for s in _store.history(c["provider"], c["slug"])
-                         if s.stamp == stamp), None)
+            snap = _snap(c["provider"], c["slug"], stamp)
             if not snap or not snap.text:
                 continue
             _seen_versions.add(key)
@@ -1515,16 +1606,29 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
                 encoding="utf-8")
             written.append(out_dir / fname)
 
-    # One comparison page per change that has a readable diff.
+    # One full-document comparison page per change whose version pair is still in
+    # the corpus. Covers source-change and curation entries too (rendered side by
+    # side without forced pairing), not only entries with block-level diffs.
     for c in dataset.get("change_log", []):
-        if not c.get("all_blocks"):
+        if c.get("versions_suppressed") or not c.get("prev_stamp") or not c.get("curr_stamp"):
             continue
+        old_s = _snap(c["provider"], c["slug"], c["prev_stamp"])
+        new_s = _snap(c["provider"], c["slug"], c["curr_stamp"])
+        if not old_s or not new_s or not old_s.text or not new_s.text:
+            continue
+        body, aggressive = render_comparison(
+            c, old_s.text, new_s.text, old_s.meta, new_s.meta)
+        if aggressive:
+            _heavy.append(f"{c['provider']}/{c['slug']} ({max(len(old_s.text), len(new_s.text)):,} chars)")
         fname = f"compare-{c['compare_id']}.html"
         (out_dir / fname).write_text(
-            _shell(f"{c['provider_name']}: {c['document']}", render_comparison(c),
-                   "changes", "Full comparison of the changed passages."),
+            _shell(f"{c['provider_name']}: {c['document']}", body,
+                   "changes", "Full side-by-side comparison of both captured documents."),
             encoding="utf-8")
         written.append(out_dir / fname)
+    if _heavy:
+        print("  comparison: aggressive collapse used on "
+              f"{len(_heavy)} large document(s): " + "; ".join(_heavy))
 
     # 404 page (GitHub Pages serves /404.html for unknown paths).
     (out_dir / "404.html").write_text(
@@ -1937,6 +2041,80 @@ text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
 line-height:2;font-size:13.5px;color:var(--ink)}
 .rl del{text-decoration:line-through;text-decoration-color:#bd7862;color:#a85c46}
 .rl ins{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:2px;color:var(--ink)}
+
+/* ---- Full-document blackline (comparison page) ---- */
+.cmp-cta{display:inline-block;font-family:var(--display);font-size:12.5px;font-weight:600;
+padding:6px 13px;border-radius:999px;background:var(--ink);color:var(--bg);
+text-decoration:none;margin-right:12px}
+.cmp-cta:hover{background:#000}
+.bl-notice{background:var(--disc-bg);border:1px solid var(--disc-line);color:var(--disc-fg);
+border-radius:10px;padding:12px 15px;margin:0 0 16px;font-size:14px;line-height:1.55}
+.bl-provs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 14px}
+.bl-prov{display:flex;flex-direction:column;gap:3px;border:1px solid var(--line);
+border-radius:10px;padding:11px 13px;font-size:12px;color:var(--muted);background:var(--bg)}
+.bl-prov-h{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.bl-role{font-family:var(--display);font-size:10.5px;font-weight:600;text-transform:uppercase;
+letter-spacing:.06em;color:var(--faint)}
+.bl-prov code{font-family:var(--mono);font-size:11px}
+.bl-arch{margin:3px 0 0;font-style:italic;color:var(--faint)}
+/* Sticky change navigator: count plus jump controls. */
+.bl-nav{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;
+background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 8px 6px 16px;
+margin:0 0 14px;width:fit-content}
+.bl-count{font-size:13px;color:var(--muted)}
+.bl-nav button{font-family:var(--display);font-size:12px;font-weight:600;border:1px solid var(--line-2);
+background:var(--panel);border-radius:999px;padding:5px 12px;cursor:pointer;color:var(--ink)}
+.bl-nav button:hover{background:var(--panel-2)}
+.bl-links{display:flex;flex-wrap:wrap;gap:4px 8px;font-size:12.5px;color:var(--muted);margin:0 0 14px}
+.bl-aggnote{font-size:12.5px;color:var(--medium);font-style:italic;margin:0 0 12px}
+.bl-split{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12.5px}
+.bl-split th{font-family:var(--display);font-size:10.5px;font-weight:600;text-transform:uppercase;
+letter-spacing:.06em;text-align:left;padding:6px 12px;color:var(--faint);
+border-bottom:1px solid var(--line);position:sticky;top:44px;background:var(--bg)}
+.bl-split td{vertical-align:top;padding:0 12px;width:50%;border-left:1px solid var(--line)}
+.bl-split td:first-child{border-left:0}
+.bl-split pre{margin:0;white-space:pre-wrap;word-break:break-word;font-family:var(--sans);
+line-height:1.6;font-size:12.5px}
+.bl-chg{background:#fff}
+.bl-chg .bl-l{background:var(--old-bg)}
+.bl-chg .bl-r{background:var(--new-bg)}
+.bl-empty{background:repeating-linear-gradient(-45deg,transparent,transparent 6px,var(--line) 6px,var(--line) 7px);opacity:.5}
+.bl-split del{text-decoration:line-through;text-decoration-color:#bd7862;color:var(--old-fg)}
+.bl-split ins{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:2px;
+color:var(--ink);background:rgba(46,125,70,.12)}
+.bl-fold td{padding:6px 12px;text-align:center;background:var(--panel)}
+.bl-fold .bl-hidden{text-align:left;margin-top:6px}
+.bl-expand{font-family:var(--display);font-size:11.5px;font-weight:600;color:var(--accent);
+background:none;border:0;cursor:pointer;padding:2px 6px}
+.bl-expand:hover{text-decoration:underline}
+.bl-dropped .bl-foldlbl{font-size:11.5px;color:var(--faint);font-style:italic}
+.bl-chg.bl-target{outline:2px solid var(--accent);outline-offset:-2px}
+/* One table, restructured for narrow screens and print rather than duplicated.
+   The unchanged left cell (a mirror of the right) is dropped so unchanged text
+   shows once; a changed row stacks its before cell above its after cell, giving
+   an inline redline read without a second copy of the document in the DOM. */
+@media(max-width:640px){
+  .bl-provs{grid-template-columns:1fr}
+  .bl-split,.bl-split thead,.bl-split tbody,.bl-split tr,.bl-split td{display:block;width:auto}
+  .bl-split thead{display:none}
+  .bl-split td{border-left:0;padding:2px 0}
+  .bl-eq .bl-l{display:none}
+  .bl-chg .bl-l::before{content:"Before";display:block;font-size:9px;font-weight:600;
+    text-transform:uppercase;letter-spacing:.06em;color:var(--old-fg)}
+  .bl-chg .bl-r::before{content:"After";display:block;font-size:9px;font-weight:600;
+    text-transform:uppercase;letter-spacing:.06em;color:var(--new-fg)}
+  .bl-empty{display:none}
+}
+@media print{
+  .bl-nav,.bl-links,.cmp-cta{display:none!important}
+  .bl-split,.bl-split thead,.bl-split tbody,.bl-split tr,.bl-split td{display:block;width:auto}
+  .bl-split thead{display:none}
+  .bl-split td{border-left:0}
+  .bl-eq .bl-l{display:none}
+  .bl-empty{display:none}
+  .bl-hidden{display:block!important}  /* paper carries the full text */
+  .bl-expand{display:none}
+}
 .chips{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 2px}
 .chip{background:var(--bg);border:1px solid var(--line-2);border-radius:20px;padding:1px 10px;
 font-size:11.5px;color:var(--accent-2);font-weight:600}
