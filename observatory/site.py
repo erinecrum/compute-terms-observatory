@@ -334,6 +334,14 @@ def _footer_versions_policy() -> str:
     return f'<p class="foot-policy">{esc(_DOC_VERSIONS_POLICY_TEXT)}</p>'
 
 
+def _licence_silence_text(field: dict) -> str:
+    """Display value, with permissive-licence silence named rather than flattened."""
+    ls = field.get("licence_silence")
+    if ls and field.get("status") == "no_clause_found":
+        return f"{ls['form']}: {ls['reason']}"
+    return field.get("display_value", field.get("value", ""))
+
+
 def _sic(citation: str) -> str:
     """Cohere's published Terms of Use genuinely contain the typo 'OFFERINfGS'
     (verified in the raw HTML capture, not a normalization artifact). Flag it with
@@ -486,6 +494,13 @@ def _status_meta(field: dict):
     if cause and field.get("status") in ("access_restricted", "not_retrievable"):
         label = f"{label} ({cause})"
         title = f"{title}: {cause}"
+    # "Silent" reads as a drafting choice. Where the governing document is a bare
+    # permissive licence, there was no choice to make: the instrument does not
+    # reach the point at all. Same underlying status, honest label.
+    ls = field.get("licence_silence")
+    if ls and field.get("status") == "no_clause_found":
+        label = "not addressed by this licence"
+        title = ls["instrument"]
     return dot, title, badge_cls, label
 
 
@@ -516,7 +531,10 @@ def _cell(provider: str, dim_key: str, field: dict) -> str:
     prog = field.get("commitment_program")
 
     src_line = _source_line(source)
+    ls = field.get("licence_silence")
     cite_line = f'<div class="cite">“{esc(_sic(citation))}”</div>' if citation else ""
+    if ls and status == "no_clause_found":
+        cite_line += (f'<div class="lic-note">{esc(ls["instrument"])}</div>')
     _dc, _t, badge_cls, badge_text = _status_meta(field)
     badge = f'<span class="badge {badge_cls}">{esc(badge_text)}</span>'
     prog_line = ""
@@ -526,6 +544,11 @@ def _cell(provider: str, dim_key: str, field: dict) -> str:
             f'(<a href="{safe_url(prog["citation_url"])}" target="_blank" rel="noopener">program</a>)</div>'
         )
 
+    # A permissive licence that is silent on a point is not making a choice: the
+    # instrument does not do that. Name the licence and the specific reason instead
+    # of the bare word "silent", which implies the publisher declined to address it.
+    if ls and status == "no_clause_found":
+        value = f"{ls['form']}: {ls['reason']}"
     short = value if len(value) <= 160 else value[:157] + "…"
     cls = "cell unverified" if unverified else ("cell absent" if absent else "cell")
     return f"""<td class="{cls}" data-provider="{esc(provider)}" data-dim="{esc(dim_key)}" data-status="{esc(status)}">
@@ -1118,7 +1141,7 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
         rows.append(f"""
 <section class="pdim" id="dim-{esc(dim["key"])}">
   <h4>{_status_dot(f)} {esc(dim["label"])} {badge}</h4>
-  <p class="pval">{esc(f.get("display_value", f.get("value","")))}</p>
+  <p class="pval">{esc(_licence_silence_text(f))}</p>
   {cite}{progline}{src}
 </section>""")
 
@@ -1730,6 +1753,7 @@ text-transform:uppercase;letter-spacing:.11em;color:var(--faint)}
 .cmp-side.new{background:var(--new-bg)}
 .cmp-side.new h3{color:var(--new-fg)}
 .cmp-side .none{color:var(--faint);font-style:italic}
+.lic-note{margin-top:7px;font-size:12px;color:var(--faint);font-style:italic;line-height:1.5}
 .rl-full{margin:12px 0 0;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}
 .rl-note{font-family:var(--sans);font-size:12.5px;font-style:italic;color:var(--faint);
 text-transform:none;letter-spacing:0}

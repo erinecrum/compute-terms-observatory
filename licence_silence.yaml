@@ -1,0 +1,64 @@
+# Why a permissive licence is silent on a dimension.
+#
+# "Silent" means the provider's terms do not address a point. For a bespoke
+# community licence that is a finding: the publisher wrote custom terms and chose
+# their scope. For a bare OSI licence it is not a choice at all -- the instrument
+# grants copyright permissions and disclaims warranties, and does nothing else.
+# Rendering both as "silent" flattens a real distinction.
+#
+# Where an entry's model licence is one of the standard forms below, a silent
+# dimension renders as the licence name plus the specific reason, rather than the
+# bare word "silent".
+#
+# DRAFTING NOTE: these are factual statements about what each licence instrument
+# does. They were drafted for review, not settled by counsel. Edit freely; the
+# rendering follows this file.
+
+# Licence values (as classified into license_type) that get this treatment.
+# Bespoke community licences are deliberately absent: their silence IS a choice.
+forms:
+  MIT: MIT
+  "Modified MIT": Modified MIT
+  "Apache 2.0": Apache-2.0
+
+# What the licence does, stated once, used as the tooltip on every affected cell.
+instrument:
+  MIT: >-
+    The MIT licence grants permission to use, copy, modify and distribute the
+    software, requires the copyright notice to be retained, and disclaims warranty
+    and liability. It creates no service relationship and addresses nothing else.
+  Modified MIT: >-
+    A modified MIT licence grants MIT's permissions subject to the publisher's added
+    conditions, and otherwise addresses only notice retention and warranty
+    disclaimer. It creates no service relationship.
+  Apache-2.0: >-
+    Apache-2.0 grants copyright and patent permissions, requires notice and
+    change-attribution, withholds trademark rights, and disclaims warranty and
+    liability. It creates no service relationship and addresses nothing else.
+
+# Per-dimension reason. Phrased as what the licence does or does not do, never as
+# what the publisher should have done.
+reasons:
+  termination: grants a perpetual licence with no termination provision
+  suspension_rights: confers no account or service to suspend
+  unilateral_modification: is a fixed grant; it provides no mechanism to change terms
+  governing_law_disputes: names no governing law or forum
+  liability: disclaims all liability rather than capping it
+  output_indemnity: offers no indemnity of any kind
+  deprecation: distributes a copy; it makes no continuity or support commitment
+  benchmarking_restrictions: places no restriction on evaluation or publication
+  competitive_training: permits use without field-of-use restriction
+  assignment_financing: is granted to any recipient, so assignment does not arise
+  data_use_ai_training: governs a copy you run yourself; the licensor receives no data
+  content_retention_review: involves no service that could retain or review content
+  data_residency: involves no hosted processing, so residency does not arise
+  data_transfer_mechanism: involves no transfer of personal data to the licensor
+  subprocessor_transparency: engages no sub-processors
+  government_access: holds no user data that could be compelled
+  prohibited_high_risk_uses: imposes no acceptable-use restrictions
+  appeal_redress: has no enforcement action to appeal
+  eu_ai_act_role: allocates no provider or deployer roles
+  model_documentation: is a licence file; it makes no documentation commitment
+  training_data_provenance: is a licence file; it makes no provenance statement
+  capacity_reservation: provisions no capacity
+  availability_definition: commits to no availability

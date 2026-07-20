@@ -397,6 +397,8 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
             f["display_value"] = display_value(f)
 
         lic_field = fields.get("model_license") or {}
+        # Annotate permissive-licence silence now that statuses are final.
+        _apply_licence_silence(fields, _license_bucket(lic_field.get("value", "")))
         providers_meta.append(
             {
                 "provider": provider,
@@ -684,6 +686,47 @@ def _wayback(url, when, direction):
         return nearest_capture(url, when, direction)
     except Exception:  # noqa: BLE001
         return None
+
+
+_LICENCE_SILENCE_CACHE = None
+
+
+def _licence_silence():
+    """Config explaining why a standard permissive licence is silent on a point."""
+    global _LICENCE_SILENCE_CACHE
+    if _LICENCE_SILENCE_CACHE is None:
+        try:
+            _LICENCE_SILENCE_CACHE = yaml.safe_load(
+                Path("licence_silence.yaml").read_text(encoding="utf-8")) or {}
+        except (OSError, ValueError):
+            _LICENCE_SILENCE_CACHE = {}
+    return _LICENCE_SILENCE_CACHE
+
+
+def _apply_licence_silence(fields: dict, licence_bucket: str) -> None:
+    """Replace bare 'silent' with the licence name and the specific reason.
+
+    Only for standard OSI forms. A bespoke community licence that is silent on a
+    point IS making a choice, and flattening that into the same label as a bare
+    MIT file would lose the distinction the open-weight segment exists to show.
+    """
+    cfg = _licence_silence()
+    form = (cfg.get("forms") or {}).get(licence_bucket)
+    if not form:
+        return
+    reasons = cfg.get("reasons") or {}
+    instrument = (cfg.get("instrument") or {}).get(form, "")
+    for key, f in fields.items():
+        if not f or f.get("status") != "no_clause_found":
+            continue
+        reason = reasons.get(key)
+        if not reason:
+            continue
+        f["licence_silence"] = {
+            "form": form,
+            "reason": reason,
+            "instrument": " ".join(instrument.split()),
+        }
 
 
 _CURATION_NOTES_CACHE = None
