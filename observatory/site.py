@@ -224,40 +224,28 @@ def _wordmark() -> str:
 _DECK_LINK = '<a href="methodology.html">documented methodology</a>'
 # "What they publish" could mean product docs, model cards, benchmarks. Naming
 # the contract terms is the whole point of the site and costs two words.
-_LEAD = ("One place to see the contract terms cloud infrastructure and AI model "
-         "providers publish, side by side, as they change.")
 # Two lines, deliberately ranked. The lead says what the site is FOR; the caveat
 # says what the summaries are. Collapsing them into one sentence made the caveat
 # compete with the purpose, and a first-time reader met the disclaimer first.
-_DECK_LEAD_HTML = f'<span class="deck-lead">{_LEAD}</span>'
-_DECK_NOTE_HTML = (
-    '<span class="deck-note"><span class="note-full">AI-generated summaries under a '
-    f'{_DECK_LINK}. Not legal advice.</span>'
-    '<span class="note-short">AI-generated summaries. Not legal advice.</span></span>'
-)
+_DOES_LINE = ("The published contract terms of cloud infrastructure and AI model "
+              "providers, archived twice daily and laid out side by side. "
+              "Every value links to the source document.")
+_NOTE_LINE = ("AI-generated summaries &middot; " + _DECK_LINK.replace(
+    ">documented methodology<", ">documented methodology<") +
+    " &middot; not legal advice")
+
+# One element per line, one copy of every string. No desktop/mobile siblings: a
+# second copy of a sentence in the DOM is a second thing that can be read aloud,
+# copied, or indexed, and it only ever hid behind a media query.
+_DECK_LEAD_HTML = f'<p class="deck-does">{_DOES_LINE}</p>'
+_DECK_NOTE_HTML = f'<p class="deck-note">{_NOTE_LINE}</p>'
 _DECK_HTML = _DECK_LEAD_HTML + _DECK_NOTE_HTML
+_HOME_LINE2 = ""
 
-
-# The one-line statement of purpose. Appears in the footer of every page, and as
-# the standfirst on the methodology page, so the two never drift apart.
-# Same sentence as the masthead lead, so the footer restates the purpose rather
-# than paraphrasing it into a second, slightly different claim.
-_PURPOSE_LINE = _LEAD
-
-# Line 2 of the home header: what the site DOES, as opposed to what it is. Home
-# page only; interior pages keep the two-line treatment, where a reader has
-# already arrived and does not need the pitch again.
-_WHAT_IT_DOES_FULL = (
-    "Each provider's documents are archived twice daily, read against the same set "
-    "of contract dimensions, and laid out side by side, so you can compare posture "
-    "across providers, catch terms as they change, and reach the primary document "
-    "behind any value in one click.")
-_WHAT_IT_DOES_SHORT = (
-    "Documents archived twice daily, read against the same dimensions, laid out "
-    "side by side.")
-_HOME_LINE2 = (
-    f'<span class="deck-does"><span class="does-full">{_WHAT_IT_DOES_FULL}</span>'
-    f'<span class="does-short">{_WHAT_IT_DOES_SHORT}</span></span>')
+# Footer one-liner. Shorter than the header sentence: by the footer a reader knows
+# what the site is, and only needs reminding.
+_PURPOSE_LINE = ("The published contract terms of cloud infrastructure and AI model "
+                 "providers, side by side, as they change.")
 
 
 # Item A5 gate: the document-versions policy text names contact@termsobservatory.org,
@@ -406,7 +394,7 @@ def _shell(title: str, body: str, active: str, subtitle: str = "",
             f'<nav class="nav">{nav}</nav></div></header>'
             '<section class="hero"><div class="hero-in">'
             f'<div class="hero-wm">{_wordmark()}</div>'
-            f'<p class="hero-deck">{_DECK_LEAD_HTML}{_HOME_LINE2}{_DECK_NOTE_HTML}</p>'
+            f'<div class="hero-deck">{_DECK_HTML}</div>'
             '</div></section>'
         )
     else:
@@ -724,27 +712,17 @@ def render_matrix(dataset: dict) -> str:
     chooser = (
         '<div class="chooser" id="chooser">'
         '<div class="chooser-main">'
-        '<button type="button" class="cpill" data-choose="cloud">'
-        '<span class="pl-full">Cloud Infrastructure Providers</span>'
-        '<span class="pl-short">Cloud Infrastructure</span></button>'
-        '<button type="button" class="cpill" data-choose="models">'
-        '<span class="pl-full">AI Model Providers</span>'
-        '<span class="pl-short">AI Models</span></button>'
+        '<button type="button" class="cpill" data-choose="cloud">Cloud Infrastructure Providers</button>'
+        '<button type="button" class="cpill" data-choose="models">AI Model Providers</button>'
         '<button type="button" class="cpill selected" data-choose="all">All</button>'
         '</div>'
         # Second level: which model providers. Every label carries its noun; a bare
         # "Closed" or "Open" tells a first-time visitor nothing about what is being
         # divided, and the division is the whole taxonomy.
         '<div class="chooser-models" id="chooser-models" hidden>'
-        '<button type="button" class="spill selected" data-choose="allmodels">'
-        '<span class="pl-full">All model providers</span>'
-        '<span class="pl-short">All models</span></button>'
-        '<button type="button" class="spill" data-choose="closed">'
-        '<span class="pl-full">Closed model providers</span>'
-        '<span class="pl-short">Closed models</span></button>'
-        '<button type="button" class="spill" data-choose="open">'
-        '<span class="pl-full">Open model providers</span>'
-        '<span class="pl-short">Open models</span></button>'
+        '<button type="button" class="spill selected" data-choose="allmodels">All model providers</button>'
+        '<button type="button" class="spill" data-choose="closed">Closed model providers</button>'
+        '<button type="button" class="spill" data-choose="open">Open model providers</button>'
         '</div>'
         '<div class="chooser-sub" id="chooser-sub" hidden>'
         '<button type="button" class="spill selected" data-sub="all">All open models</button>'
@@ -859,9 +837,13 @@ def render_matrix(dataset: dict) -> str:
 
     gen = dataset.get("generated_at", "")[:16].replace("T", " ")
     return f"""
+<section class="ctlpanel" aria-label="Matrix controls">
+  <p class="ctl-hint">Pick a provider group, then narrow by parent company or license
+  type. Each section below sorts and exports on its own.</p>
 {chooser}
 {viewbar}
 {toolbar}
+</section>
 {grouped}
 {compare_view}
 <script>window.CTO_PROVIDERS={json.dumps(pmap)};
@@ -1655,22 +1637,8 @@ letter-spacing:.12em;padding:4px 0;border-bottom:2px solid transparent}
    caveat sits under it, smaller and muted, so purpose reads before disclaimer. */
 .deck-lead{display:block;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;
 font-style:italic;color:var(--muted);font-size:13.5px}
-/* Same serif as the lead. Ranking is carried by size and colour alone, so the two
-   lines read as one voice rather than as a caption bolted under a headline.
-   (Declared, not inherited: .deck .wrap no longer sets the family.) */
-/* Line 2: what the site does. Regular face, so it reads as explanation rather
-   than as a second tagline competing with the lead. */
-.deck-does{display:block;margin-top:9px;font-family:inherit;font-style:normal;
-color:var(--muted);font-size:12.5px;line-height:1.65}
-.does-short{display:none}
-@media(max-width:640px){.does-full{display:none}.does-short{display:inline}}
-.deck-note{display:block;margin-top:9px;
-font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-style:normal;
-color:var(--faint);font-size:11.5px;line-height:1.5}
 .deck a{color:inherit;text-decoration:underline;text-decoration-color:var(--line-2)}
 .deck a:hover{color:var(--ink)}
-.note-short{display:none}
-@media(max-width:640px){.note-full{display:none}.note-short{display:inline}}
 
 /* Compact masthead: borderless, at most one hairline (under the deck). The home
    page uses the same header so the nav never shifts between pages; its left slot
@@ -1683,14 +1651,30 @@ color:var(--faint);font-size:11.5px;line-height:1.5}
 .hero{padding:40px 24px 26px;text-align:center}
 .hero-in{max-width:1040px;margin:0 auto}
 .hero-wm{display:inline-flex;flex-direction:column;align-items:center}
-.hero-wm .wm-eyebrow{font-size:clamp(14px,2vw,21px);letter-spacing:.17em;margin-bottom:0}
-.hero-wm .wm-word{font-size:clamp(52px,11vw,116px);justify-content:center;line-height:.9}
-.hero-deck{margin:20px auto 0;max-width:620px;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;
-font-style:italic;color:var(--muted);font-size:clamp(14px,1.5vw,17px)}
+/* Eyebrow at ~45% of the wordmark's cap height (was ~18%), and the gap pulled to
+   under half the eyebrow's own cap so the two lines lock as one unit. */
+.hero-wm .wm-eyebrow{font-size:clamp(23px,4.9vw,52px);letter-spacing:.15em;
+margin-bottom:0;line-height:1}
+.hero-wm .wm-word{font-size:clamp(52px,11vw,116px);justify-content:center;line-height:.9;
+margin-top:-.16em}
+.hero-deck{margin:18px auto 0;max-width:640px}
+.deck-does{margin:0;font-size:clamp(14px,1.5vw,16px);line-height:1.6;color:var(--muted);
+text-wrap:pretty}
+.deck-note{margin:7px 0 0;font-size:12px;color:var(--faint);line-height:1.5;text-wrap:pretty}
+.deck-does,.deck-note{font-style:normal}
 .hero-deck a{color:inherit}
 .hero-deck a:hover{color:var(--ink);text-decoration:none}
 
 /* The chooser: the biggest interactive elements on the page. */
+/* One tinted container groups every control. No new colours, no gradient, no
+   shadow: --panel is the same cream the table headers use, so the panel reads as
+   part of the same paper rather than as a floating card. */
+.ctlpanel{background:var(--panel);border:1px solid var(--line);border-radius:18px;
+padding:20px 24px 22px;margin:26px auto 30px;max-width:1180px}
+.ctl-hint{margin:0 auto 16px;max-width:62ch;font-size:12.5px;color:var(--faint);
+line-height:1.55;text-align:center;text-wrap:balance}
+.ctlpanel .toolbar{border:0;padding:0;margin-top:14px;background:transparent}
+.ctlpanel .viewbar{margin:14px 0 0}
 .chooser{display:flex;flex-direction:column;align-items:center;gap:12px;margin:6px 0 22px}
 .chooser-main{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
 .chooser-sub{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
@@ -1802,8 +1786,6 @@ p{max-width:74ch}
 .checks label{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;cursor:pointer}
 .checks input{accent-color:var(--accent)}
 .toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;margin:0 0 14px}
-.pl-short{display:none}
-@media(max-width:760px){.pl-full{display:none}.pl-short{display:inline}}
 /* Second-level model chooser sits between the primary row and the open subgroup. */
 .chooser-models{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
 .legend{display:flex;flex-wrap:wrap;align-items:center;gap:6px 15px;font-size:12.5px;color:var(--muted)}
