@@ -799,6 +799,16 @@ providers:
         status: verified
         generation: Kimi K2
         url: https://huggingface.co/moonshotai/Kimi-K2-Instruct/raw/main/LICENSE
+      - doc_type: ai_documentation
+        name: Kimi K2 model card
+        status: verified
+        generation: Kimi K2
+        url: https://huggingface.co/moonshotai/Kimi-K2-Instruct/raw/main/README.md
+        notes: >-
+          The model card from the repository that distributes the weights. Replaces
+          an entry that pointed at Moonshot's platform Terms of Service, which
+          governs the hosted service rather than the weights and has moved to the
+          moonshot-platform entry.
 
   - provider: moonshot-platform
     provider_name: Moonshot platform
@@ -815,6 +825,14 @@ providers:
         name: Moonshot (Kimi) Platform privacy policy
         status: unverified
         url: https://platform.kimi.ai/docs/agreement/userprivacy
+      - doc_type: ai_documentation
+        name: Kimi OpenPlatform Terms of Service
+        status: verified
+        url: https://platform.moonshot.ai/docs/agreement/modeluse
+        notes: >-
+          Moved here from the kimi weights entry, where it was filed as a model
+          card. It is the platform's Terms of Service and governs the hosted
+          service.
       # REMOVED in the split: an ai_documentation row pointed at exactly the same
       # URL as service_terms above, so it was the same document counted twice and
       # would have been extracted twice under two doc_type framings.
