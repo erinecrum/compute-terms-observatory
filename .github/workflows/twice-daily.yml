@@ -13,10 +13,11 @@ on:
     - cron: "0 1 * * *"    # 18:00 Pacific
   workflow_dispatch: {}
 
+# Least privilege: nothing by default. The pipeline job takes contents:write only
+# because it commits the public last-checked timestamp; Pages and OIDC belong to the
+# deploy job alone.
 permissions:
-  contents: write    # commit the public last-checked.json timestamp
-  pages: write
-  id-token: write
+  contents: read
 
 concurrency:
   group: pages
@@ -25,6 +26,8 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # commits data/last-checked.json
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
@@ -94,6 +97,9 @@ jobs:
   deploy:
     needs: run
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

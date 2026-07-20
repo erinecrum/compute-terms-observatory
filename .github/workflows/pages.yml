@@ -11,10 +11,12 @@ on:
     branches: [main]
   workflow_dispatch: {}
 
+# Least privilege: the workflow default grants nothing beyond reading the repo.
+# Pages and OIDC are elevated on the deploy job alone, so the build job -- the one
+# that installs dependencies and runs project code -- cannot publish to Pages or
+# mint an identity token even if something it executes tries to.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -23,6 +25,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
@@ -64,6 +68,9 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write      # publish the built artifact
+      id-token: write   # OIDC token the deploy action exchanges
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
