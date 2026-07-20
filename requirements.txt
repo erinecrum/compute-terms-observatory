@@ -10,7 +10,7 @@
 # Dependabot is enabled and will open PRs for security updates: bump these
 # deliberately rather than loosening the pins back to >=.
 
-requests==2.32.5        # HTTP fetching of public terms/SLA/AUP pages
+requests==2.34.2        # HTTP fetching of public terms/SLA/AUP pages
 beautifulsoup4==4.15.0  # HTML parsing / content extraction for page snapshots
 PyYAML==6.0.3           # source registry + human-verified overrides (non-confidential)
 python-dotenv==1.2.1    # load ANTHROPIC_API_KEY from a local .env (never committed)
