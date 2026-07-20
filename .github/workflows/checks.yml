@@ -18,6 +18,9 @@ name: Checks
 #                             provider controls, matched against an explicit
 #                             allowlist. A third party's terms once sat in the
 #                             registry as a provider's own model card.
+#   test_registry_lint      - a document type that could not govern an entry's
+#                             artifact (a DPA on downloadable weights) is a
+#                             category error, and a build failure.
 #   test_text_check         - captures that decoded as markup rather than text.
 #
 # The corpus is private, so on a fork or a run without the token these degrade to
@@ -78,7 +81,8 @@ jobs:
           set -euo pipefail
           fail=0
           for t in test_status_derivation test_section_wiring \
-                   test_licence_silence test_provider_domains test_text_check; do
+                   test_licence_silence test_provider_domains \
+                   test_registry_lint test_text_check; do
             echo "::group::$t"
             python "scripts/$t.py" || fail=1
             echo "::endgroup::"

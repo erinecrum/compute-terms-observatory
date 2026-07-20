@@ -1,0 +1,81 @@
+# What kind of thing each entry tracks, and which documents can govern it.
+#
+# The governing-document rule says every document must govern the entry's tracked
+# artifact or relationship. That judgment cannot be tested. This file encodes the
+# part of it that CAN be: a document type that could not possibly govern a given
+# class of artifact.
+#
+# A set of downloadable weights has no service to suspend, no sub-processors, and
+# no data-processing relationship with the publisher. So a DPA or a sub-processor
+# list on a weights entry is a category error on its face, whatever the document
+# says. That is mechanical, and it is what this file catches.
+#
+# What it does NOT catch: the right TYPE of document about the wrong THING. An
+# OpenAI service agreement governing a product the entry does not track is a
+# service_terms on a hosted entry, and passes cleanly. That failure needs the
+# governs line, the scope check, and the audit pass.
+
+# Entry class is derived from the display section, which is already the
+# authoritative classification used to render the matrix. Kept here as an explicit
+# mapping so the lint does not silently follow a rendering change.
+sections:
+  open_weights: weights
+  closed: hosted
+  open_hosted: hosted
+  cloud: infrastructure
+
+classes:
+  weights:
+    tracks: a set of downloadable model weights
+    # Running weights you downloaded creates no account, no service and no
+    # data-processing relationship with the publisher. Only three document types
+    # can govern the artifact itself.
+    permitted:
+      - model_license
+      - aup
+      - ai_documentation
+    # Stated so a reviewer can see the reasoning, not just the list.
+    excluded_because:
+      dpa: no personal data is processed by the publisher, so there is nothing to process
+      privacy_policy: running the weights sends the publisher no data
+      subprocessor_list: no sub-processors are engaged in distributing a file
+      sla: a downloaded file has no availability to commit to
+      service_terms: there is no service
+      deprecation: a copy already downloaded cannot be deprecated by the publisher
+      transparency_report: reports on government requests for service data
+      ai_terms: supplemental terms attach to a service
+
+  hosted:
+    tracks: a hosted model service reached over an API
+    permitted:
+      - service_terms
+      - aup
+      - ai_terms
+      - dpa
+      - privacy_policy
+      - subprocessor_list
+      - transparency_report
+      - deprecation
+      - ai_documentation
+      - sla
+    excluded_because:
+      model_license: >-
+        a hosted entry tracks the service, not a downloadable artifact. Where a
+        publisher offers both, they are separate entries (see the weights/platform
+        pairs) so that neither borrows the other's documents.
+
+  infrastructure:
+    tracks: a compute service that runs customer workloads
+    permitted:
+      - service_terms
+      - sla
+      - aup
+      - ai_terms
+      - dpa
+      - privacy_policy
+      - subprocessor_list
+      - transparency_report
+      - ai_documentation
+    excluded_because:
+      model_license: an infrastructure provider distributes no model weights
+      deprecation: model version pinning does not apply to compute

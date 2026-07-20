@@ -33,6 +33,7 @@ from .registry import Registry, load_registry
 from .schema import (DIMENSIONS, dimension_group, is_applicable, section_of,
                      segment_config, segment_group)
 from .snapshot import SnapshotStore
+from .scopecheck import check as scope_check
 from .textcheck import NON_TEXT_MESSAGE, looks_like_text, sufficient_content
 
 # Which dimensions are SLA-specific (grouped at the bottom of the matrix).
@@ -242,6 +243,7 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
                 f"source document names {g.found} ({g.mentions} mentions); "
                 f"this entry tracks {g.declared}")
     _write_generation_report(generation_findings)
+    _write_scope_report(_scope_sweep(registry, store))
 
     provider_names = registry.provider_names()
     providers_meta: List[dict] = []
@@ -873,3 +875,69 @@ def save_dataset(dataset: dict, path: str | Path = "data/dataset.json") -> Path:
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(json.dumps(dataset, indent=2, ensure_ascii=False), encoding="utf-8")
     return p
+
+
+# ---------------------------------------------------------------------------
+# Scope-clause sweep (governing-document rule, mechanical half)
+#
+# A governing document usually declares its own scope in its opening paragraph.
+# When that declaration describes an operated service and the document sits on an
+# entry tracking downloadable weights, the two disagree and someone should look.
+#
+# FLAGS ONLY. Scope language is drafted for the publisher's purposes and is often
+# broader or narrower than the artifact at hand, so a disagreement is a prompt,
+# never a finding. Nothing here suppresses a value or edits the registry.
+# ---------------------------------------------------------------------------
+
+SCOPE_REPORT_PATH = Path("data/scope_flags.json")
+
+_ENTRY_CLASS_BY_SECTION = None
+
+
+def _entry_class(section: str) -> str:
+    global _ENTRY_CLASS_BY_SECTION
+    if _ENTRY_CLASS_BY_SECTION is None:
+        try:
+            cfg = yaml.safe_load(
+                Path("entry_classes.yaml").read_text(encoding="utf-8")) or {}
+            _ENTRY_CLASS_BY_SECTION = cfg.get("sections") or {}
+        except (OSError, ValueError):
+            _ENTRY_CLASS_BY_SECTION = {}
+    return _ENTRY_CLASS_BY_SECTION.get(section or "", "")
+
+
+def _scope_sweep(registry, store) -> List[dict]:
+    findings = []
+    for doc in registry.fetchable():
+        # Same resolution the renderer uses, so the class a document is judged
+        # against is the class the reader sees it filed under.
+        section = section_of(doc.provider, doc.segment, doc.openness)
+        cls = _entry_class(section)
+        if not cls:
+            continue
+        snap = store.current(doc.provider, doc.slug)
+        if not snap or not snap.text:
+            continue
+        flag = scope_check(snap.text, cls, doc.doc_type)
+        if flag:
+            flag.update({"provider": doc.provider, "doc_type": doc.doc_type,
+                         "entry_class": cls, "url": doc.url, "name": doc.name})
+            findings.append(flag)
+    return findings
+
+
+def _write_scope_report(findings: List[dict]) -> None:
+    SCOPE_REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    SCOPE_REPORT_PATH.write_text(json.dumps({
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "count": len(findings),
+        "note": ("Documents whose own scope statement describes a different kind of "
+                 "thing than the entry they sit on tracks. Flags for review, not "
+                 "findings: nothing is suppressed and no status changes. A document "
+                 "that declares no scope is not flagged, because absence of evidence "
+                 "is not disagreement."),
+        "findings": findings,
+    }, indent=2, ensure_ascii=False), encoding="utf-8")
+    if findings:
+        print(f"  scope flags: {len(findings)} document(s) disagree with their "
+              f"entry class -> {SCOPE_REPORT_PATH}")
