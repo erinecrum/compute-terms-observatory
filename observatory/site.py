@@ -705,6 +705,10 @@ def render_matrix(dataset: dict) -> str:
     # selection (default: All). The AI Model Providers pill reveals a sub-control.
     chooser = (
         '<div class="chooser" id="chooser">'
+        # The explainer leads the chooser rather than trailing it: a first-time
+        # visitor needs the frame before the choice, not after making one.
+        '<p class="chooser-hint" id="chooser-hint">Compare the published contract terms of '
+        'cloud infrastructure providers, or of AI model providers (closed or open).</p>'
         '<div class="chooser-main">'
         '<button type="button" class="cpill" data-choose="cloud">'
         '<span class="pl-full">Cloud Infrastructure Providers</span>'
@@ -733,8 +737,6 @@ def render_matrix(dataset: dict) -> str:
         '<button type="button" class="spill" data-sub="hosted">Hosted platforms</button>'
         '<button type="button" class="spill" data-sub="weights">Weights &amp; licenses</button>'
         '</div>'
-        '<p class="chooser-hint" id="chooser-hint">Compare the published contract terms of '
-        'cloud infrastructure providers, or of AI model providers (closed or open).</p>'
         '</div>'
     )
     # The view switcher: which terms are shown, independent of which providers.
@@ -1784,7 +1786,7 @@ p{max-width:74ch}
 @media(max-width:760px){.pl-full{display:none}.pl-short{display:inline}}
 /* Second-level model chooser sits between the primary row and the open subgroup. */
 .chooser-models{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
-.chooser-hint{margin:9px 0 0;font-size:12px;color:var(--faint);line-height:1.5}
+.chooser-hint{margin:0 0 11px;font-size:12px;color:var(--faint);line-height:1.5}
 .legend{display:flex;flex-wrap:wrap;align-items:center;gap:6px 15px;font-size:12.5px;color:var(--muted)}
 .legend-lbl{font-weight:700;text-transform:uppercase;letter-spacing:.07em;font-size:11px;color:var(--faint)}
 .lg{display:inline-flex;align-items:center;gap:6px}
