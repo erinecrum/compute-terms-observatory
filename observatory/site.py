@@ -229,8 +229,8 @@ _LEAD = ("One place to see what cloud infrastructure and AI model providers publ
 # compete with the purpose, and a first-time reader met the disclaimer first.
 _DECK_HTML = (
     f'<span class="deck-lead">{_LEAD}</span>'
-    '<span class="deck-note"><span class="note-full">Summaries are AI-generated under a '
-    f'{_DECK_LINK}. Not legal advice. Every value links to its source.</span>'
+    '<span class="deck-note"><span class="note-full">AI-generated summaries under a '
+    f'{_DECK_LINK}. Not legal advice.</span>'
     '<span class="note-short">AI-generated summaries. Not legal advice.</span></span>'
 )
 
