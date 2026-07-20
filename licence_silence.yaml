@@ -1,14 +1,46 @@
-# Why a permissive licence is silent on a dimension.
+# Why a permissive licence does not address a dimension.
 #
 # "Silent" means the provider's terms do not address a point. For a bespoke
 # community licence that is a finding: the publisher wrote custom terms and chose
 # their scope. For a bare OSI licence it is not a choice at all -- the instrument
-# grants copyright permissions and disclaims warranties, and does nothing else.
+# grants copyright permissions and disclaims warranties, and does little else.
 # Rendering both as "silent" flattens a real distinction.
 #
 # Where an entry's model licence is one of the standard forms below, a silent
 # dimension renders as the licence name plus the specific reason, rather than the
 # bare word "silent".
+#
+# ---------------------------------------------------------------------------
+# DRAFTING CONSTRAINT (binding on every line in this file)
+# ---------------------------------------------------------------------------
+# Every reason describes the instrument's four corners and nothing else. Each
+# line must be a statement about what the licence CONTAINS, GRANTS, or DOES NOT
+# CONTAIN, and must be checkable by reading the licence text itself.
+#
+# Specifically forbidden:
+#
+#   1. Operational claims about the licensor. Never say what the licensor does,
+#      holds, receives, engages, retains, processes, or collects. "MIT engages no
+#      sub-processors" is not in MIT; it is a claim about a company's operations
+#      that this document cannot establish. Say "contains no sub-processor
+#      provision" instead.
+#
+#   2. Assumptions about how the reader accesses the model. Never write "a copy
+#      you run yourself", "no hosted processing", or anything else that presumes
+#      self-hosting. Whether access is self-hosted or hosted is a segment-level
+#      fact; these lines may not assume it. A reader on a hosted endpoint is
+#      governed by different documents, and a line that assumes otherwise misleads
+#      exactly the reader most at risk.
+#
+#   3. Legal conclusions dressed as document text. "Grants a perpetual licence"
+#      is a conclusion where the text does not say so; MIT never uses the word,
+#      and whether MIT is irrevocable is a contested interpretive question. Use
+#      "perpetual" or "irrevocable" ONLY where the licence grants it expressly,
+#      and quote the text when you do (see the Apache-2.0 override below).
+#
+# Enforced by scripts/test_licence_silence.py, which checks the wording against
+# these rules AND probes each provider's actual licence text for clauses that
+# would falsify a "contains no ..." claim. Run it after any edit here.
 #
 # DRAFTING NOTE: these are factual statements about what each licence instrument
 # does. They were drafted for review, not settled by counsel. Edit freely; the
@@ -26,39 +58,63 @@ instrument:
   MIT: >-
     The MIT licence grants permission to use, copy, modify and distribute the
     software, requires the copyright notice to be retained, and disclaims warranty
-    and liability. It creates no service relationship and addresses nothing else.
+    and liability. It contains no other provisions.
   Modified MIT: >-
-    A modified MIT licence grants MIT's permissions subject to the publisher's added
-    conditions, and otherwise addresses only notice retention and warranty
-    disclaimer. It creates no service relationship.
+    A modified MIT licence grants MIT's permissions subject to conditions the
+    publisher has added, and otherwise contains only notice retention and a
+    warranty disclaimer. The added conditions appear in the licence text itself.
   Apache-2.0: >-
-    Apache-2.0 grants copyright and patent permissions, requires notice and
-    change-attribution, withholds trademark rights, and disclaims warranty and
-    liability. It creates no service relationship and addresses nothing else.
+    Apache-2.0 grants expressly perpetual and irrevocable copyright and patent
+    licences, requires notice retention and change attribution, withholds
+    trademark rights, terminates the patent licence if the licensee brings patent
+    litigation over the work, and disclaims warranty and liability.
 
-# Per-dimension reason. Phrased as what the licence does or does not do, never as
-# what the publisher should have done.
+# Per-dimension reason. Phrased as what the licence contains or does not contain,
+# never as what the licensor does. Rendered as "<Licence>: <reason>".
 reasons:
-  termination: grants a perpetual licence with no termination provision
-  suspension_rights: confers no account or service to suspend
-  unilateral_modification: is a fixed grant; it provides no mechanism to change terms
+  termination: contains no termination provision
+  suspension_rights: contains no suspension provision
+  unilateral_modification: contains no mechanism for changing its own terms
   governing_law_disputes: names no governing law or forum
-  liability: disclaims all liability rather than capping it
-  output_indemnity: offers no indemnity of any kind
-  deprecation: distributes a copy; it makes no continuity or support commitment
-  benchmarking_restrictions: places no restriction on evaluation or publication
-  competitive_training: permits use without field-of-use restriction
-  assignment_financing: is granted to any recipient, so assignment does not arise
-  data_use_ai_training: governs a copy you run yourself; the licensor receives no data
-  content_retention_review: involves no service that could retain or review content
-  data_residency: involves no hosted processing, so residency does not arise
-  data_transfer_mechanism: involves no transfer of personal data to the licensor
-  subprocessor_transparency: engages no sub-processors
-  government_access: holds no user data that could be compelled
-  prohibited_high_risk_uses: imposes no acceptable-use restrictions
-  appeal_redress: has no enforcement action to appeal
+  liability: disclaims liability entirely rather than capping it
+  output_indemnity: contains no indemnity running to the licensee
+  deprecation: makes no continuity, support or versioning commitment
+  benchmarking_restrictions: contains no restriction on evaluation or publication
+  competitive_training: contains no field-of-use restriction
+  assignment_financing: contains no assignment or change-of-control provision
+  data_use_ai_training: contains no provision about data or its use for training
+  content_retention_review: contains no retention or human-review provision
+  data_residency: contains no data residency provision
+  data_transfer_mechanism: contains no international data transfer provision
+  subprocessor_transparency: contains no sub-processor provision
+  government_access: contains no provision on government or law enforcement access
+  prohibited_high_risk_uses: contains no acceptable-use or prohibited-use provision
+  appeal_redress: contains no appeal or redress mechanism
   eu_ai_act_role: allocates no provider or deployer roles
-  model_documentation: is a licence file; it makes no documentation commitment
-  training_data_provenance: is a licence file; it makes no provenance statement
-  capacity_reservation: provisions no capacity
-  availability_definition: commits to no availability
+  model_documentation: is a licence file and contains no documentation commitment
+  training_data_provenance: is a licence file and contains no provenance statement
+  capacity_reservation: contains no capacity commitment
+  availability_definition: contains no availability commitment
+
+# Where a form's actual text contradicts the general reason above, it is overridden
+# here. Each of these was found by probing the licence text, not by intuition: the
+# general lines had all three wrong before the check was written.
+overrides:
+  Apache-2.0:
+    # Section 3 is a real termination provision. "Contains no termination
+    # provision" would have been false.
+    termination: >-
+      grants a "perpetual ... irrevocable" copyright licence in section 2, and
+      contains one termination provision: the patent licence in section 3 ends if
+      the licensee brings patent litigation over the work
+    # Section 9 mentions indemnity, but running the other way: a redistributor who
+    # offers support or warranty must indemnify the contributors. Nothing in the
+    # licence indemnifies the licensee.
+    output_indemnity: >-
+      contains no indemnity running to the licensee; section 9 addresses indemnity
+      only as an obligation a redistributor takes on toward contributors
+    # Section 9 permits charging for support; it does not commit anyone to provide
+    # it. Worth stating so the mention of "support" is not read as a commitment.
+    deprecation: >-
+      makes no continuity or versioning commitment; section 9 permits a
+      redistributor to charge for support but commits no one to provide it

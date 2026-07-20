@@ -715,13 +715,18 @@ def _apply_licence_silence(fields: dict, licence_bucket: str) -> None:
     if not form:
         return
     reasons = cfg.get("reasons") or {}
+    # A form whose text contradicts the general reason overrides it. Apache-2.0
+    # does contain a termination provision (patent retaliation, section 3), so the
+    # general "contains no termination provision" must not be used for it.
+    overrides = (cfg.get("overrides") or {}).get(form) or {}
     instrument = (cfg.get("instrument") or {}).get(form, "")
     for key, f in fields.items():
         if not f or f.get("status") != "no_clause_found":
             continue
-        reason = reasons.get(key)
+        reason = overrides.get(key) or reasons.get(key)
         if not reason:
             continue
+        reason = " ".join(reason.split())
         f["licence_silence"] = {
             "form": form,
             "reason": reason,

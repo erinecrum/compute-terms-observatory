@@ -1,0 +1,75 @@
+name: Checks
+
+# The guard tests, run on every push and pull request.
+#
+# These existed as scripts but nothing ran them, so a rule could be written down
+# and then quietly violated by a later edit. Each test here was written after a
+# real defect shipped, and each has been shown to fail when its guard is removed:
+#
+#   test_status_derivation  - capture-absence states must never be re-derived into
+#                             "silent", which would assert that a provider's terms
+#                             say nothing when in fact nothing was captured.
+#   test_section_wiring     - compare mode reads the generated section ids; a
+#                             rename once broke it silently for every card.
+#   test_licence_silence    - the four-corners rule on licence_silence.yaml, plus a
+#                             probe of each provider's actual licence text for
+#                             clauses that would falsify a "contains no ..." claim.
+#   test_text_check         - captures that decoded as markup rather than text.
+#
+# The corpus is private, so on a fork or a run without the token these degrade to
+# the checks that need no snapshots rather than failing. That is deliberate: a
+# missing corpus is not a code defect.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Pull private data corpus (if token configured)
+        continue-on-error: true
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          repository: erinecrum/compute-terms-observatory-data
+          token: ${{ secrets.DATA_REPO_TOKEN }}
+          path: _data
+
+      - name: Use private corpus when available, else the committed baseline
+        run: |
+          if [ -d _data/snapshots ]; then
+            rm -rf snapshots
+            cp -R _data/snapshots snapshots
+            mkdir -p data
+            cp -R _data/data/. data/
+            echo "Checking against the private data corpus."
+          else
+            echo "No private corpus available; checking against the committed baseline."
+          fi
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run the guard tests
+        run: |
+          set -euo pipefail
+          fail=0
+          for t in test_status_derivation test_section_wiring \
+                   test_licence_silence test_text_check; do
+            echo "::group::$t"
+            python "scripts/$t.py" || fail=1
+            echo "::endgroup::"
+          done
+          exit $fail
