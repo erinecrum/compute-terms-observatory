@@ -222,18 +222,24 @@ def _wordmark() -> str:
 # The serif-italic deck line. "documented methodology" is the only link. A short
 # variant is shown on narrow viewports, the full sentence on desktop.
 _DECK_LINK = '<a href="methodology.html">documented methodology</a>'
+_LEAD = ("One place to see what cloud infrastructure and AI model providers publish, "
+         "side by side, as it changes.")
+# Two lines, deliberately ranked. The lead says what the site is FOR; the caveat
+# says what the summaries are. Collapsing them into one sentence made the caveat
+# compete with the purpose, and a first-time reader met the disclaimer first.
 _DECK_HTML = (
-    '<span class="deck-full">The public terms of cloud infrastructure and AI model '
-    f'providers, summarized by AI under a {_DECK_LINK}. Not legal advice. '
-    'Every value links to its source.</span>'
-    '<span class="deck-short">Public terms, summarized by AI. Not legal advice.</span>'
+    f'<span class="deck-lead">{_LEAD}</span>'
+    '<span class="deck-note"><span class="note-full">Summaries are AI-generated under a '
+    f'{_DECK_LINK}. Not legal advice. Every value links to its source.</span>'
+    '<span class="note-short">AI-generated summaries. Not legal advice.</span></span>'
 )
 
 
 # The one-line statement of purpose. Appears in the footer of every page, and as
 # the standfirst on the methodology page, so the two never drift apart.
-_PURPOSE_LINE = ("One place to see what compute providers publish, side by side, "
-                 "as it changes.")
+# Same sentence as the masthead lead, so the footer restates the purpose rather
+# than paraphrasing it into a second, slightly different claim.
+_PURPOSE_LINE = _LEAD
 
 
 # Item A5 gate: the document-versions policy text names contact@termsobservatory.org,
@@ -700,15 +706,35 @@ def render_matrix(dataset: dict) -> str:
     chooser = (
         '<div class="chooser" id="chooser">'
         '<div class="chooser-main">'
-        '<button type="button" class="cpill" data-choose="cloud">Cloud Infrastructure</button>'
-        '<button type="button" class="cpill" data-choose="closed">Closed</button>'
-        '<button type="button" class="cpill" data-choose="open">Open</button>'
+        '<button type="button" class="cpill" data-choose="cloud">'
+        '<span class="pl-full">Cloud Infrastructure Providers</span>'
+        '<span class="pl-short">Cloud Infrastructure</span></button>'
+        '<button type="button" class="cpill" data-choose="models">'
+        '<span class="pl-full">AI Model Providers</span>'
+        '<span class="pl-short">AI Models</span></button>'
         '<button type="button" class="cpill selected" data-choose="all">All</button>'
         '</div>'
+        # Second level: which model providers. Every label carries its noun; a bare
+        # "Closed" or "Open" tells a first-time visitor nothing about what is being
+        # divided, and the division is the whole taxonomy.
+        '<div class="chooser-models" id="chooser-models" hidden>'
+        '<button type="button" class="spill selected" data-choose="allmodels">'
+        '<span class="pl-full">All model providers</span>'
+        '<span class="pl-short">All models</span></button>'
+        '<button type="button" class="spill" data-choose="closed">'
+        '<span class="pl-full">Closed model providers</span>'
+        '<span class="pl-short">Closed models</span></button>'
+        '<button type="button" class="spill" data-choose="open">'
+        '<span class="pl-full">Open model providers</span>'
+        '<span class="pl-short">Open models</span></button>'
+        '</div>'
         '<div class="chooser-sub" id="chooser-sub" hidden>'
-        '<button type="button" class="spill selected" data-sub="all">All open</button>'
+        '<button type="button" class="spill selected" data-sub="all">All open models</button>'
         '<button type="button" class="spill" data-sub="hosted">Hosted platforms</button>'
         '<button type="button" class="spill" data-sub="weights">Weights &amp; licenses</button>'
+        '</div>'
+        '<p class="chooser-hint" id="chooser-hint">Compare the published contract terms of '
+        'cloud infrastructure providers, or of AI model providers (closed or open).</p>'
         '</div>'
     )
     # The view switcher: which terms are shown, independent of which providers.
@@ -1609,12 +1635,16 @@ letter-spacing:.12em;padding:4px 0;border-bottom:2px solid transparent}
 /* Editorial deck line (replaces the boxed disclaimer). */
 .deck{border-bottom:1px solid var(--line)}
 .deck .wrap{padding:9px 24px}
-.deck .wrap{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-style:italic;
-color:var(--muted);font-size:13.5px}
+/* Two ranked lines. The lead keeps the serif-italic voice and the old size; the
+   caveat sits under it, smaller and muted, so purpose reads before disclaimer. */
+.deck-lead{display:block;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;
+font-style:italic;color:var(--muted);font-size:13.5px}
+.deck-note{display:block;margin-top:3px;font-family:inherit;font-style:normal;
+color:var(--faint);font-size:11.5px;line-height:1.5}
 .deck a{color:inherit;text-decoration:underline;text-decoration-color:var(--line-2)}
 .deck a:hover{color:var(--ink)}
-.deck-short{display:none}
-@media(max-width:640px){.deck-full{display:none}.deck-short{display:inline}}
+.note-short{display:none}
+@media(max-width:640px){.note-full{display:none}.note-short{display:inline}}
 
 /* Compact masthead: borderless, at most one hairline (under the deck). The home
    page uses the same header so the nav never shifts between pages; its left slot
@@ -1746,6 +1776,11 @@ p{max-width:74ch}
 .checks label{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;cursor:pointer}
 .checks input{accent-color:var(--accent)}
 .toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;margin:0 0 14px}
+.pl-short{display:none}
+@media(max-width:760px){.pl-full{display:none}.pl-short{display:inline}}
+/* Second-level model chooser sits between the primary row and the open subgroup. */
+.chooser-models{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.chooser-hint{margin:9px 0 0;font-size:12px;color:var(--faint);line-height:1.5}
 .legend{display:flex;flex-wrap:wrap;align-items:center;gap:6px 15px;font-size:12.5px;color:var(--muted)}
 .legend-lbl{font-weight:700;text-transform:uppercase;letter-spacing:.07em;font-size:11px;color:var(--faint)}
 .lg{display:inline-flex;align-items:center;gap:6px}
@@ -2147,6 +2182,8 @@ document.addEventListener('click',function(e){
     if(choose==='all'){ s.cloud=s.closed=s.hosted=s.weights=true; }
     else if(choose==='cloud'){ s.cloud=true; }
     else if(choose==='closed'){ s.closed=true; }
+    // Every model provider: closed plus both open subgroups, no cloud.
+    else if(choose==='models'){ s.closed=s.hosted=s.weights=true; }
     else if(choose==='open'){
       if(sub==='hosted'){ s.hosted=true; }
       else if(sub==='weights'){ s.weights=true; }
@@ -2165,18 +2202,49 @@ document.addEventListener('click',function(e){
   }
   var chooser=document.getElementById('chooser');
   if(chooser){
+    // Two levels. The primary row picks cloud / models / all; picking models
+    // reveals the model-provider row, and picking Open reveals its subgroup.
+    // "models" and "allmodels" both mean every model provider; they differ only
+    // in which row is showing.
     var choose='all', sub='all';
+    var modelsRow=document.getElementById('chooser-models');
+    var openRow=document.getElementById('chooser-sub');
+    var hint=document.getElementById('chooser-hint');
+    function syncRows(){
+      var inModels=(choose==='models'||choose==='allmodels'||choose==='closed'||choose==='open');
+      if(modelsRow) modelsRow.hidden=!(inModels||choose==='all');
+      if(openRow) openRow.hidden=(choose!=='open');
+      // The explainer earns its place only until the reader has chosen.
+      if(hint) hint.hidden=(choose!=='all');
+    }
+    function markPrimary(){
+      var primary=(choose==='cloud')?'cloud':(choose==='all')?'all':'models';
+      chooser.querySelectorAll('.cpill').forEach(function(b){
+        b.classList.toggle('selected', b.dataset.choose===primary); });
+    }
+    function markModels(){
+      var key=(choose==='closed'||choose==='open')?choose:'allmodels';
+      if(modelsRow) modelsRow.querySelectorAll('.spill').forEach(function(b){
+        b.classList.toggle('selected', b.dataset.choose===key); });
+    }
     chooser.addEventListener('click',function(e){
       var m=e.target.closest('[data-choose]'), sp=e.target.closest('[data-sub]');
-      if(m){ choose=m.dataset.choose;
-        chooser.querySelectorAll('.cpill').forEach(function(b){ b.classList.toggle('selected', b===m); });
-        if(choose!=='open'){ sub='all'; chooser.querySelectorAll('.spill').forEach(function(b){ b.classList.toggle('selected', b.dataset.sub==='all'); }); }
-        applyChooser(choose, sub);
-      } else if(sp){ sub=sp.dataset.sub;
-        chooser.querySelectorAll('.spill').forEach(function(b){ b.classList.toggle('selected', b===sp); });
-        applyChooser(choose, sub);
+      if(m){
+        choose=m.dataset.choose;
+        // Both "all model providers" spellings render the same set.
+        var effective=(choose==='models'||choose==='allmodels')?'models':choose;
+        if(effective!=='open'){ sub='all';
+          if(openRow) openRow.querySelectorAll('.spill').forEach(function(b){
+            b.classList.toggle('selected', b.dataset.sub==='all'); }); }
+        markPrimary(); markModels(); syncRows();
+        applyChooser(effective, sub);
+      } else if(sp){
+        sub=sp.dataset.sub;
+        openRow.querySelectorAll('.spill').forEach(function(b){ b.classList.toggle('selected', b===sp); });
+        applyChooser('open', sub);
       }
     });
+    syncRows();
   }
 
   // The view switcher owns which dimension ROWS are eligible (the chooser owns
