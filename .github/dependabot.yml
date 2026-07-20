@@ -1,0 +1,36 @@
+version: 2
+
+# Dependabot's security alerts fire without this file, but only for known
+# vulnerabilities. This adds scheduled update PRs, which matter here for a specific
+# reason: both the Python dependencies and the GitHub Actions are PINNED (exact
+# versions, commit SHAs). Pinning is deliberate -- CI runs with an API key and a
+# token that can write the corpus -- but a pin left alone becomes a stale pin, and a
+# stale pin is its own risk.
+#
+# Updates are raised as pull requests and are never auto-merged. Reviewing what
+# changed is the point of pinning in the first place.
+
+updates:
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+    labels:
+      - dependencies
+
+  # The pinned action SHAs. Without this, a SHA pin never moves and quietly ages;
+  # Dependabot resolves the tag and proposes the new SHA with the release notes.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci"
+    labels:
+      - dependencies
