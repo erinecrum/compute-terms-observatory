@@ -53,16 +53,17 @@ DMARC reports in item 5 come back clean.
 
 | Host | Type | Value | TTL |
 |---|---|---|---|
-| `_dmarc` | TXT | `v=DMARC1; p=quarantine; rua=mailto:dmarc@termsobservatory.org; fo=1; adkim=s; aspf=s` | 3600 |
+| `_dmarc` | TXT | `v=DMARC1; p=quarantine; rua=mailto:contact@termsobservatory.org; fo=1; adkim=s; aspf=s` | 3600 |
 
 Starting at `quarantine` rather than `reject` is deliberate: it is reversible while
 DKIM is still being enabled. FOLLOWUPS carries a two-week check to move to `reject`.
 
-> **Privacy note on the report address.** DMARC `rua` is published in public DNS and
-> gets scraped. The record above sends reports to a `dmarc@` alias on the new
-> domain, which keeps your personal address off the public record. If you would
-> rather they land in your existing inbox, forward that alias rather than putting a
-> personal address in DNS.
+> **Two notes on the report address.** DMARC `rua` is published in public DNS and
+> gets scraped, so it points at the domain address rather than a personal one.
+> Separately: aggregate reports arrive as daily XML attachments from every major
+> receiver, so `contact@` will carry machine mail alongside human mail. A Gmail
+> filter on subject `Report Domain:` moving them to a label keeps the inbox usable.
+> If that becomes annoying, changing `rua` later is a one-record edit.
 
 ## 4. Google-issued values — PLACEHOLDERS, only Google can generate these
 
@@ -82,7 +83,7 @@ authentication" step is the one people miss.
 | Host | Type | Value | TTL |
 |---|---|---|---|
 | `@` | CAA | `0 issue "letsencrypt.org"` | 3600 |
-| `@` | CAA | `0 iodef "mailto:security@termsobservatory.org"` | 3600 |
+| `@` | CAA | `0 iodef "mailto:contact@termsobservatory.org"` | 3600 |
 
 GitHub Pages provisions its certificates through Let's Encrypt, so that is the only
 issuer authorised. The `iodef` line asks non-authorised CAs to report attempts.

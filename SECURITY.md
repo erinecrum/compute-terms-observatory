@@ -2,11 +2,10 @@
 
 ## Reporting
 
-Report security issues to **security@termsobservatory.org**.
+Report security issues to **contact@termsobservatory.org**.
 
-Please include enough detail to reproduce. If the issue involves published document
-text rather than the software, see "Document versions" below, which is a separate
-channel.
+Please include enough detail to reproduce. Enquiries about published document text
+rather than the software reach the same address; see "Document versions" below.
 
 There is no bug bounty. This is a single-maintainer research project.
 
@@ -76,13 +75,10 @@ Documented so the limits are known rather than assumed:
 
 ## Mail
 
-The domain runs Google Workspace. Three aliases resolve to one mailbox:
-
-| address | purpose |
-|---|---|
-| `security@termsobservatory.org` | security reports (this document) |
-| `contact@termsobservatory.org` | document-versions policy enquiries |
-| `legal@termsobservatory.org` | provider legal correspondence |
+The domain runs Google Workspace. **contact@termsobservatory.org** is the single
+public address: security reports, document-versions enquiries, and provider
+correspondence all arrive there. One address is easier to monitor reliably than
+three, and an unmonitored alias is worse than no alias.
 
 SPF authorises Google's servers, DKIM is published, and DMARC is enforced. The
 DMARC policy starts at `quarantine` while the setup is new and moves to `reject`
@@ -95,10 +91,11 @@ CI uses two secrets, both repository-scoped:
 - `ANTHROPIC_API_KEY` — extraction. Rotate if a workflow log is ever made public.
 - `DATA_REPO_TOKEN` — read/write access to the private corpus repository.
 
-`DATA_REPO_TOKEN` should be the narrowest mechanism that works: a fine-grained
-personal access token limited to the single private repository, with contents
-read/write and nothing else, and an expiry set. Rotate every 90 days; FOLLOWUPS
-carries the reminder. Rotating means issuing a new token, updating the repository
+`DATA_REPO_TOKEN` is a fine-grained personal access token, scoped to the single
+private corpus repository with contents read/write and nothing else, and carrying an
+expiry. It is deliberately not a classic token: a classic PAT's `repo` scope reaches
+every repository the account owns, so a leak from CI would expose far more than the
+corpus. Rotate every 90 days; FOLLOWUPS carries the reminder. Rotating means issuing a new token, updating the repository
 secret, and confirming a pipeline run succeeds before revoking the old one.
 
 ## Document versions
