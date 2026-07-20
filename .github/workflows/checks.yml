@@ -62,6 +62,13 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # test_section_wiring reads the rendered site to confirm compare mode's
+      # table ids match the sections actually generated, so the site has to exist
+      # before the tests run. Rendering does not call the API; it rebuilds the
+      # dataset from the corpus and writes HTML.
+      - name: Build the site
+        run: python main.py site
+
       - name: Run the guard tests
         run: |
           set -euo pipefail
