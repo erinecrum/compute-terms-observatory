@@ -96,6 +96,29 @@ reasons:
   capacity_reservation: contains no capacity commitment
   availability_definition: contains no availability commitment
 
+# ---------------------------------------------------------------------------
+# Bespoke community licences
+# ---------------------------------------------------------------------------
+# These get the opposite treatment. A publisher who drafts its own licence sets
+# its own scope, so a point it does not address sits alongside the many points it
+# chose to address: the silence is a finding, not a property of the instrument.
+# So the badge still reads "silent", and only the licence is named, with no
+# structural reason offered -- because there isn't one.
+#
+# Keyed by provider, because a bespoke licence has no standard name to derive.
+# A provider absent here falls back to a bare "silent", which is the safe default.
+bespoke:
+  names:
+    minimax: MiniMax Community License
+    llama: Llama 4 Community License
+    gemma: Gemma Terms of Use
+  # Same four-corners rule: says what the document does, not why.
+  reason: the terms appear silent on this point
+  note: >-
+    A bespoke community licence, drafted by the publisher rather than adopted from
+    a standard form. It sets its own scope, so what it leaves out sits alongside
+    what it chose to include.
+
 # Where a form's actual text contradicts the general reason above, it is overridden
 # here. Each of these was found by probing the licence text, not by intuition: the
 # general lines had all three wrong before the check was written.

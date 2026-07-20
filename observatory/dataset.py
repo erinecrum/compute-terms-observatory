@@ -398,7 +398,10 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
 
         lic_field = fields.get("model_license") or {}
         # Annotate permissive-licence silence now that statuses are final.
-        _apply_licence_silence(fields, _license_bucket(lic_field.get("value", "")))
+        _bucket = _license_bucket(lic_field.get("value", ""))
+        _apply_licence_silence(fields, _bucket)
+        if _bucket == "bespoke/community license":
+            _apply_bespoke_silence(fields, provider)
         providers_meta.append(
             {
                 "provider": provider,
@@ -701,6 +704,31 @@ def _licence_silence():
         except (OSError, ValueError):
             _LICENCE_SILENCE_CACHE = {}
     return _LICENCE_SILENCE_CACHE
+
+
+def _apply_bespoke_silence(fields: dict, provider: str) -> None:
+    """Name the bespoke licence, but keep calling the silence what it is.
+
+    The mirror image of the permissive case. A publisher who wrote its own licence
+    chose that licence's scope, so a point it omits is a finding about the terms,
+    not a limit of the instrument. The badge stays "silent" and no structural
+    reason is offered, because there is none to give: only the licence is named.
+    """
+    cfg = (_licence_silence().get("bespoke") or {})
+    name = (cfg.get("names") or {}).get(provider)
+    if not name:
+        return
+    reason = " ".join((cfg.get("reason") or "").split())
+    note = " ".join((cfg.get("note") or "").split())
+    for f in fields.values():
+        if not f or f.get("status") != "no_clause_found":
+            continue
+        f["licence_silence"] = {
+            "form": name,
+            "reason": reason,
+            "instrument": note,
+            "bespoke": True,
+        }
 
 
 def _apply_licence_silence(fields: dict, licence_bucket: str) -> None:

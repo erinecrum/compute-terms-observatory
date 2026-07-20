@@ -58,11 +58,15 @@ ACCESS_ASSUMPTION = re.compile(
 CONCLUSION = re.compile(r"\b(perpetual|irrevocable)\b", re.I)
 
 
-def check_wording(reasons, overrides):
+def check_wording(reasons, overrides, bespoke):
     bad = []
     lines = [("reasons", k, v) for k, v in reasons.items()]
     for form, ov in overrides.items():
         lines += [(f"overrides.{form}", k, v) for k, v in ov.items()]
+    # The bespoke prose is published the same way and is held to the same rule.
+    for key in ("reason", "note"):
+        if bespoke.get(key):
+            lines.append(("bespoke", key, bespoke[key]))
 
     for where, key, text in lines:
         t = " ".join(str(text).split())
@@ -168,7 +172,8 @@ def main():
 
     failures = []
 
-    for where, key, why in check_wording(reasons, overrides):
+    bespoke = cfg.get("bespoke") or {}
+    for where, key, why in check_wording(reasons, overrides, bespoke):
         failures.append(f"  {where}.{key}: {why}")
 
     for form, provider, dim, why in check_text(cfg):
@@ -181,7 +186,8 @@ def main():
               "override under the form naming the clause that exists.")
         return 1
 
-    n = len(reasons) + sum(len(v) for v in overrides.values())
+    n = (len(reasons) + sum(len(v) for v in overrides.values())
+         + sum(1 for k in ("reason", "note") if bespoke.get(k)))
     print(f"All licence-silence checks passed ({n} reason lines, "
           f"wording + licence text).")
     return 0

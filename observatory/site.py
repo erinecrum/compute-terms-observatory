@@ -499,7 +499,11 @@ def _status_meta(field: dict):
     # reach the point at all. Same underlying status, honest label.
     ls = field.get("licence_silence")
     if ls and field.get("status") == "no_clause_found":
-        label = "not addressed by this licence"
+        # A bespoke licence keeps the "silent" label: there the omission is the
+        # finding. Only a standard permissive form gets the softer label, because
+        # only there is the omission a property of the instrument.
+        if not ls.get("bespoke"):
+            label = "not addressed by this licence"
         title = ls["instrument"]
     return dot, title, badge_cls, label
 
