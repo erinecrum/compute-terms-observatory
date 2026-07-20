@@ -850,10 +850,15 @@ providers:
 
       # -- Data protection & accountability (Phase B) --
       - doc_type: ai_documentation
-        name: Model card / usage policy
-        status: unverified
-        url: https://huggingface.co/zai-org/GLM-4.5
-        notes: HF model card; MIT license in corpus.
+        name: GLM-5.2 model card
+        status: verified
+        generation: GLM-5.2
+        url: https://huggingface.co/zai-org/GLM-5.2/raw/main/README.md
+        notes: >-
+          Was the GLM-4.5 model card page while the licence tracked GLM-5.2. The
+          generation check suppressed the licence rather than report across two
+          generations. GLM-4.5 publishes no LICENSE file, so GLM-5.2 is the
+          generation with a complete pair. Raw README, matching the licence path.
   - provider: minimax
     provider_name: MiniMax
     segment: model_provider
