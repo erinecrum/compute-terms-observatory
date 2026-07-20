@@ -873,9 +873,21 @@ providers:
 
       # -- Data protection & accountability (Phase B) --
       - doc_type: ai_documentation
-        name: Model card / usage policy
-        status: unverified
-        url: https://minimax-m2.com/terms
+        name: MiniMax-M3 model card
+        status: verified
+        generation: MiniMax-M3
+        url: https://huggingface.co/MiniMaxAI/MiniMax-M3/raw/main/README.md
+        notes: >-
+          Replaces https://minimax-m2.com/terms, which was filed here as MiniMax's
+          model card but is the Terms of Service of a third party that describes
+          itself as commercially operating the M2 model and "independent from ...
+          upstream vendors". It governs that operator's hosted service, not
+          MiniMax's weights, and fails the governing-document rule. It was also a
+          non-first-party source. The generation check had already suppressed its
+          values (M2 documentation against an M3 licence), but the document
+          remained listed under MiniMax's name.
+          Now the M3 model card from the repository that distributes the weights,
+          matching the generation the licence tracks.
   - provider: mistral-platform
     provider_name: Mistral platform
     segment: model_provider
