@@ -60,10 +60,10 @@ Raised 2026-07-19.
 ## DMARC: move to p=reject after two weeks
 
 Set 2026-07-19, check from **2026-08-02**. DMARC starts at `quarantine` while
-Workspace mail is new. Once aggregate reports show legitimate mail passing SPF and
+Workspace mail is new. Once the Postmark digests show legitimate mail passing SPF and
 DKIM consistently, replace the `_dmarc` TXT record with:
 
-    v=DMARC1; p=reject; rua=mailto:contact@termsobservatory.org; fo=1; adkim=s; aspf=s
+    v=DMARC1; p=reject; rua=mailto:<the Postmark address from the DMARC sheet>; fo=1; adkim=s; aspf=s
 
 and tighten SPF from `~all` to `-all` in the same session. Do not do either while
 reports still show failures: that rejects your own mail.

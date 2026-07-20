@@ -49,21 +49,36 @@ Google's current single-record setup. Add this one record.
 sends legitimate mail to oblivion with no diagnostics. Tighten to `-all` once the
 DMARC reports in item 5 come back clean.
 
-## 3. DMARC — replaces the current `p=reject` record
+## 3. DMARC — reports go to a processor, not your inbox
+
+DMARC aggregate reports are XML, sent daily by every major receiver. Rather than
+have that land in `contact@`, a free processor ingests them and sends one readable
+digest instead. The `rua` address below is issued by the processor at signup.
+
+**Step 1 — get the address (two minutes, no card).**
+
+Use **Postmark's DMARC monitoring**: <https://dmarc.postmarkapp.com>. Enter the
+domain and the address that should receive the weekly digest. It returns an `rua`
+address of the form `re+xxxxxxxxx@dmarc.postmarkapp.com`.
+
+(Alternative if you prefer: dmarcian's free tier, <https://dmarcian.com>. Same
+idea, same record shape. Either is fine; Postmark needs no account.)
+
+**Step 2 — paste the record**, substituting the address from step 1:
 
 | Host | Type | Value | TTL |
 |---|---|---|---|
-| `_dmarc` | TXT | `v=DMARC1; p=quarantine; rua=mailto:contact@termsobservatory.org; fo=1; adkim=s; aspf=s` | 3600 |
+| `_dmarc` | TXT | `v=DMARC1; p=quarantine; rua=mailto:re+xxxxxxxxx@dmarc.postmarkapp.com; fo=1; adkim=s; aspf=s` | 3600 |
 
 Starting at `quarantine` rather than `reject` is deliberate: it is reversible while
-DKIM is still being enabled. FOLLOWUPS carries a two-week check to move to `reject`.
+the setup is new. FOLLOWUPS carries a two-week check to move to `reject` once the
+digests show legitimate mail passing consistently.
 
-> **Two notes on the report address.** DMARC `rua` is published in public DNS and
-> gets scraped, so it points at the domain address rather than a personal one.
-> Separately: aggregate reports arrive as daily XML attachments from every major
-> receiver, so `contact@` will carry machine mail alongside human mail. A Gmail
-> filter on subject `Report Domain:` moving them to a label keeps the inbox usable.
-> If that becomes annoying, changing `rua` later is a one-record edit.
+> **If you would rather receive nothing at all**, this is also a valid record and
+> publishes the same enforceable policy:
+> `v=DMARC1; p=quarantine; fo=1; adkim=s; aspf=s`
+> The cost is visibility: no reports means no evidence for the `p=reject` decision
+> and no warning if someone starts spoofing the domain.
 
 ## 4. Google-issued values — PLACEHOLDERS, only Google can generate these
 

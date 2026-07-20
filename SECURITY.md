@@ -80,9 +80,10 @@ public address: security reports, document-versions enquiries, and provider
 correspondence all arrive there. One address is easier to monitor reliably than
 three, and an unmonitored alias is worse than no alias.
 
-SPF authorises Google's servers, DKIM is published, and DMARC is enforced. The
-DMARC policy starts at `quarantine` while the setup is new and moves to `reject`
-once aggregate reports are clean.
+SPF authorises Google's servers, DKIM is published, and DMARC is enforced. DMARC
+aggregate reports are routed to a monitoring service rather than to the public
+address, so the mailbox stays human-readable. The policy starts at `quarantine`
+while the setup is new and moves to `reject` once the reports are clean.
 
 ## Credentials and rotation
 
