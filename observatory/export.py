@@ -111,7 +111,11 @@ def _comparison_sheet(ws, dataset: dict, group: str, title: str, view: str = "al
         ws.cell(row=r, column=2, value=d["label"]).font = Font(bold=True, size=10)
         for c, p in enumerate(providers, start=3):
             f = matrix.get(p["provider"], {}).get(d["key"], {})
-            ws.cell(row=r, column=c, value=f.get("display_value", f.get("value", "")))
+            # A spreadsheet has no drawer to open, so an absence carries its full
+            # sentence rather than the shortened matrix clause.
+            ws.cell(row=r, column=c,
+                    value=f.get("absence_full")
+                    or f.get("display_value", f.get("value", "")))
         for c in range(1, len(headers) + 1):
             cell = ws.cell(row=r, column=c)
             cell.alignment = _WRAP_TOP
@@ -157,7 +161,8 @@ def _detail_sheet(ws, dataset: dict) -> None:
             f = matrix.get(p["provider"], {}).get(d["key"], {})
             src = f.get("source") or {}
             prog = f.get("commitment_program")
-            value = f.get("display_value", f.get("value", ""))
+            value = (f.get("absence_full")
+                     or f.get("display_value", f.get("value", "")))
             if prog:
                 value = f"{value}\n[{prog['program']}: {prog['value']}]"
             row = [

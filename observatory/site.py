@@ -542,6 +542,16 @@ def _cell(provider: str, dim_key: str, field: dict) -> str:
     cite_line = f'<div class="cite">“{esc(_sic(citation))}”</div>' if citation else ""
     if ls and status == "no_clause_found":
         cite_line += (f'<div class="lic-note">{esc(ls["instrument"])}</div>')
+    # The cell shows a shortened clause; the drawer carries the full sentence and,
+    # where the finding rests on having read a set of documents, names them. A
+    # reader should never have to take "no provision" on trust.
+    if field.get("absence_full"):
+        cite_line += f'<div class="absence-full">{esc(field["absence_full"])}</div>'
+        reviewed = field.get("documents_reviewed") or []
+        if len(reviewed) > 1 and status == "no_clause_found":
+            items = "".join(f"<li>{esc(n)}</li>" for n in reviewed)
+            cite_line += (f'<details class="reviewed"><summary>Documents reviewed '
+                          f'({len(reviewed)})</summary><ul>{items}</ul></details>')
     _dc, _t, badge_cls, badge_text = _status_meta(field)
     badge = f'<span class="badge {badge_cls}">{esc(badge_text)}</span>'
     prog_line = ""
@@ -699,7 +709,7 @@ def render_matrix(dataset: dict) -> str:
         '<button type="button" class="spill selected" data-sub="all">All open</button>'
         '<button type="button" class="spill" data-sub="hosted">Hosted platforms</button>'
         '<button type="button" class="spill" data-sub="weights">Weights &amp; licenses</button>'
-        '</div></div>'
+        '</div>'
     )
     # The view switcher: which terms are shown, independent of which providers.
     # "Key terms" (the default) shows the curated subset of every group; the other
@@ -957,14 +967,24 @@ code mechanically found in the archived source text.</li>
 <li><strong>Unverified.</strong> The model returned a value but no supporting quote could be
 matched to the source. Give it no weight without reading the document yourself.</li>
 </ul>
-<p>The remaining two labels, <strong>silent</strong> and <strong>not applicable</strong>,
-describe the terms rather than the check; they are explained in the next section.</p>
+<p>The remaining statuses describe the terms rather than the check. None is displayed as
+a bare word: each renders as a sentence saying what was reviewed and why no term is
+reported. They are explained in the next section.</p>
 <p>Confidence (high, medium, low) is recorded alongside the status and reflects how
 directly the source text supported the reading. A verified quote with low confidence
 usually means the clause was found but was partial, qualified, or spread across several
 documents.</p>"""),
 
-        ("silent-not-applicable", "What silent and not applicable mean", """
+        ("silent-not-applicable", "How absences are reported", """
+<p>The Observatory reports what governing documents say. Where they say nothing on a point, it reports that it looked, which documents it looked at, and what it found instead. An absence is a finding and is written as one: no cell displays a bare status word, because "silent" reads as a judgment about the provider and "not applicable" reads as a gap in coverage, when in each case the accurate statement is narrower and checkable.</p>
+<p>So a cell never reads &ldquo;silent&rdquo;. It reads, for example, <em>Reviewed the AWS
+Customer Agreement and 8 other governing documents: no provision addresses this
+term</em>, with the full list of documents in the cell drawer. The dense matrix shows a
+shortened clause; spreadsheet exports carry the full sentence throughout, since they have
+no drawer to open.</p>
+<p>The underlying statuses are unchanged, and the badge and confidence marker still sit
+alongside. What changed is that the reader is told what was looked at.</p>
+<p>The distinctions those sentences draw:</p>
 <ul>
 <li><strong>Silent.</strong> The provider's terms do not address this dimension: there is
 no governing clause to quote. This is a finding about the terms, not a failure of the
@@ -1174,7 +1194,7 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
         rows.append(f"""
 <section class="pdim" id="dim-{esc(dim["key"])}">
   <h4>{_status_dot(f)} {esc(dim["label"])} {badge}</h4>
-  <p class="pval">{esc(_licence_silence_text(f))}</p>
+  <p class="pval">{esc(f.get("absence_full") or _licence_silence_text(f))}</p>
   {cite}{progline}{src}
 </section>""")
 
@@ -1786,6 +1806,11 @@ text-transform:uppercase;letter-spacing:.11em;color:var(--faint)}
 .cmp-side.new{background:var(--new-bg)}
 .cmp-side.new h3{color:var(--new-fg)}
 .cmp-side .none{color:var(--faint);font-style:italic}
+.absence-full{margin-top:7px;font-size:13px;color:var(--ink);line-height:1.55}
+.reviewed{margin-top:6px;font-size:12px;color:var(--faint)}
+.reviewed summary{cursor:pointer}
+.reviewed ul{margin:5px 0 0 16px;padding:0}
+.reviewed li{margin:2px 0}
 .lic-note{margin-top:7px;font-size:12px;color:var(--faint);font-style:italic;line-height:1.5}
 .rl-full{margin:12px 0 0;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}
 .rl-note{font-family:var(--sans);font-size:12.5px;font-style:italic;color:var(--faint);

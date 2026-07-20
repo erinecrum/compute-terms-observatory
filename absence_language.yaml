@@ -1,0 +1,101 @@
+# How the site says "no term is reported here".
+#
+# A bare status word makes the reader do the work and invites the wrong reading.
+# "Silent" sounds like a judgment about the provider. "Not applicable" sounds like
+# a gap in our coverage. "Not retrievable" sounds like something broke. In every
+# case the honest content is the same shape: WHAT WAS REVIEWED, and WHY NO TERM
+# IS REPORTED.
+#
+# So no cell displays a status word. Each renders a sentence assembled from the
+# status plus that cell's own facts: the documents reviewed, the capture mechanism,
+# the applicability reason. Nothing here is free-drafted per cell.
+#
+# Placeholders:
+#   {documents}   the reviewed document name, or "X and N other governing documents"
+#   {n_documents} how many governing documents were reviewed
+#   {document}    a single document name
+#   {mechanism}   how retrieval was blocked (robots.txt, CAPTCHA, login required)
+#   {reason}      the applicability reason, from the segment map in schema.py
+#   {entry_class} "a weights license", "a hosted model service", ...
+#   {generation}  the generation a capture actually describes
+#
+# The compact form is what the dense matrix cell shows. It must still be a clause,
+# never a code word. The full sentence always appears in the drawer and in exports.
+
+# How an entry class is named mid-sentence.
+entry_class_names:
+  weights: a weights license
+  hosted: a hosted model service
+  infrastructure: a compute service
+
+templates:
+
+  # --- The terms were read and say nothing on this point ---
+  no_clause_found:
+    full: "Reviewed {documents}: no provision addresses this term."
+    # Compact never names documents: at matrix density the name alone overflows
+    # the cell. It states the shape of the finding and the drawer supplies the list.
+    compact: "No provision ({n_documents} documents reviewed)"
+    compact_one: "No provision (1 document reviewed)"
+    # Where the extraction found language in the area but no clear term, the
+    # honest report is not silence. The quote travels with it.
+    ambiguous:
+      full: "Reviewed {documents}: language touches this area but sets no clear term."
+      compact: "Touched but no clear term"
+
+  # --- The term type cannot arise for this kind of entry ---
+  not_applicable:
+    full: "This term type does not arise for {entry_class}: {reason}."
+    compact: "Does not arise for {entry_class}"
+    # Used when the applicability map has no specific reason for the pair.
+    fallback_reason: the precondition for this term does not exist for this kind of entry
+
+  # --- The provider's own configuration blocks retrieval ---
+  access_restricted:
+    full: "The provider blocks automated retrieval of {document} ({mechanism}); no current capture exists to review."
+    compact: "Provider blocks retrieval ({mechanism})"
+    no_mechanism:
+      full: "The provider blocks automated retrieval of {document}; no current capture exists to review."
+      compact: "Provider blocks retrieval"
+
+  # --- No governing capture exists, by cause ---
+  not_retrievable:
+    default:
+      full: "No governing capture of {document} exists to review."
+      compact: "No capture to review"
+    causes:
+      javascript:
+        full: "{document} renders its text through JavaScript and yielded none to capture; no governing capture exists to review."
+        compact: "No text captured (JavaScript-rendered)"
+      broken_link:
+        full: "The provider's own link to {document} is broken; no governing capture exists to review."
+        compact: "Provider link broken"
+      insufficient_capture:
+        full: "The capture of {document} was too short to be the document itself, most likely a landing page; no governing capture exists to review."
+        compact: "Capture too short to be the document"
+      generation_mismatch:
+        full: "A capture exists but describes {generation}; values are withheld until a generation-correct capture lands."
+        compact: "Capture describes {generation}"
+      source_withdrawn:
+        full: "No governing document for this entry is currently captured; the previously registered source was withdrawn because it does not govern what this entry tracks."
+        compact: "No governing document captured"
+
+# Shown where a whole entry, table or view has nothing to display.
+empty_states:
+  no_documents: "No governing document for this entry is currently captured, so no terms are reported. The entry remains listed rather than hidden, because its absence of published terms is itself the finding."
+  no_matches: "No entries match this combination of filters."
+
+# Legend and methodology copy, so the framing lives with the templates.
+framing:
+  legend_intro: >-
+    Every cell reports a finding. Where a governing document sets a term, the term
+    is shown with its source. Where none does, the cell says what was reviewed and
+    why no term is reported, rather than leaving a blank for the reader to
+    interpret.
+  methodology: >-
+    The Observatory reports what governing documents say. Where they say nothing on
+    a point, it reports that it looked, which documents it looked at, and what it
+    found instead. An absence is a finding and is written as one: no cell displays a
+    bare status word, because "silent" reads as a judgment about the provider and
+    "not applicable" reads as a gap in coverage, when in each case the accurate
+    statement is narrower and checkable.

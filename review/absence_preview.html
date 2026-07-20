@@ -1,0 +1,44 @@
+<style>
+body{font:15px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#faf6f0;color:#1a1a1a;margin:0;padding:28px 34px;max-width:1000px}
+h1{font-size:19px;margin:0 0 4px} .sub{color:#6b6357;font-size:13px;margin-bottom:22px}
+.case{border:1px solid #e2dcd2;border-radius:9px;padding:13px 15px;margin-bottom:11px;background:#fffdfa}
+.lab{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:9px}
+code{background:#f0eae0;padding:2px 7px;border-radius:4px;font-size:12px}
+.src{color:#8a8073;font-size:11.5px}
+.cell{background:#f6f1e9;border:1px solid #e6e0d5;border-radius:5px;padding:7px 10px;font-size:13.5px;display:flex;align-items:center;gap:8px}
+.dot{width:7px;height:7px;border-radius:50%;background:#bdb4a5;flex:none}
+.full{margin-top:8px;color:#4a443c;font-size:13.5px;padding-left:2px}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:#8a8073;margin:24px 0 9px;font-weight:600}
+</style>
+<h1>Absence language: one rendered example of each state</h1>
+<div class="sub">Compact form (what a dense matrix cell shows) above, full sentence (drawer, provider pages, exports) below.
+No cell displays a bare status word.</div>
+<h2>All states</h2>
+<div class="case"><div class="lab"><code>not_applicable</code>
+<span class="src">live data &middot; aws / model_license</span></div>
+<div class="cell"><span class="dot"></span>Does not arise for a compute service</div>
+<div class="full">This term type does not arise for a compute service: infrastructure providers distribute no model weights, so the license under which weights are distributed has no referent.</div></div><div class="case"><div class="lab"><code>no_clause_found</code>
+<span class="src">live data &middot; azure / deprecation</span></div>
+<div class="cell"><span class="dot"></span>No provision (7 documents reviewed)</div>
+<div class="full">Reviewed SLA for Microsoft Online Services (consolidated; incl. Azure compute/GPU) and 6 other governing documents: no provision addresses this term.</div></div><div class="case"><div class="lab"><code>not_retrievable / source_withdrawn</code>
+<span class="src">live data &middot; gpt-oss / data_use_ai_training</span></div>
+<div class="cell"><span class="dot"></span>No governing document captured</div>
+<div class="full">No governing document for this entry is currently captured; the previously registered source was withdrawn because it does not govern what this entry tracks.</div></div><div class="case"><div class="lab"><code>not_retrievable / insufficient_capture</code>
+<span class="src">live data &middot; gemini / government_access</span></div>
+<div class="cell"><span class="dot"></span>Capture too short to be the document</div>
+<div class="full">The capture of Gemini API Additional Terms of Service was too short to be the document itself, most likely a landing page; no governing capture exists to review.</div></div><div class="case"><div class="lab"><code>no_clause_found / ambiguous</code>
+<span class="src">synthesised (state not in current data) &middot; claude / content_retention_review</span></div>
+<div class="cell"><span class="dot"></span>Touched but no clear term</div>
+<div class="full">Reviewed Anthropic Commercial Terms of Service and 6 other governing documents: language touches this area but sets no clear term.</div></div><div class="case"><div class="lab"><code>access_restricted / captcha</code>
+<span class="src">synthesised (state not in current data) &middot; deepseek-platform / governing_law_disputes</span></div>
+<div class="cell"><span class="dot"></span>Provider blocks retrieval (CAPTCHA)</div>
+<div class="full">The provider blocks automated retrieval of DeepSeek Terms of Use (CAPTCHA); no current capture exists to review.</div></div><div class="case"><div class="lab"><code>not_retrievable / javascript</code>
+<span class="src">synthesised (state not in current data) &middot; grok / appeal_redress</span></div>
+<div class="cell"><span class="dot"></span>No text captured (JavaScript-rendered)</div>
+<div class="full">xAI Terms of Service renders its text through JavaScript and yielded none to capture; no governing capture exists to review.</div></div><div class="case"><div class="lab"><code>not_retrievable / broken_link</code>
+<span class="src">synthesised (state not in current data) &middot; coreweave / data_residency</span></div>
+<div class="cell"><span class="dot"></span>Provider link broken</div>
+<div class="full">The provider&#x27;s own link to CoreWeave Terms of Use is broken; no governing capture exists to review.</div></div><div class="case"><div class="lab"><code>not_retrievable / generation_mismatch</code>
+<span class="src">synthesised (state not in current data) &middot; llama / termination</span></div>
+<div class="cell"><span class="dot"></span>Capture describes Llama 2</div>
+<div class="full">A capture exists but describes Llama 2; values are withheld until a generation-correct capture lands.</div></div>

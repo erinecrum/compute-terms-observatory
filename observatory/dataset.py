@@ -26,11 +26,12 @@ from typing import Dict, List, Optional
 
 import yaml
 
+from .absence import sentence as absence_sentence
 from .differ import diff_text
 from .extractor import load_extraction
 from .overrides import apply_overrides, load_overrides
 from .registry import Registry, load_registry
-from .schema import (DIMENSIONS, dimension_group, is_applicable, section_of,
+from .schema import (DIMENSIONS, SEGMENT_REMOVED, dimension_group, is_applicable, section_of,
                      segment_config, segment_group)
 from .snapshot import SnapshotStore
 from .fingerprint import check as fingerprint_check
@@ -435,6 +436,30 @@ def build_dataset(registry: Optional[Registry] = None) -> dict:
                         "no governing document is currently captured for this entry")
 
         _apply_licence_silence(fields, _bucket)
+
+        # Every absence renders as a sentence saying what was reviewed and why no
+        # term is reported. Computed here, once, because this is the only place the
+        # reviewed-document list, the entry class and the applicability reason are
+        # all in scope. Every surface -- matrix, drawer, provider page, compare
+        # cards, exports -- reads these fields rather than re-deriving a label.
+        _doc_names = [d.get("name") for d in docs_used if d.get("name")]
+        _entry_cls = _ABSENCE_CLASS.get(section, "")
+        _removed = SEGMENT_REMOVED.get(group) or {}
+        for _k, _f in fields.items():
+            _gen = ""
+            _note = _f.get("suppressed_note") or ""
+            if _f.get("capture_cause") == "generation_mismatch":
+                _gen = _generation_from_note(_note)
+            _s = absence_sentence(
+                _f, documents=_doc_names, entry_class=_entry_cls,
+                reason=_removed.get(_k, ""), generation=_gen)
+            if _s:
+                _f["absence_full"] = _s["full"]
+                _f["absence_compact"] = _s["compact"]
+                _f["documents_reviewed"] = _s["documents_reviewed"]
+                # display_value is what older surfaces read; point it at the
+                # compact clause so no surface can fall back to a status word.
+                _f["display_value"] = _s["compact"]
         if _bucket == "bespoke/community license":
             _apply_bespoke_silence(fields, provider)
         providers_meta.append(
@@ -1031,3 +1056,19 @@ def _write_fingerprint_report(findings: List[dict]) -> None:
     if findings:
         print(f"  fingerprint flags: {len(findings)} capture(s) never name the "
               f"tracked model -> {FINGERPRINT_REPORT_PATH}")
+
+
+# Display section -> the entry-class name used mid-sentence in absence copy.
+_ABSENCE_CLASS = {"open_weights": "weights", "closed": "hosted",
+                  "open_hosted": "hosted", "cloud": "infrastructure"}
+
+
+def _generation_from_note(note: str) -> str:
+    """Pull the generation a superseded capture describes out of its note.
+
+    The note is built as "source document names X (N mentions); ...". Parsing our
+    own string is ugly but keeps the generation out of a second data path.
+    """
+    import re
+    m = re.search(r"names ([^(]+)\(", note or "")
+    return m.group(1).strip() if m else ""
