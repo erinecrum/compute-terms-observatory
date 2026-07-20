@@ -236,6 +236,25 @@ _PURPOSE_LINE = ("One place to see what compute providers publish, side by side,
                  "as it changes.")
 
 
+# Item A5 gate: the document-versions policy text names contact@termsobservatory.org,
+# a mailbox that does not exist until the Google Workspace setup and DNS verification
+# complete. Publishing a policy that invites contact at a dead address is worse than
+# publishing nothing, so the text is built and held. Flip to True after mail is
+# verified; that publishes both the methodology section and the footer line together,
+# since a policy referenced in the footer must be readable in full somewhere.
+PUBLISH_DOCUMENT_VERSIONS_POLICY = False
+
+# The wording is fixed and ships verbatim. It asserts the documentation and
+# verification purpose, offers a channel, and promises nothing about how requests are
+# resolved. Do not soften it into an invitation to object.
+_DOC_VERSIONS_POLICY_TEXT = (
+    "Captured document versions are published so readers can independently verify "
+    "the Observatory's change reports. The Observatory reproduces these publicly "
+    "posted terms for documentation and verification purposes. Providers who wish to "
+    "discuss the presentation of their documents may contact "
+    "contact@termsobservatory.org."
+)
+
 # Marker replaced with the finished Content-Security-Policy once a page's inline
 # blocks are known. See _apply_csp.
 _CSP_SLOT = "<!--CSP-->"
@@ -305,6 +324,14 @@ def safe_url(url) -> str:
     if scheme and scheme not in ("http", "https", "mailto"):
         return "#blocked-url"
     return esc(raw)
+
+
+def _footer_versions_policy() -> str:
+    """Footer line for the document-versions policy. Gated with the methodology
+    section so the pointer and the policy it points at always ship together."""
+    if not PUBLISH_DOCUMENT_VERSIONS_POLICY:
+        return ""
+    return f'<p class="foot-policy">{esc(_DOC_VERSIONS_POLICY_TEXT)}</p>'
 
 
 def _sic(citation: str) -> str:
@@ -383,6 +410,7 @@ def _shell(title: str, body: str, active: str, subtitle: str = "",
 </main>
 <footer class="site-foot"><div class="wrap">
   <p class="foot-purpose">{esc(_PURPOSE_LINE)}</p>
+  {_footer_versions_policy()}
   <span class="foot-copy">© 2026 Compute Terms Observatory</span> ·
   Public documents only · Descriptive, never advisory ·
   <a href="methodology.html">Methodology</a> ·
@@ -705,6 +733,11 @@ def render_matrix(dataset: dict) -> str:
         return (f'<section id="{sec_id}" class="msec" data-sec="{sec_id}">{header}'
                 f'{_matrix_table(dims_for(group), subset, matrix, table_id)}</section>')
 
+    # One list, emitted to the JS and used to build the tables, so compare mode and
+    # group collapse can never fall out of step with the sections that exist. A
+    # rename now breaks the build check rather than silently blinding compare mode.
+    TABLE_IDS = ["tbl-cloud", "tbl-closed", "tbl-open-hosted", "tbl-open-weights"]
+
     # Sections are organized by model openness, which is the distinction a reader is
     # looking for. Within Open, the two subgroups differ by governing instrument:
     # a hosted-service contract, or a licence attached to distributed weights. The
@@ -751,6 +784,7 @@ def render_matrix(dataset: dict) -> str:
 {compare_view}
 <script>window.CTO_PROVIDERS={json.dumps(pmap)};
 window.CTO_VIEW_GROUPS={json.dumps({k: (list(g) if g else None) for k, g in VIEW_GROUPS.items()})};
+window.CTO_TABLES={json.dumps(TABLE_IDS)};
 window.CTO_DIMS={json.dumps([{"key": d["key"], "label": d["label"], "group": d.get("group","")} for d in dims])};</script>
 <p class="genline">Generated {esc(gen)} UTC</p>
 """
@@ -975,6 +1009,35 @@ published here as the change feed; the archived snapshot corpus is maintained in
 project's data repository. See the <a href="about.html">About</a> page for the full
 provider and dimension coverage.</p>"""),
 
+        ("verifying-a-change", "Verifying a change claim", """
+<p>A change report is a claim about what a document used to say and what it says
+now. Every such claim ships with the material needed to check it, so a reader does
+not have to take the Observatory's summary on trust.</p>
+<ul>
+<li><strong>The captured text, both sides.</strong> For any document appearing in
+the change feed, the full text of the prior and current captures is published, each
+with its capture date, fetch method and content hash. The hash is computed at
+capture time, so the published text can be checked against the fingerprint recorded
+when it was archived.</li>
+<li><strong>The redline and the full comparison.</strong> The feed shows a windowed
+redline; the comparison page shows every changed passage whole.</li>
+<li><strong>Independent captures.</strong> Where the Internet Archive holds a
+capture reasonably close to the change on either side, it is linked. These are not
+the Observatory's captures and are not under its control, which is the point. Where
+no capture exists near the change, no link is shown: a link to a capture months away
+would look like corroboration while corroborating nothing.</li>
+</ul>
+<p>Only documents that appear in the change feed have their full text published. The
+rest of the archived corpus is not public.</p>
+<p>The published text is evidence of what a document said on a particular date. It
+is not a substitute for the provider's live document, which is linked from every
+version page and every value.</p>"""),
+        # Held behind PUBLISH_DOCUMENT_VERSIONS_POLICY until the contact mailbox
+        # exists; see the gate near the top of this module.
+        *([("document-versions", "Document versions",
+            f"<p>{esc(_DOC_VERSIONS_POLICY_TEXT)}</p>")]
+          if PUBLISH_DOCUMENT_VERSIONS_POLICY else []),
+
         ("how-to-cite", "How to cite", """
 <p>Every value carries the document it came from, that document's URL, the archived
 version's content hash, and the date it was fetched, so a citation can be pinned to an
@@ -1084,6 +1147,46 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
 """
 
 
+def version_page_id(provider: str, slug: str, stamp: str) -> str:
+    return f"version-{provider}-{slug}-{stamp}"
+
+
+def render_version(meta: dict, text: str, doc_url: str, role: str) -> str:
+    """One captured version of a document, in full.
+
+    Published only for documents that appear in the change feed, so that every
+    change claim can be checked against the text it was derived from. The corpus is
+    otherwise private. The provenance treatment matches archived-capture cells: the
+    reader is told what this text is evidence OF, which is what the document said on
+    a particular date, not what it says now.
+    """
+    method = meta.get("fetch_method") or "direct"
+    archived = method == "wayback"
+    when = (meta.get("capture_timestamp") or meta.get("fetched_at") or "")[:19].replace("T", " ")
+    sha = (meta.get("text_sha256") or "")[:16]
+    chip = ('<span class="badge archived">archived capture</span>' if archived
+            else '<span class="badge muted">direct capture</span>')
+    return f"""
+<p><a href="changes.html">&larr; Back to the change feed</a></p>
+<div class="ver-banner">
+  <p><strong>This is the {esc(role)} version of this document as the Observatory
+  captured it.</strong> It is evidence of what the document said on
+  {esc(when)} UTC, not necessarily what it says today. Read the
+  <a href="{safe_url(doc_url)}" target="_blank" rel="noopener">provider's live
+  document</a> for the current text.</p>
+</div>
+<div class="ver-meta">
+  {chip}
+  <span><strong>Captured</strong> {esc(when)} UTC</span>
+  <span><strong>Method</strong> {esc("Internet Archive" if archived else method)}</span>
+  <span><strong>Content hash</strong> <code>{esc(sha)}</code></span>
+  <span><strong>Source</strong>
+    <a href="{safe_url(doc_url)}" target="_blank" rel="noopener">{esc(doc_url)}</a></span>
+</div>
+<pre class="ver-text">{esc(text)}</pre>
+"""
+
+
 def render_comparison(c: dict) -> str:
     """One change, every changed passage shown whole, before and after.
 
@@ -1144,8 +1247,31 @@ def _change_item(c: dict) -> str:
         + (f'<ins>{esc(b["new"])}</ins> ' if b.get("new") else "")
         for b in c.get("blocks", [])
     ).strip()
-    full = (f'<p class="rl-full"><a href="compare-{esc(c["compare_id"])}.html">'
-            'View full document comparison</a></p>') if c.get("all_blocks") else ""
+    links = []
+    if c.get("all_blocks"):
+        links.append(f'<a href="compare-{esc(c["compare_id"])}.html">'
+                     'View full document comparison</a>')
+    # Full captured text for each side. Suppressed per document, the redline,
+    # hashes and Internet Archive links stay: verification does not depend on us
+    # hosting the text, only on the text being checkable.
+    if c.get("versions_suppressed"):
+        links.append('<span class="rl-note">Full-text versions for this document are '
+                     'not currently displayed. The redline, content hashes, and '
+                     'Internet Archive captures remain available for verification.</span>')
+    elif c.get("all_blocks"):
+        if c.get("prev_stamp"):
+            links.append('<a href="' + esc(version_page_id(c["provider"], c["slug"], c["prev_stamp"]))
+                         + '.html">View prior version</a>')
+        if c.get("curr_stamp"):
+            links.append('<a href="' + esc(version_page_id(c["provider"], c["slug"], c["curr_stamp"]))
+                         + '.html">View current version</a>')
+    # Independent corroboration: the reader can check our captures against a third
+    # party's. Omitted rather than approximated when no capture is near the change.
+    for label, url in (("Internet Archive, before", c.get("wayback_before")),
+                       ("Internet Archive, after", c.get("wayback_after"))):
+        if url:
+            links.append(f'<a href="{safe_url(url)}" target="_blank" rel="noopener">{label}</a>')
+    full = f'<p class="rl-full">{" &middot; ".join(links)}</p>' if links else ""
     redline = (f'<details class="redline"><summary>View redline</summary>'
                f'<div class="rl">{rl}</div>{full}</details>') if rl else ""
 
@@ -1255,6 +1381,35 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
             encoding="utf-8",
         )
         written.append(out_dir / fname)
+
+    # Full captured text for both sides of every change in the feed. Applies
+    # retroactively: any entry already in the feed whose captures are still in the
+    # corpus gets its pair published on this build, not only new changes.
+    from .snapshot import SnapshotStore
+
+    _store = SnapshotStore("snapshots")
+    _seen_versions = set()
+    for c in dataset.get("change_log", []):
+        if not c.get("all_blocks") or c.get("versions_suppressed"):
+            continue
+        for stamp, role in ((c.get("prev_stamp"), "prior"), (c.get("curr_stamp"), "current")):
+            if not stamp:
+                continue
+            key = (c["provider"], c["slug"], stamp)
+            if key in _seen_versions:
+                continue      # shared between consecutive changes; publish once
+            snap = next((s for s in _store.history(c["provider"], c["slug"])
+                         if s.stamp == stamp), None)
+            if not snap or not snap.text:
+                continue
+            _seen_versions.add(key)
+            fname = version_page_id(c["provider"], c["slug"], stamp) + ".html"
+            (out_dir / fname).write_text(
+                _shell(f"{c['provider_name']}: {c['document']}",
+                       render_version(snap.meta, snap.text, c.get("url", ""), role),
+                       "changes", f"Captured {role} version, in full."),
+                encoding="utf-8")
+            written.append(out_dir / fname)
 
     # One comparison page per change that has a readable diff.
     for c in dataset.get("change_log", []):
@@ -1572,7 +1727,19 @@ text-transform:uppercase;letter-spacing:.11em;color:var(--faint)}
 .cmp-side.new{background:var(--new-bg)}
 .cmp-side.new h3{color:var(--new-fg)}
 .cmp-side .none{color:var(--faint);font-style:italic}
-.rl-full{margin:12px 0 0}
+.rl-full{margin:12px 0 0;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}
+.rl-note{font-family:var(--sans);font-size:12.5px;font-style:italic;color:var(--faint);
+text-transform:none;letter-spacing:0}
+/* Published captured version: provenance first, then the text verbatim. */
+.ver-banner{background:var(--disc-bg);border:1px solid var(--disc-line);color:var(--disc-fg);
+border-radius:10px;padding:12px 15px;margin:0 0 16px;font-size:14px;line-height:1.55}
+.ver-banner p{margin:0}
+.ver-meta{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;margin:0 0 18px;
+padding-bottom:14px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.ver-meta code{font-family:var(--mono);font-size:11.5px}
+.ver-text{white-space:pre-wrap;word-wrap:break-word;font-family:var(--mono);font-size:12.5px;
+line-height:1.7;color:var(--ink);background:var(--panel);border:1px solid var(--line-2);
+border-radius:10px;padding:16px 18px;max-width:none;overflow-x:auto}
 .rl-full a{font-family:var(--display);font-size:11px;font-weight:600;text-transform:uppercase;
 letter-spacing:.09em}
 @media(max-width:720px){.cmp-block{grid-template-columns:1fr}}
@@ -1937,7 +2104,7 @@ document.addEventListener('click',function(e){
   var viewbar=document.getElementById('viewbar');
   if(viewbar){
     var VIEW_GROUPS=window.CTO_VIEW_GROUPS||{}, view='key', expanded={}, shut={};
-    var TABLES=['tbl-cloud','tbl-closed','tbl-open-hosted','tbl-open-weights'], SKEY='cto.groups.v1';
+    var TABLES=window.CTO_TABLES||[], SKEY='cto.groups.v1';
     function groupsIn(id){
       var t=document.getElementById(id), out=[]; if(!t) return out;
       t.querySelectorAll('tbody tr.grouprow').forEach(function(tr){
@@ -2040,7 +2207,7 @@ document.addEventListener('click',function(e){
     var cmpEmpty=document.getElementById('cmp-empty'), cmpOut=document.getElementById('cmp-out');
     var cesc=function(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;};
     var selected=[], cellMap=null;
-    function buildMap(){ cellMap={}; ['tbl-cloud','tbl-closed','tbl-open-hosted','tbl-open-weights'].forEach(function(id){
+    function buildMap(){ cellMap={}; (window.CTO_TABLES||[]).forEach(function(id){
       var t=document.getElementById(id); if(!t) return;
       t.querySelectorAll('tbody td.cell').forEach(function(td){ if(td.dataset.provider) cellMap[td.dataset.provider+'||'+td.dataset.dim]=td; }); }); }
     function renderCompare(){

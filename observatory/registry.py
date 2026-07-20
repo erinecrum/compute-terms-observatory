@@ -119,6 +119,7 @@ def load_registry(path: str | Path = "registry.yaml") -> Registry:
                 generation=d.get("generation", ""),
                 capture_state=d.get("capture_state", ""),
                 capture_cause=d.get("capture_cause", ""),
+                versions_suppressed=bool(d.get("versions_suppressed", False)),
                 fetch_method=fetch_method,
             )
             key = (provider, doc.slug)

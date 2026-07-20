@@ -19,6 +19,7 @@ step) has its data; with a single snapshot per document it is empty (baselines).
 from __future__ import annotations
 
 import json
+import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -587,6 +588,16 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
                 "all_blocks": []
                 if suppressed
                 else [{"old": b.old, "new": b.new} for b in d.blocks],
+                # Per-document switch. Hides the full-text version pages while the
+                # redline, hashes and Internet Archive links stay: verification does
+                # not depend on us hosting the text.
+                "versions_suppressed": bool(getattr(doc, "versions_suppressed", False)),
+                # Independent corroboration, looked up around the change's own
+                # content date rather than the fetch date.
+                "wayback_before": None if suppressed else _wayback(
+                    curr.meta.get("url", doc.url), prev.content_date, "before"),
+                "wayback_after": None if suppressed else _wayback(
+                    curr.meta.get("url", doc.url), curr.content_date, "after"),
             }
             if source_changed:
                 # A hand-written curation note takes precedence over the generic
@@ -662,6 +673,17 @@ def _build_change_log(registry: Registry, store: SnapshotStore) -> List[dict]:
 
     entries.sort(key=lambda e: e["detected_at"], reverse=True)
     return entries
+
+
+def _wayback(url, when, direction):
+    """Internet Archive corroboration link, or None. Never fails the build."""
+    if os.environ.get("CTO_SKIP_WAYBACK"):
+        return None
+    try:
+        from .wayback import nearest_capture
+        return nearest_capture(url, when, direction)
+    except Exception:  # noqa: BLE001
+        return None
 
 
 _CURATION_NOTES_CACHE = None

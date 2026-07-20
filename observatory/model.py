@@ -66,7 +66,10 @@ class Document:
     # document is never fetched and its values render as absent-by-access
     # rather than as a repeated failure.
     capture_state: str = ""
-    capture_cause: str = ""           # model generation a license/doc pins to, e.g. "GLM-5.2"
+    capture_cause: str = ""
+    # Operational switch: hide this document's full-text version pages while
+    # keeping its redline, hashes and Internet Archive links.
+    versions_suppressed: bool = False           # model generation a license/doc pins to, e.g. "GLM-5.2"
     # Fetch tier for THIS source: direct (default), browser (Playwright), or
     # wayback (Internet Archive fallback). See observatory/fetcher.py.
     fetch_method: str = "direct"
