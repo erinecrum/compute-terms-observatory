@@ -2195,6 +2195,12 @@ background:none;border:0;cursor:pointer;padding:2px 6px}
 .bl-expand:hover{text-decoration:underline}
 .bl-dropped .bl-foldlbl{font-size:11.5px;color:var(--faint);font-style:italic}
 .bl-chg.bl-target{outline:2px solid var(--accent);outline-offset:-2px}
+/* Section breadcrumb above a changed block, so a reader knows where in the
+   document the change sits. Built from the document's own numbering. */
+.bl-sec td{padding:9px 12px 2px;border-left:0;background:transparent}
+.bl-secref{display:inline-block;font-family:var(--display);font-size:11px;font-weight:600;
+letter-spacing:.02em;color:var(--muted);background:var(--panel);border:1px solid var(--line);
+border-radius:6px;padding:2px 8px}
 /* One table, restructured for narrow screens and print rather than duplicated.
    The unchanged left cell (a mirror of the right) is dropped so unchanged text
    shows once; a changed row stacks its before cell above its after cell, giving

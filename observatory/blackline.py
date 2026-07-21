@@ -54,6 +54,49 @@ class Hunk:
     kind: str            # "equal" | "replace" | "insert" | "delete"
     old: List[str] = field(default_factory=list)
     new: List[str] = field(default_factory=list)
+    old_start: int = 0   # line index of this hunk in the old/new document, so a
+    new_start: int = 0   # changed block can be labelled with its section.
+
+
+# Section markers, deliberately conservative. A DECIMAL number ("3.1", "3.2.1")
+# is structural and reliable. A bare integer ("3.") is not: it is as often a
+# numbered list item as a section, and treating list items as sections produced
+# nonsense references like "43". So bare integers are ignored, and the reference
+# is built only from decimals and parenthetical sub-markers the document actually
+# contains -- never synthesised, and omitted entirely where the numbering does not
+# support one.
+_DECIMAL = re.compile(r"^(\d{1,2}\.\d{1,2}(?:\.\d{1,2})*)[.)\s]")
+_SUB = re.compile(r"^\(([a-z]{1,5}|[ivxlcdm]{1,6})\)\s")
+_ROMAN = re.compile(r"^[ivxlcdm]{2,}$")
+
+
+def _section_paths(lines: List[str]) -> List[tuple]:
+    """For each line, (compact section path, "") active there.
+
+    Tracks a decimal-number > letter > roman hierarchy from the document's own
+    markers, so a change under 3.1, sub-clause (b), item (i) reads "3.1(b)(i)".
+    The roman/letter ambiguity of "(i)" is resolved by context: roman only when a
+    letter level is already open. No heading text is shown, because a numbered
+    list item's sentence is not a heading and guessing wrong is worse than a bare
+    number. Empty where the document has no decimal or parenthetical structure.
+    """
+    dec = alpha = roman = ""
+    out = []
+    for raw in lines:
+        s = raw.strip()
+        md = _DECIMAL.match(s)
+        ms = _SUB.match(s)
+        if md:
+            dec, alpha, roman = md.group(1).rstrip("."), "", ""
+        elif ms:
+            tok = ms.group(1)
+            if _ROMAN.match(tok) or (tok in "ivx" and alpha):
+                roman = tok
+            elif re.fullmatch(r"[a-z]", tok):
+                alpha, roman = tok, ""
+        path = dec + (f"({alpha})" if alpha else "") + (f"({roman})" if roman else "")
+        out.append((path, ""))
+    return out
 
 
 @dataclass
@@ -70,13 +113,13 @@ def _hunks(old_text: str, new_text: str) -> List[Hunk]:
     out: List[Hunk] = []
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
         if tag == "equal":
-            out.append(Hunk("equal", old_lines[i1:i2], new_lines[j1:j2]))
+            out.append(Hunk("equal", old_lines[i1:i2], new_lines[j1:j2], i1, j1))
         elif tag == "replace":
-            out.append(Hunk("replace", old_lines[i1:i2], new_lines[j1:j2]))
+            out.append(Hunk("replace", old_lines[i1:i2], new_lines[j1:j2], i1, j1))
         elif tag == "delete":
-            out.append(Hunk("delete", old_lines[i1:i2], []))
+            out.append(Hunk("delete", old_lines[i1:i2], [], i1, j1))
         elif tag == "insert":
-            out.append(Hunk("insert", [], new_lines[j1:j2]))
+            out.append(Hunk("insert", [], new_lines[j1:j2], i1, j1))
     return out
 
 
@@ -178,9 +221,28 @@ def build(old_text: str, new_text: str, *, paired: bool = True) -> Blackline:
     hunks = _hunks(old_text, new_text)
     change_count = sum(1 for h in hunks if h.kind != "equal")
     n_h = len(hunks)
+    new_paths = _section_paths(new_text.splitlines())
+    old_paths = _section_paths(old_text.splitlines())
+
+    def section_label(h: Hunk) -> str:
+        """The section reference for a changed hunk: 'Under 3(b)(i)' plus the
+        top-level heading where one is known. Empty when the document carries no
+        numbering to anchor to (nothing invented)."""
+        paths = new_paths if h.new else old_paths
+        idx = h.new_start if h.new else h.old_start
+        if not paths or idx >= len(paths):
+            return ""
+        path, heading = paths[idx]
+        if not path and not heading:
+            return ""
+        ref = path
+        if heading:
+            ref = f"{path} &middot; {heading}" if path else heading
+        return ref
 
     def render(drop_distant: bool) -> str:
         rows = []
+        last_sec = None
         for idx, h in enumerate(hunks):
             if h.kind == "equal":
                 run = h.old
@@ -196,6 +258,13 @@ def build(old_text: str, new_text: str, *, paired: bool = True) -> Blackline:
                 else:
                     rows.append(_equal_row(run))
             else:
+                # Label the change with its section, but only when it moves to a
+                # new one, so a run of edits in the same clause is not repetitive.
+                sec = section_label(h)
+                if sec and sec != last_sec:
+                    rows.append(f'<tr class="bl-sec"><td colspan="2">'
+                                f'<span class="bl-secref">{sec}</span></td></tr>')
+                    last_sec = sec
                 row, _ = _changed_rows(h)
                 rows.append(row)
         return ('<table class="bl-split"><thead><tr>'
