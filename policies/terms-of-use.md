@@ -16,7 +16,7 @@ If you find an error, we want to know. Data corrections are handled publicly thr
 
 ## 3\. Intellectual property
 
-The Compute Terms Observatory name, the O. logo and wordmark, and the site's visual identity are protected and may not be used to imply affiliation or endorsement. The site's source code is available under the license stated in the public repository.
+The Compute Terms Observatory name, the .O logo and wordmark, and the site's visual identity are protected and may not be used to imply affiliation or endorsement. The site's source code is available under the license stated in the public repository.
 
 Captured provider documents remain the property of their respective publishers. They are reproduced here for documentation and verification purposes, so readers can independently check the Observatory's change reports and summaries. Providers who wish to discuss the presentation of their documents may contact [contact@termsobservatory.org](mailto:contact@termsobservatory.org).
 
