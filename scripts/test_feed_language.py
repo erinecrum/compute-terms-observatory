@@ -54,13 +54,16 @@ def main():
         if phrase in text:
             fails.append(f"  internal phrase reached the feed: {phrase!r}")
 
-    # Every relocation/curation entry (those leading with the Observatory-update
-    # line) must also carry the "did not change its terms" line.
-    leads = html.count("we changed which document we track for this entry")
-    unchanged = len(re.findall(r"did not change its terms", html))
-    if leads and unchanged < leads:
-        fails.append(f"  {leads} relocation/curation entries but only {unchanged} "
-                     f"'did not change its terms' lines")
+    # The feed shows only genuine provider term changes. Observatory bookkeeping
+    # (relocations, curation) and its "did not change its terms" line must not
+    # appear at all: those entries are excluded from the public feed, not merely
+    # relabelled.
+    if "we changed which document we track for this entry" in html:
+        fails.append("  a relocation/curation entry is in the public feed; only "
+                     "genuine provider term changes belong there")
+    if "did not change its terms" in html:
+        fails.append("  the 'did not change its terms' line is in the feed; those "
+                     "entries should be excluded entirely, not shown")
 
     if fails:
         print("Feed-language check FAILED:\n")
@@ -69,8 +72,9 @@ def main():
               "emits kinds, not prose.")
         return 1
 
-    print(f"All feed-language checks passed ({leads} relocation/curation entries, "
-          f"each with its 'did not change' line; no internal phrasing).")
+    entries = html.count('class="change"')
+    print(f"All feed-language checks passed ({entries} feed entries, all genuine "
+          f"provider term changes; no bookkeeping, no internal phrasing).")
     return 0
 
 

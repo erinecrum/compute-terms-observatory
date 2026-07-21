@@ -1084,8 +1084,10 @@ also carries a staleness flag.</p>"""),
 localized before/after difference. The change feed is generated from those differences;
 quoted excerpts are kept short.</p>
 <p>A change to a document also triggers re-extraction of that provider, so the matrix and
-the feed stay in step. Changes that alter only formatting or boilerplate are marked
-cosmetic and can be filtered out of the feed.</p>"""),
+the feed stay in step. The feed shows only genuine changes to a provider's published
+terms. Timestamp or counter movement with the terms unchanged, and the Observatory's own
+tracking changes (adopting a newer document for an entry, for example), are not changes to
+what a provider published and are kept out of the feed.</p>"""),
 
         ("coverage-limitations", "Coverage and limitations", """
 <p>This site reports what public documents say, with citations. It does not characterize,
@@ -1223,8 +1225,8 @@ def render_provider(dataset: dict, pmeta: dict) -> str:
   {cite}{progline}{src}
 </section>""")
 
-    # This provider's change history.
-    changes = [c for c in dataset.get("change_log", []) if c["provider"] == provider]
+    # This provider's change history: genuine term changes only, matching the feed.
+    changes = [c for c in _reader_facing_changes(dataset) if c["provider"] == provider]
     if changes:
         chitems = "".join(_change_item(c) for c in changes)
         change_html = f'<div class="changes">{chitems}</div>'
@@ -1575,8 +1577,21 @@ def _change_item(c: dict) -> str:
 </article>"""
 
 
+def _reader_facing_changes(dataset: dict) -> list:
+    """The change feed shows only genuine changes to a provider's terms.
+
+    Everything else is excluded from the public feed: source relocations and
+    curation are Observatory bookkeeping (the provider did nothing), and cosmetic
+    entries are timestamp or counter movement with the terms unchanged. None of
+    these is a change to what a provider published, so none belongs in a feed of
+    provider changes.
+    """
+    return [c for c in dataset.get("change_log", [])
+            if c.get("kind") == "lineage_edit"]
+
+
 def render_changes(dataset: dict) -> str:
-    log = dataset.get("change_log", [])
+    log = _reader_facing_changes(dataset)
     if not log:
         return _mark_state("All quiet. Still watching.")
 
@@ -1610,7 +1625,6 @@ def render_changes(dataset: dict) -> str:
     </label>
     <label>From <input type="date" id="cf-from" min="{esc(dates[0])}" max="{esc(dates[-1])}"></label>
     <label>To <input type="date" id="cf-to" min="{esc(dates[0])}" max="{esc(dates[-1])}"></label>
-    <label class="cf-cosmetic"><input type="checkbox" id="cf-cosmetic"> Show cosmetic changes</label>
     <button type="button" id="cf-clear" class="btn ghost">Clear filters</button>
   </div>
   <div class="cf-facets">
@@ -1626,6 +1640,13 @@ def render_changes(dataset: dict) -> str:
 
 def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
+    # Comparison and version pages are generated per current change entry. When an
+    # entry leaves the feed (a relocation removed, a capture aged out), its pages
+    # must not linger: the build is otherwise additive, so a stale page from a
+    # previous run would keep serving. Clear them and let this run republish only
+    # what still belongs.
+    for stale in list(out_dir.glob("compare-*.html")) + list(out_dir.glob("version-*.html")):
+        stale.unlink()
     written = []
     n = len(dataset["providers"])
     pages = {
@@ -1667,9 +1688,10 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
     def _snap(provider, slug, stamp):
         return next((s for s in _store.history(provider, slug) if s.stamp == stamp), None)
 
+    _feed = _reader_facing_changes(dataset)
     _seen_versions = set()
     _heavy = []  # documents that needed aggressive collapse, reported to the build
-    for c in dataset.get("change_log", []):
+    for c in _feed:
         if c.get("versions_suppressed"):
             continue
         for stamp, role in ((c.get("prev_stamp"), "prior"), (c.get("curr_stamp"), "current")):
@@ -1693,7 +1715,7 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
     # One full-document comparison page per change whose version pair is still in
     # the corpus. Covers source-change and curation entries too (rendered side by
     # side without forced pairing), not only entries with block-level diffs.
-    for c in dataset.get("change_log", []):
+    for c in _feed:
         if c.get("versions_suppressed") or not c.get("prev_stamp") or not c.get("curr_stamp"):
             continue
         old_s = _snap(c["provider"], c["slug"], c["prev_stamp"])
@@ -2738,11 +2760,9 @@ document.addEventListener('click',function(e){
     var provs=checked('.cf-prov'), dims=checked('.cf-dim');
     var from=document.getElementById('cf-from').value, to=document.getElementById('cf-to').value;
     var sort=document.getElementById('cf-sort').value;
-    var showCosmetic=document.getElementById('cf-cosmetic').checked;
     var dimsNarrowed=dims.length<totalDim, visible=0;
     items.forEach(function(a){
       var show=true;
-      if(!showCosmetic && a.dataset.substantive==='0' && a.dataset.curation!=='1') show=false;
       if(provs.indexOf(a.dataset.provider)<0) show=false;
       if(from && a.dataset.date<from) show=false;
       if(to && a.dataset.date>to) show=false;
@@ -2760,7 +2780,7 @@ document.addEventListener('click',function(e){
     document.getElementById('cf-empty').hidden=visible>0;
   }
   document.addEventListener('change',function(e){
-    if(e.target.matches('.cf-prov,.cf-dim,#cf-sort,#cf-from,#cf-to,#cf-cosmetic')) apply();
+    if(e.target.matches('.cf-prov,.cf-dim,#cf-sort,#cf-from,#cf-to')) apply();
   });
   document.getElementById('cf-clear').addEventListener('click',function(){
     document.querySelectorAll('.cf-prov,.cf-dim').forEach(function(c){c.checked=true;});
