@@ -29,6 +29,9 @@ name: Checks
 #   test_blackline          - the full-document comparison invariants: word-level
 #                             granularity, one row per change, single DOM copy,
 #                             collapse and the size guard.
+#   test_no_external_requests - no generated page loads a resource from a
+#                             third-party origin, so the privacy policy's
+#                             no-third-party-requests claim cannot silently break.
 #   test_text_check         - captures that decoded as markup rather than text.
 #
 # The corpus is private, so on a fork or a run without the token these degrade to
@@ -92,7 +95,8 @@ jobs:
                    test_licence_silence test_provider_domains \
                    test_registry_lint \
                    test_absence_language test_blackline \
-                   test_feed_language test_text_check; do
+                   test_feed_language \
+                   test_no_external_requests test_text_check; do
             echo "::group::$t"
             python "scripts/$t.py" || fail=1
             echo "::endgroup::"
