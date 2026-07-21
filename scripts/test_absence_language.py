@@ -47,10 +47,18 @@ def main():
     index = ROOT / "site/index.html"
     if index.exists():
         html = index.read_text()
-        for word in ("silent", "not applicable", "not retrievable"):
-            # A cell whose entire visible content is the status word.
-            if re.search(rf">\s*{re.escape(word)}\s*<", html, re.I):
-                fails.append(f"  site/index.html renders a bare {word!r} as cell content")
+        # Status badges and the status aria-labels must never carry the internal
+        # enum vocabulary; they route through display_strings now. (The word may
+        # still appear inside a model-written VALUE, e.g. "silent on benchmarking",
+        # which is substantive content, not a status label, so only badges and
+        # status labels are checked.)
+        badges = re.findall(r'<span class="badge[^"]*">([^<]*)</span>', html)
+        labels = re.findall(r'aria-label="Status: ([^"]*)"', html)
+        for text in badges + labels:
+            for word in ("silent", "unverified"):
+                if re.search(rf"\b{word}\b", text, re.I):
+                    fails.append(f"  a status badge/label renders the internal word "
+                                 f"{word!r}: {text!r}")
 
     if fails:
         print("Absence-language check FAILED:\n")

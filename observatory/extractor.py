@@ -47,10 +47,47 @@ def _clip_citation(s: str, max_words: int = 14) -> str:
     return s if len(words) <= max_words else " ".join(words[:max_words]) + "…"
 
 
+# Typographic variants folded to ASCII before matching, so a quote written with a
+# straight apostrophe verifies against a capture that uses a curly one (and vice
+# versa). This was a real cause of false "unverified": AWS's text uses curly
+# quotes throughout, the model quoted with straight ones, and the exact-match
+# failed on punctuation the reader would never distinguish.
+_TYPO_FOLD = {
+    "‘": "'", "’": "'", "‚": "'", "′": "'",
+    "“": '"', "”": '"', "„": '"', "″": '"',
+    "–": "-", "—": "-", "−": "-",
+    " ": " ", " ": " ", " ": " ",
+    "…": "...",
+}
+_TYPO_RE = re.compile("|".join(map(re.escape, _TYPO_FOLD)))
+
+
 def _norm(s: str) -> str:
-    """Whitespace-normalized lowercase, for mechanically checking that a quote
-    appears verbatim in the archived text (the automated-verification guardrail)."""
-    return re.sub(r"\s+", " ", s or "").lower().strip()
+    """Whitespace-normalized, lowercased, with typographic punctuation folded to
+    ASCII, for mechanically checking that a quote appears verbatim in the archived
+    text (the automated-verification guardrail)."""
+    s = _TYPO_RE.sub(lambda m: _TYPO_FOLD[m.group()], s or "")
+    return re.sub(r"\s+", " ", s).lower().strip()
+
+
+def _citation_spans(quote: str) -> List[str]:
+    """A citation split into contiguous spans at any ellipsis. A verbatim quote is
+    one span; an elided quote ("A ... B") is two, each of which must appear in the
+    source on its own. We never accept an elided string as a single match, because
+    the elided form appears nowhere in the document."""
+    parts = re.split(r"\.\.\.|…", quote or "")
+    return [p.strip() for p in parts if p.strip()]
+
+
+def _quote_verifies(quote: str, src_text: str) -> bool:
+    """True when every contiguous span of the citation appears verbatim in the
+    source. One span for a plain quote; each span checked independently for an
+    elided one, which is the 'store two citations' rule applied at match time."""
+    spans = _citation_spans(quote)
+    if not spans:
+        return False
+    norm_src = _norm(src_text)
+    return all(_norm(sp) in norm_src for sp in spans)
 
 
 @dataclass
@@ -149,9 +186,14 @@ def _tool_schema(available_slugs: List[str]) -> dict:
                                 "type": "string",
                                 "description": "A VERBATIM excerpt copied EXACTLY from "
                                 "the cited document (not paraphrased), UNDER 15 words, "
-                                "that supports the value. Empty only if the value is "
-                                "'not specified'/'unclear'. This quote is mechanically "
-                                "checked against the archived text.",
+                                "that supports the value. Must be ONE CONTIGUOUS span of "
+                                "text: do NOT use an ellipsis to join separated passages, "
+                                "because the joined form appears nowhere in the document "
+                                "and fails verification. If a single contiguous span "
+                                "under 15 words cannot support the value, choose the one "
+                                "span that best does, or return 'not specified'. Empty "
+                                "only if the value is 'not specified'/'unclear'. This "
+                                "quote is mechanically checked against the archived text.",
                             },
                             "citation_document": {
                                 "type": "string",
@@ -277,7 +319,7 @@ def extract_provider(
         # display clip cannot break the match. Anything unverified publishes as
         # "unverified" with low confidence rather than as fact.
         raw_quote = e.get("citation", "").strip()
-        verified = bool(raw_quote) and src is not None and _norm(raw_quote) in _norm(src.text)
+        verified = bool(raw_quote) and src is not None and _quote_verifies(raw_quote, src.text)
         confidence = e.get("confidence", "low")
         if not verified:
             confidence = "low"
@@ -285,6 +327,9 @@ def extract_provider(
             "value": e.get("value", "").strip(),
             "confidence": confidence,
             "citation": _clip_citation(raw_quote),
+            # Contiguous spans, so a value resting on two passages carries both as
+            # separate verified quotes rather than one unverifiable elided string.
+            "citations": _citation_spans(raw_quote),
             "citation_document": cited,
             "status": "verified" if verified else "unverified",
             # Provenance: the exact source this value is anchored to.

@@ -470,15 +470,17 @@ def _source_line(source: dict) -> str:
 # human/counsel-verified tier. Warning styling is reserved for quote_unverified;
 # absence states (silent / not applicable) get neutral, muted treatment so they
 # read as "nothing to see", not "something went wrong".
-_STATUS_META = {
-    "quote_verified":   ("ok",     "supporting quote verified against the source document", "ok",    "✓ quote verified"),
-    "quote_unverified": ("warn",   "no supporting quote could be matched to the source",     "warn",  "unverified — supporting quote not matched"),
-    "no_clause_found":  ("absent", "the provider's terms are silent on this point",          "muted", "silent — no clause found"),
-    "not_applicable":   ("na",     "this dimension does not apply to this offering",         "muted", "not applicable"),
-    # Absence of a captured document, not a finding about the terms. Muted, never
-    # a warning: nothing has gone wrong with the provider's drafting.
-    "access_restricted": ("na",    "the provider's configuration blocks automated retrieval", "muted", "access restricted by provider"),
-    "not_retrievable":   ("na",    "the document could not be retrieved",                     "muted", "not retrievable"),
+# Style per status (dot colour class, badge class). The reader-facing LABEL and
+# TOOLTIP are not here: they live in display_strings.yaml and are pulled in by
+# _status_meta, so no status enum word is written in code. "✓ " is prepended to
+# the verified label at render time.
+_STATUS_STYLE = {
+    "quote_verified":    ("ok",     "ok"),
+    "quote_unverified":  ("warn",   "warn"),
+    "no_clause_found":   ("absent", "muted"),
+    "not_applicable":    ("na",     "muted"),
+    "access_restricted": ("na",     "muted"),
+    "not_retrievable":   ("na",     "muted"),
 }
 _DEFAULT_STATUS = "quote_unverified"
 
@@ -503,9 +505,34 @@ _CAPTURE_CAUSE = {
 }
 
 
+def _status_legend() -> str:
+    """A visible key mapping each status dot colour to its label, so a reader never
+    has to guess what a coloured circle means (the dots carry a tooltip and an
+    aria-label, but a colour alone is not a label). Labels come from
+    display_strings, so the key and the badges cannot drift apart."""
+    labels = _display_strings().get("status_labels") or {}
+    items = [
+        ("ok", labels.get("quote_verified", "")),
+        ("warn", labels.get("quote_unverified", "")),
+        ("absent", labels.get("no_clause_found", "")),
+        ("na", labels.get("not_applicable", "")),
+    ]
+    dots = "".join(
+        f'<span class="legend-item"><span class="dot {cls}" aria-hidden="true"></span>'
+        f'{esc(text)}</span>' for cls, text in items if text)
+    return (f'<div class="legend" role="img" aria-label="Cell status key">'
+            f'<span class="legend-lbl">Key</span>{dots}</div>')
+
+
 def _status_meta(field: dict):
-    dot, title, badge_cls, label = _STATUS_META.get(
-        field.get("status", _DEFAULT_STATUS), _STATUS_META[_DEFAULT_STATUS])
+    status = field.get("status", _DEFAULT_STATUS)
+    dot, badge_cls = _STATUS_STYLE.get(status, _STATUS_STYLE[_DEFAULT_STATUS])
+    ds = _display_strings()
+    label = (ds.get("status_labels") or {}).get(status) \
+        or (ds.get("status_labels") or {}).get(_DEFAULT_STATUS, "")
+    title = (ds.get("status_tooltips") or {}).get(status, label)
+    if status == "quote_verified":
+        label = "✓ " + label
     cause = _CAPTURE_CAUSE.get(field.get("capture_cause") or "")
     if cause and field.get("status") in ("access_restricted", "not_retrievable"):
         label = f"{label} ({cause})"
@@ -844,6 +871,7 @@ def render_matrix(dataset: dict) -> str:
 {chooser}
 {viewbar}
 {toolbar}
+{_status_legend()}
 </section>
 {grouped}
 {compare_view}
@@ -982,56 +1010,49 @@ archived version's content hash, and the model used, so any datapoint traces bac
 exact text that produced it. License values attach to the specific license document and
 model generation they came from; they are never asserted across a whole model family.</p>"""),
 
-        ("verification-statuses", "Verification statuses and confidence", """
-<p>Every value in the matrix carries one of four labels describing how well it is
-supported. Nothing here is human-verified; the labels describe the automated check, not
-anyone's review.</p>
+        ("verification-statuses", "Cell labels and confidence", """
+<p>Every cell carries one label. The reader sees the label, so each is defined here under
+the exact words it displays. Nothing is human-verified; the labels describe an automated
+check, not anyone's review.</p>
 <ul>
-<li><strong>Quote verified.</strong> The value is backed by a short verbatim quote that the
-code mechanically found in the archived source text.</li>
-<li><strong>Unverified.</strong> The model returned a value but no supporting quote could be
-matched to the source. Give it no weight without reading the document yourself.</li>
+<li><strong>Quote verified against source.</strong> The value is backed by a short verbatim
+quote that the code found, word for word, in the archived source. Where a value rests on
+two separated passages, each is stored and checked as its own contiguous quote; a quote is
+never joined across an ellipsis, because the joined form appears nowhere in the document.</li>
+<li><strong>Quote not verified against source.</strong> The model returned a value but no
+supporting quote could be matched. The value is shown but unconfirmed; give it no weight
+without reading the document yourself.</li>
 </ul>
-<p>The remaining statuses describe the terms rather than the check. None is displayed as
-a bare word: each renders as a sentence saying what was reviewed and why no term is
-reported. They are explained in the next section.</p>
-<p>Confidence (high, medium, low) is recorded alongside the status and reflects how
-directly the source text supported the reading. A verified quote with low confidence
-usually means the clause was found but was partial, qualified, or spread across several
-documents.</p>"""),
+<p>The remaining labels describe the terms, or the absence of a captured document, rather
+than the check. Each is defined in the next section.</p>
+<p>Confidence (high, medium, low) sits alongside a verified value and reflects how directly
+the quote supported the reading: a verified quote with low confidence usually means the
+clause was partial or qualified.</p>"""),
 
-        ("silent-not-applicable", "How absences are reported", """
-<p>The Observatory reports what governing documents say. Where they say nothing on a point, it reports that it looked, which documents it looked at, and what it found instead. An absence is a finding and is written as one: no cell displays a bare status word, because "silent" reads as a judgment about the provider and "not applicable" reads as a gap in coverage, when in each case the accurate statement is narrower and checkable.</p>
-<p>So a cell never reads &ldquo;silent&rdquo;. It reads, for example, <em>Reviewed the AWS
-Customer Agreement and 8 other governing documents: no provision addresses this
-term</em>, with the full list of documents in the cell drawer. The dense matrix shows a
-shortened clause; spreadsheet exports carry the full sentence throughout, since they have
-no drawer to open.</p>
-<p>The underlying statuses are unchanged, and the badge and confidence marker still sit
-alongside. What changed is that the reader is told what was looked at.</p>
-<p>The distinctions those sentences draw:</p>
+        ("silent-not-applicable", "When no value is reported", """
+<p>Where the Observatory reports no value, the cell says which label applies and, in its
+drawer and in exports, a full sentence stating what was reviewed and why. Each label is
+defined here under the words it displays.</p>
 <ul>
-<li><strong>Silent.</strong> The provider's terms do not address this dimension: there is
-no governing clause to quote. This is a finding about the terms, not a failure of the
-tool.</li>
-<li><strong>Not applicable.</strong> The dimension does not apply to this offering. For
-example, service-level or capacity terms for a downloadable open-weight model, which is a
-license rather than a hosted service.</li>
+<li><strong>No provision found.</strong> The governing documents were reviewed and none
+addresses this point. A finding about the terms, not a failure of the tool: the provider
+could have addressed the point and did not. The cell names the documents reviewed.</li>
+<li><strong>Not applicable.</strong> The point cannot arise for this kind of offering, so
+no provision is expected. Service-level or capacity terms for a downloadable open-weight
+model, for example, which is a license rather than a hosted service. The cell states the
+reason.</li>
 </ul>
-<p>The distinction matters when reading across a row. A silent cell means the provider
-could have addressed the point and did not. A not-applicable cell means the point could
-not arise for that kind of offering.</p>
 <p>Two further labels describe a document that is not in the corpus at all, rather than
 anything the terms say. Neither is a finding about the provider's drafting.</p>
 <ul>
 <li><strong>Access restricted by provider.</strong> Some providers block automated
 retrieval via robots.txt, CAPTCHAs, or login walls. The Observatory honors these
-boundaries and does not bypass them; affected documents are marked &ldquo;Access
-restricted by provider&rdquo; rather than captured through workarounds. The mechanism is
-shown in parentheses.</li>
-<li><strong>Not retrievable.</strong> The document could not be retrieved for a technical
-reason, shown in parentheses: JavaScript-rendered (the page returns no text to an
-automated fetch) or a broken provider link.</li>
+boundaries and does not bypass them; affected documents carry this label rather than being
+captured through workarounds. The mechanism is shown in parentheses.</li>
+<li><strong>Not retrievable.</strong> No governing document is currently captured to review,
+for a technical reason shown in parentheses: a JavaScript-rendered page that returns no
+text, a broken provider link, a capture too short to be the document, or a source removed
+from the registry.</li>
 </ul>"""),
 
         ("sources-and-mirrors", "Which copy of a document is authoritative", """
@@ -1889,6 +1910,9 @@ padding:20px 24px 22px;margin:14px auto 30px;max-width:1180px}
 line-height:1.55;text-align:center;text-wrap:balance}
 .ctlpanel .toolbar{border:0;padding:0;margin-top:14px;background:transparent}
 .ctlpanel .viewbar{margin:14px 0 0}
+.ctlpanel .legend{margin:16px 0 0;padding-top:14px;border-top:1px solid var(--line);justify-content:center}
+.legend-item{display:inline-flex;align-items:center;gap:6px}
+.legend-item .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
 .chooser{display:flex;flex-direction:column;align-items:center;gap:12px;margin:6px 0 22px}
 .chooser-main{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
 .chooser-sub{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}

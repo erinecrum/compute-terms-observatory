@@ -38,6 +38,25 @@ feed:
   capture_issue:
     lead: "This capture could not be read as text, so no change is reported."
 
+# Status badges. The reader only ever sees these labels, never the internal enum
+# (no bare "silent" or "unverified"). Each is defined on the methodology page under
+# the same label.
+status_labels:
+  quote_verified: "Quote verified against source"
+  quote_unverified: "Quote not verified against source"
+  no_clause_found: "No provision found"
+  not_applicable: "Not applicable"
+  access_restricted: "Access restricted by provider"
+  not_retrievable: "Not retrievable"
+
+status_tooltips:
+  quote_verified: "A supporting quote was matched, word for word, in the cited source document."
+  quote_unverified: "No supporting quote could be matched to the source, so the value is shown but unconfirmed."
+  no_clause_found: "The governing documents were reviewed and contain no provision on this point."
+  not_applicable: "This term type does not arise for this kind of entry."
+  access_restricted: "The provider blocks automated retrieval of this document."
+  not_retrievable: "No governing document is currently captured to review."
+
 comparison:
   # Header note above the two documents, by mode.
   lineage_note: >-
