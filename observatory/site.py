@@ -436,6 +436,7 @@ def _shell(title: str, body: str, active: str, subtitle: str = "",
   Public documents only · Descriptive, never advisory ·
   <a href="methodology.html">Methodology</a> ·
   <a href="https://github.com/erinecrum/compute-terms-observatory">Source</a>
+  <span class="foot-legal">· <a href="terms.html">Terms</a> · <a href="privacy.html">Privacy</a></span>
 </div></footer>
 <script>{_JS}</script>
 </body>
@@ -977,6 +978,68 @@ def _segment_dims_body() -> str:
         'The omissions per segment:</p>'
         + "".join(blocks)
     )
+
+
+def _md_inline(text: str) -> str:
+    """Inline markdown for the policy pages: escape HTML first, then apply bold and
+    links. Deliberately small: these two documents use only **bold** and
+    [text](url), plus backslash escapes (\\. \\[ \\])."""
+    text = esc(text)
+    # Links: [label](href) -> anchor. hrefs are policy-authored (mailto: and
+    # internal), so safe_url guards them.
+    def _link(m):
+        return f'<a href="{safe_url(m.group(2))}">{m.group(1)}</a>'
+    text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", _link, text)
+    text = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", text)
+    text = re.sub(r"(?<!\*)\*([^*]+)\*(?!\*)", r"<em>\1</em>", text)
+    # Markdown backslash escapes: a literal ., [, ] the author escaped.
+    text = re.sub(r"\\([.\[\]\\])", r"\1", text)
+    return text
+
+
+def render_policy(md_text: str) -> str:
+    """Render a policy markdown document (Terms or Privacy) into the site's page
+    body. Verbatim wording; only structure is translated to HTML. Supports the
+    constructs these two documents use and nothing more, so the words on the page
+    are exactly the words in policies/*.md."""
+    html, para, in_list = [], [], False
+
+    def flush_para():
+        if para:
+            html.append(f"<p>{_md_inline(' '.join(para))}</p>")
+            para.clear()
+
+    def close_list():
+        nonlocal in_list
+        if in_list:
+            html.append("</ul>")
+            in_list = False
+
+    for raw in md_text.splitlines():
+        line = raw.rstrip()
+        if not line.strip():
+            flush_para(); close_list(); continue
+        if line.startswith("# "):
+            # The page shell already renders the document title as the page h1, so
+            # the markdown title line is skipped to avoid a duplicate heading.
+            flush_para(); close_list()
+        elif line.startswith("## "):
+            flush_para(); close_list()
+            html.append(f"<h2>{_md_inline(line[3:].strip())}</h2>")
+        elif line.strip() == "---":
+            flush_para(); close_list()
+            html.append('<hr class="policy-rule">')
+        elif line.lstrip().startswith("- "):
+            flush_para()
+            if not in_list:
+                html.append("<ul>"); in_list = True
+            html.append(f"<li>{_md_inline(line.lstrip()[2:].strip())}</li>")
+        else:
+            close_list()
+            para.append(line.strip())
+    flush_para(); close_list()
+    return ('<p><a href="index.html">&larr; Back to the matrix</a></p>'
+            '<div class="policy">' + "".join(html) + "</div>")
 
 
 def render_methodology(dataset: dict) -> str:
@@ -1678,6 +1741,12 @@ def render_site(dataset: dict, out_dir: Path = SITE_DIR) -> List[Path]:
         "methodology.html": ("Methodology", render_methodology(dataset), "methodology",
                              "How the observatory archives, detects, and classifies published terms."),
         "about.html": ("About & coverage", render_about(dataset), "about", ""),
+        "terms.html": ("Terms of Use",
+                       render_policy(Path("policies/terms-of-use.md").read_text(encoding="utf-8")),
+                       "", "The terms governing use of the Compute Terms Observatory."),
+        "privacy.html": ("Privacy Policy",
+                         render_policy(Path("policies/privacy-policy.md").read_text(encoding="utf-8")),
+                         "", "What the Compute Terms Observatory processes, and why."),
     }
     for fname, (title, body, active, subtitle) in pages.items():
         is_home = fname == "index.html"
@@ -2286,6 +2355,17 @@ border:1px solid var(--line-2);border-radius:8px;background:var(--bg);color:var(
 .foot-purpose{margin:0 0 10px;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;
 font-style:italic;font-size:14.5px;color:var(--muted)}
 /* Standfirst above a page's body copy, same serif voice as the deck and footer. */
+/* Policy pages (Terms, Privacy): plain prose in the same shell and type scale as
+   the methodology page. */
+.policy{max-width:660px}
+.policy h2{font-family:var(--display);font-size:16px;font-weight:600;margin:28px 0 8px;color:var(--ink)}
+.policy p{margin:0 0 13px;font-size:15px;line-height:1.65;color:var(--ink)}
+.policy ul{margin:0 0 13px;padding-left:20px}
+.policy li{font-size:15px;line-height:1.6;margin:4px 0}
+.policy a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+.policy-rule{border:0;border-top:1px solid var(--line);margin:24px 0 16px}
+.foot-legal{margin-left:2px}
+.foot-legal a{white-space:nowrap}
 .page-standfirst{margin:0 0 26px;max-width:660px;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;
 font-style:italic;font-size:16px;line-height:1.55;color:var(--muted)}
 

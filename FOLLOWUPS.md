@@ -36,6 +36,27 @@ page for months. Do not let a quiet quarter become an argument for switching it 
 
 Raised 2026-07-20.
 
+## Client-side storage triggers a privacy-policy review
+
+Any future feature that stores anything in the visitor's browser -- localStorage,
+sessionStorage, IndexedDB, cookies, cache APIs -- triggers a privacy-policy review
+before it ships, the same standing rule as a feature that expands the processing
+footprint.
+
+Why: the privacy policy makes specific claims about what is stored client-side (as
+of publication, only per-tab sessionStorage of which matrix sections are
+collapsed, named explicitly in "What we do not do"). A feature that stores
+anything else would make the policy inaccurate the moment it shipped. This was
+caught during the policy publish: the policy originally said "no local storage"
+while the site already used sessionStorage, and the pages were held until the text
+was corrected.
+
+The mechanical backstop: scripts/test_policy_integrity.py fails the build if the
+policy text changes without a dated change-history entry, so a policy update to
+cover a new storage feature cannot be made silently either.
+
+Raised 2026-07-20.
+
 ## Quarterly full-registry governs review
 
 **Next due: 2026-10-20**, then quarterly.
