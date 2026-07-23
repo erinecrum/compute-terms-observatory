@@ -36,6 +36,23 @@ page for months. Do not let a quiet quarter become an argument for switching it 
 
 Raised 2026-07-20.
 
+## Contact-address encoding is friction, not protection
+
+The contact address is entity-encoded in every generated page so it does not
+appear as a plain string in the HTML source. This defeats naive regex email
+scrapers only. Any scraper that parses the DOM sees the address in full: the
+browser decodes the entities, which is the entire point (copy-paste and screen
+readers work identically), and a DOM-aware scraper reads that same decoded value.
+
+So this is cheap friction, not a defence. The real spam control remains Google
+Workspace filtering on the mailbox. Do not add JavaScript obfuscation, images, or
+"at/dot" rewriting to strengthen it: those degrade accessibility or change the
+text, for protection that still falls to any serious scraper. If harvesting ever
+becomes a real problem, the answer is a contact form or an alias, not more source
+obfuscation.
+
+Raised 2026-07-20.
+
 ## Client-side storage triggers a privacy-policy review
 
 Any future feature that stores anything in the visitor's browser -- localStorage,

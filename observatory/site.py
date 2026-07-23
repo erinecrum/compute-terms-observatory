@@ -273,6 +273,25 @@ _DOC_VERSIONS_POLICY_TEXT = (
 _CSP_SLOT = "<!--CSP-->"
 
 
+CONTACT_EMAIL = "contact@termsobservatory.org"
+# Entity-encoded form of the contact address, as decimal character references.
+# The browser decodes these in both text content and attribute values, so the
+# rendered text, mailto: behaviour, copy-paste and screen-reader output are all
+# identical to the plain form; only the HTML source differs. That defeats naive
+# regex email scrapers while changing nothing for a human. No JavaScript, no
+# images, no "at/dot" rewriting -- those would degrade accessibility or alter the
+# text. The verbatim legal-page text is unaffected, because the DOM content is the
+# same characters.
+_CONTACT_ENCODED = "".join(f"&#{ord(c)};" for c in CONTACT_EMAIL)
+
+
+def _encode_contact(html: str) -> str:
+    """Replace every plain rendering of the contact address with its entity-encoded
+    form. Applied once to the finished document, so every current and future
+    rendering -- link text and mailto: href -- is encoded without per-template edits."""
+    return html.replace(CONTACT_EMAIL, _CONTACT_ENCODED)
+
+
 def _apply_csp(html: str) -> str:
     """Insert a Content-Security-Policy meta tag computed from this page's own
     inline script and style blocks.
@@ -407,8 +426,10 @@ def _shell(title: str, body: str, active: str, subtitle: str = "",
             f'<div class="deck"><div class="wrap">{_DECK_HTML}</div></div>'
         )
     # The policy hashes this page's own inline blocks, so it is computed after the
-    # document is assembled and swapped into the slot below.
-    return _apply_csp(f"""<!doctype html>
+    # document is assembled and swapped into the slot below. The contact address is
+    # entity-encoded as the final step, so every rendering of it on every page --
+    # text and mailto: href alike -- is encoded automatically.
+    return _encode_contact(_apply_csp(f"""<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -440,7 +461,7 @@ def _shell(title: str, body: str, active: str, subtitle: str = "",
 </div></footer>
 <script>{_JS}</script>
 </body>
-</html>""")
+</html>"""))
 
 
 def _source_line(source: dict) -> str:
